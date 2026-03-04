@@ -74,3 +74,14 @@ pnpm dev
 ```
 
 Note: root `pnpm dev` expects Python dependencies to already be installed in your active environment.
+
+## Makefile shortcuts
+
+From repo root:
+
+```bash
+make start-frontend
+make start-backend
+make migration-up
+make migration-new m="add profile fields"
+```
