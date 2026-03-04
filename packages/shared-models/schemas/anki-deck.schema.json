@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AnkiDeck",
+  "description": "Simplified deck model for grouping Anki-like cards.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique deck identifier."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owner user identifier (UUID)."
+    },
+    "name": {
+      "type": "string",
+      "description": "Deck display name."
+    },
+    "description": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Optional deck description."
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the deck is archived."
+    },
+    "new_cards_per_day": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 20,
+      "description": "Daily limit for new cards from this deck."
+    },
+    "review_cards_per_day": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 200,
+      "description": "Daily limit for review cards from this deck."
+    },
+    "card_count": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Total number of cards in the deck."
+    },
+    "card_ids": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "default": null,
+      "description": "Optional card id list when preloaded; null means not loaded."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Search/filter tags for the deck."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp (ISO 8601)."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "name",
+    "created_at",
+    "updated_at"
+  ]
+}

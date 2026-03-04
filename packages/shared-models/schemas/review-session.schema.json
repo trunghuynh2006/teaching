@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReviewSession",
+  "description": "A timed review session where the system preselects cards for a user.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique review session identifier."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owner user identifier (UUID)."
+    },
+    "deck_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "default": null,
+      "description": "Optional deck filter used to generate this session."
+    },
+    "target_duration_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 10,
+      "description": "Requested study duration for this session."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "active", "completed", "abandoned"],
+      "default": "planned",
+      "description": "Session lifecycle state."
+    },
+    "selected_card_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "default": [],
+      "description": "Cards selected by the scheduler for this session."
+    },
+    "reviewed_count": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "How many selected cards were reviewed in this session."
+    },
+    "started_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "When the session started (ISO 8601)."
+    },
+    "completed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "When the session was completed or abandoned (ISO 8601)."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp (ISO 8601)."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "target_duration_minutes",
+    "created_at",
+    "updated_at"
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AnkiCard",
+  "description": "Simplified Anki-like card model for spaced repetition.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique card identifier."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owner user identifier (UUID)."
+    },
+    "deck_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "default": null,
+      "description": "Deck/group identifier for organizing cards."
+    },
+    "source_lesson_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "default": null,
+      "description": "Optional originating lesson identifier."
+    },
+    "front_text": {
+      "type": "string",
+      "description": "Question/prompt side of the card."
+    },
+    "back_text": {
+      "type": "string",
+      "description": "Answer/explanation side of the card."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["new", "learning", "review", "relearning"],
+      "default": "new",
+      "description": "Simplified learning stage for scheduling."
+    },
+    "ease_factor": {
+      "type": "number",
+      "minimum": 1.3,
+      "maximum": 3,
+      "default": 2.5,
+      "description": "Ease multiplier used to grow or shrink intervals."
+    },
+    "interval_days": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Current review interval in days."
+    },
+    "repetitions": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Count of successful reviews."
+    },
+    "lapses": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Count of failed reviews after learning."
+    },
+    "due_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "Next scheduled review time (ISO 8601)."
+    },
+    "last_reviewed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "Most recent review time (ISO 8601)."
+    },
+    "is_suspended": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this card is temporarily excluded from reviews."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Search/filter tags for the card."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp (ISO 8601)."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "front_text",
+    "back_text",
+    "created_at",
+    "updated_at"
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AnkiReviewLog",
+  "description": "Simplified per-review event log for Anki-like cards.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique review log identifier."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owner user identifier (UUID)."
+    },
+    "card_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Reviewed card identifier."
+    },
+    "deck_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "default": null,
+      "description": "Deck context at review time, if any."
+    },
+    "rating": {
+      "type": "string",
+      "enum": ["again", "hard", "good", "easy"],
+      "description": "Simplified review grade selected by the learner."
+    },
+    "elapsed_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Time spent before answering, in milliseconds."
+    },
+    "interval_before_days": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Card interval before this review, in days."
+    },
+    "interval_after_days": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Card interval after this review, in days."
+    },
+    "ease_factor_before": {
+      "type": "number",
+      "minimum": 1.3,
+      "maximum": 3,
+      "default": 2.5,
+      "description": "Ease factor before this review."
+    },
+    "ease_factor_after": {
+      "type": "number",
+      "minimum": 1.3,
+      "maximum": 3,
+      "default": 2.5,
+      "description": "Ease factor after this review."
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the review happened (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "card_id",
+    "rating",
+    "reviewed_at"
+  ]
+}
