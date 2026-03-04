@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StudentProfile",
+  "description": "Basic student profile linked to a user account.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique profile identifier."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Linked user identifier (UUID)."
+    },
+    "full_name": {
+      "type": "string",
+      "description": "Student full name."
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120,
+      "description": "Student age in years."
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Student email address."
+    },
+    "phone": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Student phone number."
+    },
+    "grade_level": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 13,
+      "description": "Academic year level. US typically uses 1-12, NZ can use 1-13."
+    },
+    "education_system": {
+      "type": "string",
+      "enum": ["US", "NZ"],
+      "default": "US",
+      "description": "School system used to interpret grade levels."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp (ISO 8601)."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "full_name",
+    "age",
+    "email",
+    "grade_level",
+    "created_at",
+    "updated_at"
+  ]
+}
