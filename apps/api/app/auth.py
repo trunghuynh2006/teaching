@@ -11,7 +11,8 @@ JWT_SECRET = os.getenv("JWT_SECRET", "change_me_in_production")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "120"))
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Primary scheme supports long passwords; keep bcrypt for backward compatibility.
+pwd_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
