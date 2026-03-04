@@ -1,0 +1,13 @@
+node_modules
+.pnpm-store
+.turbo
+.env
+.env.*
+__pycache__
+*.pyc
+.venv
+apps/api/.venv
+dist
+coverage
+.DS_Store
+pw.txt

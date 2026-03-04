@@ -1,0 +1,15 @@
+{
+  "name": "teaching-platform-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "cd apps/api && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.3"
+  }
+}
