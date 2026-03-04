@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "echo 'lint not configured'",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:models": "python3 ../../scripts/generate_shared_models.py"
   },
   "dependencies": {
     "react": "^18.3.1",

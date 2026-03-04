@@ -6,7 +6,7 @@ VENV_BIN := $(API_DIR)/.venv/bin
 ALEMBIC := $(VENV_BIN)/alembic
 UVICORN := $(VENV_BIN)/uvicorn
 
-.PHONY: help start-frontend start-backend migration-up migration-new
+.PHONY: help start-frontend start-backend migration-up migration-new generate-models
 
 help:
 	@echo "Available targets:"
@@ -14,6 +14,7 @@ help:
 	@echo "  make start-backend                  # Start FastAPI backend dev server"
 	@echo "  make migration-up                   # Run Alembic migrations to head"
 	@echo "  make migration-new m='message'      # Create new Alembic migration"
+	@echo "  make generate-models                # Generate shared models from JSON schema"
 
 start-frontend:
 	pnpm --filter web dev
@@ -45,3 +46,6 @@ migration-new:
 	else \
 		alembic revision --autogenerate -m "$(m)"; \
 	fi
+
+generate-models:
+	python3 scripts/generate_shared_models.py

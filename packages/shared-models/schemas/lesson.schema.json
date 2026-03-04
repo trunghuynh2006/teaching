@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lesson",
+  "description": "Shared lesson model for frontend and backend.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique lesson identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Lesson title."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short lesson description."
+    },
+    "duration_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Estimated duration in minutes."
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Publishing state."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Lesson tags."
+    }
+  },
+  "required": [
+    "id",
+    "title"
+  ]
+}
