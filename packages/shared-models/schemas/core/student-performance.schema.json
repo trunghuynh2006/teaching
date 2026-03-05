@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StudentPerformance",
+  "description": "Latest known learner performance for a specific subject.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique learner-subject performance identifier."
+    },
+    "learner_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Referenced learner (student profile) identifier."
+    },
+    "subject_id": {
+      "type": "string",
+      "description": "Referenced subject identifier."
+    },
+    "latest_history_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Most recent performance history entry identifier."
+    },
+    "current_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Current normalized performance score in range 0-100."
+    },
+    "trend": {
+      "type": "string",
+      "enum": [
+        "improving",
+        "stable",
+        "declining"
+      ],
+      "default": "stable",
+      "description": "Short-term trend based on recent history."
+    },
+    "measured_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when current score was measured (ISO 8601)."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this rollup row was last updated (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "learner_id",
+    "subject_id",
+    "current_score",
+    "measured_at",
+    "updated_at"
+  ]
+}

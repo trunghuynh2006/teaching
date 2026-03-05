@@ -201,3 +201,127 @@ export class SkillLesson {
     };
   }
 }
+
+export class StudentPerformance {
+  constructor(data = {}) {
+    this.id = data.id;
+    this.learner_id = data.learner_id;
+    this.subject_id = data.subject_id;
+    this.latest_history_id = data.latest_history_id ?? null;
+    this.current_score = data.current_score;
+    this.trend = data.trend ?? "stable";
+    this.measured_at = data.measured_at;
+    this.updated_at = data.updated_at;
+  }
+
+  static validate(data) {
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.learner_id === undefined) return false;
+    if (data.learner_id !== undefined && !(typeof data.learner_id === "string")) return false;
+    if (data.subject_id === undefined) return false;
+    if (data.subject_id !== undefined && !(typeof data.subject_id === "string")) return false;
+    if (data.latest_history_id !== undefined && !((data.latest_history_id === null || typeof data.latest_history_id === "string"))) return false;
+    if (data.current_score === undefined) return false;
+    if (data.current_score !== undefined && !(typeof data.current_score === "number")) return false;
+    if (data.current_score !== undefined && data.current_score < 0) return false;
+    if (data.current_score !== undefined && data.current_score > 100) return false;
+    if (data.trend !== undefined && !(typeof data.trend === "string")) return false;
+    if (data.measured_at === undefined) return false;
+    if (data.measured_at !== undefined && !(typeof data.measured_at === "string")) return false;
+    if (data.updated_at === undefined) return false;
+    if (data.updated_at !== undefined && !(typeof data.updated_at === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      learner_id: this.learner_id,
+      subject_id: this.subject_id,
+      latest_history_id: this.latest_history_id,
+      current_score: this.current_score,
+      trend: this.trend,
+      measured_at: this.measured_at,
+      updated_at: this.updated_at,
+    };
+  }
+}
+
+export class StudentPerformanceHistory {
+  constructor(data = {}) {
+    this.id = data.id;
+    this.student_performance_id = data.student_performance_id;
+    this.learner_id = data.learner_id;
+    this.subject_id = data.subject_id;
+    this.score = data.score;
+    this.recorded_at = data.recorded_at;
+    this.source = data.source ?? "system";
+    this.notes = data.notes ?? null;
+  }
+
+  static validate(data) {
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.student_performance_id === undefined) return false;
+    if (data.student_performance_id !== undefined && !(typeof data.student_performance_id === "string")) return false;
+    if (data.learner_id === undefined) return false;
+    if (data.learner_id !== undefined && !(typeof data.learner_id === "string")) return false;
+    if (data.subject_id === undefined) return false;
+    if (data.subject_id !== undefined && !(typeof data.subject_id === "string")) return false;
+    if (data.score === undefined) return false;
+    if (data.score !== undefined && !(typeof data.score === "number")) return false;
+    if (data.score !== undefined && data.score < 0) return false;
+    if (data.score !== undefined && data.score > 100) return false;
+    if (data.recorded_at === undefined) return false;
+    if (data.recorded_at !== undefined && !(typeof data.recorded_at === "string")) return false;
+    if (data.source !== undefined && !(typeof data.source === "string")) return false;
+    if (data.notes !== undefined && !((data.notes === null || typeof data.notes === "string"))) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      student_performance_id: this.student_performance_id,
+      learner_id: this.learner_id,
+      subject_id: this.subject_id,
+      score: this.score,
+      recorded_at: this.recorded_at,
+      source: this.source,
+      notes: this.notes,
+    };
+  }
+}
+
+export class Subject {
+  constructor(data = {}) {
+    this.id = data.id;
+    this.code = data.code;
+    this.name = data.name;
+    this.description = data.description;
+    this.is_active = data.is_active ?? true;
+  }
+
+  static validate(data) {
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.code === undefined) return false;
+    if (data.code !== undefined && !(typeof data.code === "string")) return false;
+    if (data.name === undefined) return false;
+    if (data.name !== undefined && !(typeof data.name === "string")) return false;
+    if (data.description !== undefined && !(typeof data.description === "string")) return false;
+    if (data.is_active !== undefined && !(typeof data.is_active === "boolean")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      code: this.code,
+      name: this.name,
+      description: this.description,
+      is_active: this.is_active,
+    };
+  }
+}

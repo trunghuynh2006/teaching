@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StudentPerformanceHistory",
+  "description": "Immutable time-based snapshots of learner performance per subject.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique history entry identifier."
+    },
+    "student_performance_id": {
+      "type": "string",
+      "description": "Referenced student performance rollup identifier."
+    },
+    "learner_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Referenced learner (student profile) identifier."
+    },
+    "subject_id": {
+      "type": "string",
+      "description": "Referenced subject identifier."
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Observed normalized performance score in range 0-100."
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this performance snapshot was recorded (ISO 8601)."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "assessment",
+        "assignment",
+        "manual",
+        "system"
+      ],
+      "default": "system",
+      "description": "Source of this measurement."
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Optional notes about the measurement."
+    }
+  },
+  "required": [
+    "id",
+    "student_performance_id",
+    "learner_id",
+    "subject_id",
+    "score",
+    "recorded_at"
+  ]
+}

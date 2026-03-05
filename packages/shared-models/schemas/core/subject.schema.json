@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Subject",
+  "description": "A learning subject domain (for example English or Logic).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique subject identifier."
+    },
+    "code": {
+      "type": "string",
+      "description": "Short stable subject code (for example ENGLISH, LOGIC)."
+    },
+    "name": {
+      "type": "string",
+      "description": "Subject display name."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short subject description."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this subject is currently active."
+    }
+  },
+  "required": [
+    "id",
+    "code",
+    "name"
+  ]
+}
