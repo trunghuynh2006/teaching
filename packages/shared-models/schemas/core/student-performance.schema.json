@@ -1,22 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "StudentPerformance",
-  "description": "Latest known learner performance for a specific subject.",
+  "description": "Latest known learner performance for a specific skill.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique learner-subject performance identifier."
+      "description": "Unique learner-skill performance identifier."
     },
     "learner_id": {
       "type": "string",
       "format": "uuid",
       "description": "Referenced learner (student profile) identifier."
     },
-    "subject_id": {
+    "skill_id": {
       "type": "string",
-      "description": "Referenced subject identifier."
+      "description": "Referenced skill identifier."
     },
     "latest_history_id": {
       "type": [
@@ -56,7 +56,7 @@
   "required": [
     "id",
     "learner_id",
-    "subject_id",
+    "skill_id",
     "current_score",
     "measured_at",
     "updated_at"

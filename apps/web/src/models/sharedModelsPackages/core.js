@@ -206,7 +206,7 @@ export class StudentPerformance {
   constructor(data = {}) {
     this.id = data.id;
     this.learner_id = data.learner_id;
-    this.subject_id = data.subject_id;
+    this.skill_id = data.skill_id;
     this.latest_history_id = data.latest_history_id ?? null;
     this.current_score = data.current_score;
     this.trend = data.trend ?? "stable";
@@ -219,8 +219,8 @@ export class StudentPerformance {
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
     if (data.learner_id === undefined) return false;
     if (data.learner_id !== undefined && !(typeof data.learner_id === "string")) return false;
-    if (data.subject_id === undefined) return false;
-    if (data.subject_id !== undefined && !(typeof data.subject_id === "string")) return false;
+    if (data.skill_id === undefined) return false;
+    if (data.skill_id !== undefined && !(typeof data.skill_id === "string")) return false;
     if (data.latest_history_id !== undefined && !((data.latest_history_id === null || typeof data.latest_history_id === "string"))) return false;
     if (data.current_score === undefined) return false;
     if (data.current_score !== undefined && !(typeof data.current_score === "number")) return false;
@@ -238,7 +238,7 @@ export class StudentPerformance {
     return {
       id: this.id,
       learner_id: this.learner_id,
-      subject_id: this.subject_id,
+      skill_id: this.skill_id,
       latest_history_id: this.latest_history_id,
       current_score: this.current_score,
       trend: this.trend,
@@ -253,7 +253,7 @@ export class StudentPerformanceHistory {
     this.id = data.id;
     this.student_performance_id = data.student_performance_id;
     this.learner_id = data.learner_id;
-    this.subject_id = data.subject_id;
+    this.skill_id = data.skill_id;
     this.score = data.score;
     this.recorded_at = data.recorded_at;
     this.source = data.source ?? "system";
@@ -267,8 +267,8 @@ export class StudentPerformanceHistory {
     if (data.student_performance_id !== undefined && !(typeof data.student_performance_id === "string")) return false;
     if (data.learner_id === undefined) return false;
     if (data.learner_id !== undefined && !(typeof data.learner_id === "string")) return false;
-    if (data.subject_id === undefined) return false;
-    if (data.subject_id !== undefined && !(typeof data.subject_id === "string")) return false;
+    if (data.skill_id === undefined) return false;
+    if (data.skill_id !== undefined && !(typeof data.skill_id === "string")) return false;
     if (data.score === undefined) return false;
     if (data.score !== undefined && !(typeof data.score === "number")) return false;
     if (data.score !== undefined && data.score < 0) return false;
@@ -285,43 +285,11 @@ export class StudentPerformanceHistory {
       id: this.id,
       student_performance_id: this.student_performance_id,
       learner_id: this.learner_id,
-      subject_id: this.subject_id,
+      skill_id: this.skill_id,
       score: this.score,
       recorded_at: this.recorded_at,
       source: this.source,
       notes: this.notes,
-    };
-  }
-}
-
-export class Subject {
-  constructor(data = {}) {
-    this.id = data.id;
-    this.code = data.code;
-    this.name = data.name;
-    this.description = data.description;
-    this.is_active = data.is_active ?? true;
-  }
-
-  static validate(data) {
-    if (data.id === undefined) return false;
-    if (data.id !== undefined && !(typeof data.id === "string")) return false;
-    if (data.code === undefined) return false;
-    if (data.code !== undefined && !(typeof data.code === "string")) return false;
-    if (data.name === undefined) return false;
-    if (data.name !== undefined && !(typeof data.name === "string")) return false;
-    if (data.description !== undefined && !(typeof data.description === "string")) return false;
-    if (data.is_active !== undefined && !(typeof data.is_active === "boolean")) return false;
-    return true;
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      code: this.code,
-      name: this.name,
-      description: this.description,
-      is_active: this.is_active,
     };
   }
 }

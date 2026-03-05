@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "StudentPerformanceHistory",
-  "description": "Immutable time-based snapshots of learner performance per subject.",
+  "description": "Immutable time-based snapshots of learner performance per skill.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -18,9 +18,9 @@
       "format": "uuid",
       "description": "Referenced learner (student profile) identifier."
     },
-    "subject_id": {
+    "skill_id": {
       "type": "string",
-      "description": "Referenced subject identifier."
+      "description": "Referenced skill identifier."
     },
     "score": {
       "type": "number",
@@ -57,7 +57,7 @@
     "id",
     "student_performance_id",
     "learner_id",
-    "subject_id",
+    "skill_id",
     "score",
     "recorded_at"
   ]
