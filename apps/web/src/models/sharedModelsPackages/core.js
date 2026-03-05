@@ -35,3 +35,74 @@ export class Lesson {
     };
   }
 }
+
+export class Skill {
+  constructor(data = {}) {
+    this.id = data.id;
+    this.title = data.title;
+    this.description = data.description;
+    this.difficulty = data.difficulty ?? "beginner";
+    this.is_published = data.is_published ?? false;
+    this.tags = data.tags ?? [];
+  }
+
+  static validate(data) {
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.title === undefined) return false;
+    if (data.title !== undefined && !(typeof data.title === "string")) return false;
+    if (data.description !== undefined && !(typeof data.description === "string")) return false;
+    if (data.difficulty !== undefined && !(typeof data.difficulty === "string")) return false;
+    if (data.is_published !== undefined && !(typeof data.is_published === "boolean")) return false;
+    if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      title: this.title,
+      description: this.description,
+      difficulty: this.difficulty,
+      is_published: this.is_published,
+      tags: this.tags,
+    };
+  }
+}
+
+export class SkillLesson {
+  constructor(data = {}) {
+    this.id = data.id;
+    this.skill_id = data.skill_id;
+    this.lesson_id = data.lesson_id;
+    this.order_index = data.order_index;
+    this.is_required = data.is_required ?? true;
+    this.created_at = data.created_at;
+  }
+
+  static validate(data) {
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.skill_id === undefined) return false;
+    if (data.skill_id !== undefined && !(typeof data.skill_id === "string")) return false;
+    if (data.lesson_id === undefined) return false;
+    if (data.lesson_id !== undefined && !(typeof data.lesson_id === "string")) return false;
+    if (data.order_index === undefined) return false;
+    if (data.order_index !== undefined && !(Number.isInteger(data.order_index))) return false;
+    if (data.order_index !== undefined && data.order_index < 1) return false;
+    if (data.is_required !== undefined && !(typeof data.is_required === "boolean")) return false;
+    if (data.created_at !== undefined && !(typeof data.created_at === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      skill_id: this.skill_id,
+      lesson_id: this.lesson_id,
+      order_index: this.order_index,
+      is_required: this.is_required,
+      created_at: this.created_at,
+    };
+  }
+}

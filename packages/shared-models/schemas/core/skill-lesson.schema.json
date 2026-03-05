@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SkillLesson",
+  "description": "Join model linking a lesson to a skill with skill-specific lesson metadata.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique skill-lesson link identifier."
+    },
+    "skill_id": {
+      "type": "string",
+      "description": "Referenced skill identifier."
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Referenced lesson identifier."
+    },
+    "order_index": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Position of the lesson in this skill path."
+    },
+    "is_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the lesson must be completed to acquire the skill."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "skill_id",
+    "lesson_id",
+    "order_index"
+  ]
+}

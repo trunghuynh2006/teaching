@@ -2,5 +2,5 @@
 // Do not edit manually.
 
 export { AnkiCard, AnkiDeck, AnkiReviewLog, ReviewSession } from "./anki.js";
-export { Lesson } from "./core.js";
+export { Lesson, Skill, SkillLesson } from "./core.js";
 export { StudentProfile } from "./student.js";

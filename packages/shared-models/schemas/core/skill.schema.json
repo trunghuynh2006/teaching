@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill",
+  "description": "A skill that groups lessons students need to complete.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique skill identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Skill title."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short skill description."
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner",
+      "description": "Relative skill difficulty level."
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Publishing state."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Skill tags."
+    }
+  },
+  "required": [
+    "id",
+    "title"
+  ]
+}

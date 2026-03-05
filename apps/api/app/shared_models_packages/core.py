@@ -10,3 +10,19 @@ class Lesson(BaseModel):
     duration_minutes: int | None = Field(default=None, description='Estimated duration in minutes.', ge=1)
     is_published: bool = Field(default=False, description='Publishing state.')
     tags: list[str] = Field(default_factory=list)
+
+class Skill(BaseModel):
+    id: str = ...
+    title: str = ...
+    description: str | None = Field(default=None, description='Short skill description.')
+    difficulty: str = Field(default='beginner', description='Relative skill difficulty level.')
+    is_published: bool = Field(default=False, description='Publishing state.')
+    tags: list[str] = Field(default_factory=list)
+
+class SkillLesson(BaseModel):
+    id: str = ...
+    skill_id: str = ...
+    lesson_id: str = ...
+    order_index: int = ...
+    is_required: bool = Field(default=True, description='Whether the lesson must be completed to acquire the skill.')
+    created_at: str | None = Field(default=None, description='Creation timestamp (ISO 8601).')
