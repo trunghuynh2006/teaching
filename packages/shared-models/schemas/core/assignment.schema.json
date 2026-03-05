@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Assignment",
+  "description": "A learner-specific assignment instance based on an assessment.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique assignment identifier."
+    },
+    "assessment_id": {
+      "type": "string",
+      "description": "Referenced assessment identifier."
+    },
+    "learner_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Referenced learner (student profile) identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Assignment title shown to learners."
+    },
+    "description": {
+      "type": "string",
+      "description": "Assignment-specific instructions."
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Submission deadline (ISO 8601)."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "assigned",
+        "in_progress",
+        "submitted",
+        "graded",
+        "cancelled"
+      ],
+      "default": "assigned",
+      "description": "Assignment lifecycle status."
+    },
+    "assigned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Assignment creation timestamp (ISO 8601)."
+    },
+    "submitted_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "default": null,
+      "description": "Submission timestamp (ISO 8601)."
+    },
+    "grade": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "default": null,
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Numeric grade in range 0-100."
+    },
+    "feedback": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Evaluator feedback for the learner."
+    }
+  },
+  "required": [
+    "id",
+    "assessment_id",
+    "learner_id",
+    "title",
+    "deadline",
+    "assigned_at"
+  ]
+}

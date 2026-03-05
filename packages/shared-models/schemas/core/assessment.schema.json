@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Assessment",
+  "description": "An assessment students complete as part of learning.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique assessment identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Assessment title."
+    },
+    "description": {
+      "type": "string",
+      "description": "Assessment description and submission instructions."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "written_response",
+        "frayment"
+      ],
+      "description": "Assessment type. written_response means students submit paragraph-form answers."
+    },
+    "expected_time_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Estimated time to complete in minutes."
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Publishing state."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Assessment tags."
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "type",
+    "expected_time_minutes"
+  ]
+}

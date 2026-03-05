@@ -2,7 +2,7 @@
 # Do not edit manually.
 
 from .anki import AnkiCard, AnkiDeck, AnkiReviewLog, ReviewSession
-from .core import Lesson, Skill, SkillLesson
+from .core import Assessment, Assignment, Lesson, Skill, SkillLesson
 from .student import StudentProfile
 
-__all__ = ['AnkiCard', 'AnkiDeck', 'AnkiReviewLog', 'ReviewSession', 'Lesson', 'Skill', 'SkillLesson', 'StudentProfile']
+__all__ = ['AnkiCard', 'AnkiDeck', 'AnkiReviewLog', 'ReviewSession', 'Assessment', 'Assignment', 'Lesson', 'Skill', 'SkillLesson', 'StudentProfile']

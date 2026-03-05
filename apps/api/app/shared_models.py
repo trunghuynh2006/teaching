@@ -2,7 +2,7 @@
 # Do not edit manually.
 
 from .shared_models_packages.anki import AnkiCard, AnkiDeck, AnkiReviewLog, ReviewSession
-from .shared_models_packages.core import Lesson, Skill, SkillLesson
+from .shared_models_packages.core import Assessment, Assignment, Lesson, Skill, SkillLesson
 from .shared_models_packages.student import StudentProfile
 
-__all__ = ['AnkiCard', 'AnkiDeck', 'AnkiReviewLog', 'ReviewSession', 'Lesson', 'Skill', 'SkillLesson', 'StudentProfile']
+__all__ = ['AnkiCard', 'AnkiDeck', 'AnkiReviewLog', 'ReviewSession', 'Assessment', 'Assignment', 'Lesson', 'Skill', 'SkillLesson', 'StudentProfile']
