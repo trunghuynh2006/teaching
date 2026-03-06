@@ -58,7 +58,7 @@ type rolePayload struct {
 func main() {
 	_ = godotenv.Load()
 
-	databaseURL := getenv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/study_platform?sslmode=disable")
+	databaseURL := mustGetenv("DATABASE_URL")
 	jwtSecret := getenv("JWT_SECRET", "change_me_in_production")
 	jwtAlgorithm := getenv("JWT_ALGORITHM", "HS256")
 	jwtExpireMinutes := getenvInt("JWT_EXPIRE_MINUTES", 120)
@@ -320,4 +320,12 @@ func getenvInt(key string, fallback int) int {
 	}
 
 	return parsed
+}
+
+func mustGetenv(key string) string {
+	value := strings.TrimSpace(os.Getenv(key))
+	if value == "" {
+		log.Fatalf("missing required environment variable: %s", key)
+	}
+	return value
 }

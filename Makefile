@@ -23,4 +23,4 @@ seed-users:
 	cd $(API_DIR) && go run . seed-users
 
 generate-models:
-	python3 scripts/generate_shared_models.py
+	go run ./scripts/generate_shared_models.go
