@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StudentPerformanceTimeline",
+  "description": "Time-ordered performance snapshot view for a learner.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique timeline identifier."
+    },
+    "learner_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Referenced learner (student profile) identifier."
+    },
+    "skill_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Optional skill filter for this timeline."
+    },
+    "from_time": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "default": null,
+      "description": "Inclusive lower bound of the timeline range (ISO 8601)."
+    },
+    "to_time": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "default": null,
+      "description": "Inclusive upper bound of the timeline range (ISO 8601)."
+    },
+    "snapshots": {
+      "type": "array",
+      "description": "Ordered snapshot points included in this timeline.",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "snapshot_id": {
+            "type": "string",
+            "description": "Referenced performance snapshot identifier."
+          },
+          "skill_id": {
+            "type": "string",
+            "description": "Referenced skill identifier for this point."
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Observed normalized performance score in range 0-100."
+          },
+          "level_framework": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "description": "Optional proficiency framework identifier at this point (for example cefr)."
+          },
+          "level_value": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "description": "Optional level value within the selected framework at this point (for example B2)."
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "assessment",
+              "assignment",
+              "manual",
+              "system"
+            ],
+            "default": "system",
+            "description": "Source of this measurement."
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this snapshot was recorded (ISO 8601)."
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "skill_id",
+          "score",
+          "recorded_at"
+        ]
+      }
+    },
+    "performance_trends": {
+      "type": "array",
+      "default": [],
+      "description": "Backend-computed trend summaries scoped to specific learner performance tracks.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "student_performance_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "description": "Referenced learner-skill performance identifier, if available."
+          },
+          "skill_id": {
+            "type": "string",
+            "description": "Referenced skill identifier for this trend summary."
+          },
+          "trend_direction": {
+            "type": "string",
+            "enum": [
+              "improving",
+              "stable",
+              "declining"
+            ],
+            "description": "Trend direction for this specific performance track."
+          },
+          "trend_slope": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "default": null,
+            "description": "Score slope over time for this specific performance track."
+          },
+          "trend_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "default": null,
+            "description": "Percentage score change for this specific performance track."
+          },
+          "trend_window": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "default": null,
+            "description": "Metadata describing the window and method used for this trend computation.",
+            "additionalProperties": false,
+            "properties": {
+              "method": {
+                "type": "string",
+                "description": "Trend method identifier (for example linear_regression or delta)."
+              },
+              "start_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Trend window start timestamp (ISO 8601)."
+              },
+              "end_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Trend window end timestamp (ISO 8601)."
+              },
+              "min_points": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Minimum number of points required for trend computation."
+              }
+            },
+            "required": [
+              "method",
+              "start_at",
+              "end_at",
+              "min_points"
+            ]
+          }
+        },
+        "required": [
+          "skill_id",
+          "trend_direction"
+        ]
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this timeline was generated (ISO 8601)."
+    }
+  },
+  "required": [
+    "id",
+    "learner_id",
+    "snapshots",
+    "generated_at"
+  ]
+}

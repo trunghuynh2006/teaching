@@ -85,9 +85,9 @@ class StudentPerformance(BaseModel):
     created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
     updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
-class StudentPerformanceHistory(BaseModel):
+class StudentPerformanceSnapshot(BaseModel):
     id: str = ...
-    student_performance_id: str = ...
+    student_performance_id: str | None = Field(default=None, description='Referenced student performance rollup identifier, if available.')
     learner_id: str = ...
     skill_id: str = ...
     score: float = ...
@@ -95,4 +95,16 @@ class StudentPerformanceHistory(BaseModel):
     level_value: str | None = Field(default=None, description='Optional level value within the selected framework at this snapshot (for example B2).')
     recorded_at: str = ...
     source: str = Field(default='system', description='Source of this measurement.')
-    notes: str | None = Field(default=None, description='Optional notes about the measurement.')
+    notes: str | None = Field(default=None, description='Optional notes about the snapshot.')
+    created_by: str | None = Field(default=None, description='User identifier that created this snapshot.')
+    created_time: str | None = Field(default=None, description='Snapshot creation timestamp (ISO 8601).')
+
+class StudentPerformanceTimeline(BaseModel):
+    id: str = ...
+    learner_id: str = ...
+    skill_id: str | None = Field(default=None, description='Optional skill filter for this timeline.')
+    from_time: str | None = Field(default=None, description='Inclusive lower bound of the timeline range (ISO 8601).')
+    to_time: str | None = Field(default=None, description='Inclusive upper bound of the timeline range (ISO 8601).')
+    snapshots: list[dict[str, object]] = Field(default_factory=list)
+    performance_trends: list[dict[str, object]] = Field(default_factory=list)
+    generated_at: str = ...

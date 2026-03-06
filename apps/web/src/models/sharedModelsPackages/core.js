@@ -326,10 +326,10 @@ export class StudentPerformance {
   }
 }
 
-export class StudentPerformanceHistory {
+export class StudentPerformanceSnapshot {
   constructor(data = {}) {
     this.id = data.id;
-    this.student_performance_id = data.student_performance_id;
+    this.student_performance_id = data.student_performance_id ?? null;
     this.learner_id = data.learner_id;
     this.skill_id = data.skill_id;
     this.score = data.score;
@@ -338,13 +338,14 @@ export class StudentPerformanceHistory {
     this.recorded_at = data.recorded_at;
     this.source = data.source ?? "system";
     this.notes = data.notes ?? null;
+    this.created_by = data.created_by ?? null;
+    this.created_time = data.created_time ?? null;
   }
 
   static validate(data) {
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
-    if (data.student_performance_id === undefined) return false;
-    if (data.student_performance_id !== undefined && !(typeof data.student_performance_id === "string")) return false;
+    if (data.student_performance_id !== undefined && !((data.student_performance_id === null || typeof data.student_performance_id === "string"))) return false;
     if (data.learner_id === undefined) return false;
     if (data.learner_id !== undefined && !(typeof data.learner_id === "string")) return false;
     if (data.skill_id === undefined) return false;
@@ -359,6 +360,8 @@ export class StudentPerformanceHistory {
     if (data.recorded_at !== undefined && !(typeof data.recorded_at === "string")) return false;
     if (data.source !== undefined && !(typeof data.source === "string")) return false;
     if (data.notes !== undefined && !((data.notes === null || typeof data.notes === "string"))) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
     return true;
   }
 
@@ -374,6 +377,50 @@ export class StudentPerformanceHistory {
       recorded_at: this.recorded_at,
       source: this.source,
       notes: this.notes,
+      created_by: this.created_by,
+      created_time: this.created_time,
+    };
+  }
+}
+
+export class StudentPerformanceTimeline {
+  constructor(data = {}) {
+    this.id = data.id;
+    this.learner_id = data.learner_id;
+    this.skill_id = data.skill_id ?? null;
+    this.from_time = data.from_time ?? null;
+    this.to_time = data.to_time ?? null;
+    this.snapshots = data.snapshots ?? [];
+    this.performance_trends = data.performance_trends ?? [];
+    this.generated_at = data.generated_at;
+  }
+
+  static validate(data) {
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.learner_id === undefined) return false;
+    if (data.learner_id !== undefined && !(typeof data.learner_id === "string")) return false;
+    if (data.skill_id !== undefined && !((data.skill_id === null || typeof data.skill_id === "string"))) return false;
+    if (data.from_time !== undefined && !((data.from_time === null || typeof data.from_time === "string"))) return false;
+    if (data.to_time !== undefined && !((data.to_time === null || typeof data.to_time === "string"))) return false;
+    if (data.snapshots === undefined) return false;
+    if (data.snapshots !== undefined && !((Array.isArray(data.snapshots) && data.snapshots.every((item) => true)))) return false;
+    if (data.performance_trends !== undefined && !((Array.isArray(data.performance_trends) && data.performance_trends.every((item) => true)))) return false;
+    if (data.generated_at === undefined) return false;
+    if (data.generated_at !== undefined && !(typeof data.generated_at === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      learner_id: this.learner_id,
+      skill_id: this.skill_id,
+      from_time: this.from_time,
+      to_time: this.to_time,
+      snapshots: this.snapshots,
+      performance_trends: this.performance_trends,
+      generated_at: this.generated_at,
     };
   }
 }

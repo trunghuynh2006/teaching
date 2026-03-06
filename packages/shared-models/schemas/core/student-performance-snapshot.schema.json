@@ -1,17 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "StudentPerformanceHistory",
-  "description": "Immutable time-based snapshots of learner performance per skill.",
+  "title": "StudentPerformanceSnapshot",
+  "description": "Immutable point-in-time snapshot of learner performance for a skill.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique history entry identifier."
+      "description": "Unique snapshot identifier."
     },
     "student_performance_id": {
-      "type": "string",
-      "description": "Referenced student performance rollup identifier."
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Referenced student performance rollup identifier, if available."
     },
     "learner_id": {
       "type": "string",
@@ -66,12 +70,29 @@
         "null"
       ],
       "default": null,
-      "description": "Optional notes about the measurement."
+      "description": "Optional notes about the snapshot."
+    },
+    "created_by": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "default": null,
+      "description": "User identifier that created this snapshot."
+    },
+    "created_time": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "default": null,
+      "description": "Snapshot creation timestamp (ISO 8601)."
     }
   },
   "required": [
     "id",
-    "student_performance_id",
     "learner_id",
     "skill_id",
     "score",
