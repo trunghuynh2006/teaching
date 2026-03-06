@@ -2,7 +2,7 @@
 
 Monorepo with:
 - `apps/web`: React + Vite frontend with animated UI and sidebar navigation
-- `apps/api`: FastAPI backend with PostgreSQL + JWT auth
+- `apps/api2`: Go backend with PostgreSQL + JWT auth
 - Tooling: `pnpm` workspaces + `turborepo` for repo management
 
 ## Features
@@ -28,24 +28,23 @@ Monorepo with:
 
 - Node.js 20+
 - pnpm 9+
-- Python 3.11+
+- Go 1.22+
 - Docker (for local PostgreSQL)
+
+If `pnpm` is not on your PATH, use:
+`/home/trung/.nvm/versions/node/v22.16.0/bin/pnpm`
 
 ## Run backend
 
 ```bash
-cd apps/api
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
+cd apps/api2
 docker compose up -d
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+cp .env.example .env
+go run .
 ```
 
-Backend URLs:
+Backend URL:
 - API: http://localhost:8000
-- Swagger: http://localhost:8000/docs
 
 ## Run frontend
 
@@ -73,8 +72,6 @@ Then start frontend + backend together from root:
 pnpm dev
 ```
 
-Note: root `pnpm dev` expects Python dependencies to already be installed in your active environment.
-
 ## Makefile shortcuts
 
 From repo root:
@@ -82,6 +79,4 @@ From repo root:
 ```bash
 make start-frontend
 make start-backend
-make migration-up
-make migration-new m="add profile fields"
 ```
