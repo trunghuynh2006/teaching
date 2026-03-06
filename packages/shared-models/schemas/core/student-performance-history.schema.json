@@ -28,6 +28,22 @@
       "maximum": 100,
       "description": "Observed normalized performance score in range 0-100."
     },
+    "level_framework": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Optional proficiency framework identifier at this snapshot (for example cefr)."
+    },
+    "level_value": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Optional level value within the selected framework at this snapshot (for example B2)."
+    },
     "recorded_at": {
       "type": "string",
       "format": "date-time",

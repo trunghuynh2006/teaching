@@ -269,6 +269,8 @@ export class StudentPerformance {
     this.skill_id = data.skill_id;
     this.latest_history_id = data.latest_history_id ?? null;
     this.current_score = data.current_score;
+    this.level_framework = data.level_framework ?? null;
+    this.level_value = data.level_value ?? null;
     this.trend = data.trend ?? "stable";
     this.measured_at = data.measured_at;
     this.updated_at = data.updated_at;
@@ -290,6 +292,8 @@ export class StudentPerformance {
     if (data.current_score !== undefined && !(typeof data.current_score === "number")) return false;
     if (data.current_score !== undefined && data.current_score < 0) return false;
     if (data.current_score !== undefined && data.current_score > 100) return false;
+    if (data.level_framework !== undefined && !((data.level_framework === null || typeof data.level_framework === "string"))) return false;
+    if (data.level_value !== undefined && !((data.level_value === null || typeof data.level_value === "string"))) return false;
     if (data.trend !== undefined && !(typeof data.trend === "string")) return false;
     if (data.measured_at === undefined) return false;
     if (data.measured_at !== undefined && !(typeof data.measured_at === "string")) return false;
@@ -309,6 +313,8 @@ export class StudentPerformance {
       skill_id: this.skill_id,
       latest_history_id: this.latest_history_id,
       current_score: this.current_score,
+      level_framework: this.level_framework,
+      level_value: this.level_value,
       trend: this.trend,
       measured_at: this.measured_at,
       updated_at: this.updated_at,
@@ -327,6 +333,8 @@ export class StudentPerformanceHistory {
     this.learner_id = data.learner_id;
     this.skill_id = data.skill_id;
     this.score = data.score;
+    this.level_framework = data.level_framework ?? null;
+    this.level_value = data.level_value ?? null;
     this.recorded_at = data.recorded_at;
     this.source = data.source ?? "system";
     this.notes = data.notes ?? null;
@@ -345,6 +353,8 @@ export class StudentPerformanceHistory {
     if (data.score !== undefined && !(typeof data.score === "number")) return false;
     if (data.score !== undefined && data.score < 0) return false;
     if (data.score !== undefined && data.score > 100) return false;
+    if (data.level_framework !== undefined && !((data.level_framework === null || typeof data.level_framework === "string"))) return false;
+    if (data.level_value !== undefined && !((data.level_value === null || typeof data.level_value === "string"))) return false;
     if (data.recorded_at === undefined) return false;
     if (data.recorded_at !== undefined && !(typeof data.recorded_at === "string")) return false;
     if (data.source !== undefined && !(typeof data.source === "string")) return false;
@@ -359,6 +369,8 @@ export class StudentPerformanceHistory {
       learner_id: this.learner_id,
       skill_id: this.skill_id,
       score: this.score,
+      level_framework: this.level_framework,
+      level_value: this.level_value,
       recorded_at: this.recorded_at,
       source: this.source,
       notes: this.notes,

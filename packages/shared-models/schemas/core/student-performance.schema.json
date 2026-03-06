@@ -32,6 +32,22 @@
       "maximum": 100,
       "description": "Current normalized performance score in range 0-100."
     },
+    "level_framework": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Optional proficiency framework identifier (for example cefr)."
+    },
+    "level_value": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "Optional level value within the selected framework (for example B2)."
+    },
     "trend": {
       "type": "string",
       "enum": [
