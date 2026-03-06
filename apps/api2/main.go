@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"api2/internal/store"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -20,7 +22,7 @@ import (
 )
 
 type app struct {
-	db               *pgxpool.Pool
+	queries          *store.Queries
 	jwtSecret        string
 	jwtAlgorithm     string
 	jwtExpireMinutes int
@@ -72,7 +74,7 @@ func main() {
 	defer db.Close()
 
 	application := &app{
-		db:               db,
+		queries:          store.New(db),
 		jwtSecret:        jwtSecret,
 		jwtAlgorithm:     jwtAlgorithm,
 		jwtExpireMinutes: jwtExpireMinutes,
@@ -185,19 +187,18 @@ func (a *app) roleData(w http.ResponseWriter, r *http.Request, currentUser user)
 }
 
 func (a *app) getUserByUsername(ctx context.Context, username string) (user, error) {
-	const query = `
-		SELECT id, username, full_name, role, hashed_password
-		FROM users
-		WHERE username = $1
-	`
-
-	var u user
-	err := a.db.QueryRow(ctx, query, username).Scan(&u.ID, &u.Username, &u.FullName, &u.Role, &u.HashedPassword)
+	record, err := a.queries.GetUserByUsername(ctx, username)
 	if err != nil {
 		return user{}, err
 	}
 
-	return u, nil
+	return user{
+		ID:             int(record.ID),
+		Username:       record.Username,
+		FullName:       record.FullName,
+		Role:           record.Role,
+		HashedPassword: record.HashedPassword,
+	}, nil
 }
 
 func (a *app) createAccessToken(subject, role string) (string, error) {

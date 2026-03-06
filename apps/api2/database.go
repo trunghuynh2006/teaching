@@ -5,6 +5,8 @@ import (
 	"errors"
 	"strings"
 
+	"api2/internal/store"
+
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,19 +28,13 @@ var demoUsers = []struct {
 }
 
 func (a *app) initDB(ctx context.Context) error {
-	const createUsersTableSQL = `
-		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
-			username VARCHAR(64) UNIQUE NOT NULL,
-			full_name VARCHAR(120) NOT NULL,
-			role VARCHAR(20) NOT NULL,
-			hashed_password VARCHAR(255) NOT NULL
-		);
-		CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
-		CREATE INDEX IF NOT EXISTS idx_users_role ON users (role);
-	`
-
-	if _, err := a.db.Exec(ctx, createUsersTableSQL); err != nil {
+	if err := a.queries.InitUsersTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitUsersUsernameIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitUsersRoleIndex(ctx); err != nil {
 		return err
 	}
 
@@ -47,8 +43,7 @@ func (a *app) initDB(ctx context.Context) error {
 
 func (a *app) seedUsers(ctx context.Context) error {
 	for _, demo := range demoUsers {
-		var existingHash string
-		err := a.db.QueryRow(ctx, "SELECT hashed_password FROM users WHERE username=$1", demo.Username).Scan(&existingHash)
+		existingHash, err := a.queries.GetUserHashByUsername(ctx, demo.Username)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
 				hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(demo.Password), bcrypt.DefaultCost)
@@ -56,14 +51,12 @@ func (a *app) seedUsers(ctx context.Context) error {
 					return hashErr
 				}
 
-				_, insertErr := a.db.Exec(
-					ctx,
-					"INSERT INTO users (username, full_name, role, hashed_password) VALUES ($1, $2, $3, $4)",
-					demo.Username,
-					demo.FullName,
-					demo.Role,
-					string(hashedPassword),
-				)
+				insertErr := a.queries.CreateUser(ctx, store.CreateUserParams{
+					Username:       demo.Username,
+					FullName:       demo.FullName,
+					Role:           demo.Role,
+					HashedPassword: string(hashedPassword),
+				})
 				if insertErr != nil {
 					return insertErr
 				}
@@ -83,14 +76,12 @@ func (a *app) seedUsers(ctx context.Context) error {
 			return hashErr
 		}
 
-		_, err = a.db.Exec(
-			ctx,
-			"UPDATE users SET full_name=$1, role=$2, hashed_password=$3 WHERE username=$4",
-			demo.FullName,
-			demo.Role,
-			string(hashedPassword),
-			demo.Username,
-		)
+		err = a.queries.UpdateUserByUsername(ctx, store.UpdateUserByUsernameParams{
+			FullName:       demo.FullName,
+			Role:           demo.Role,
+			HashedPassword: string(hashedPassword),
+			Username:       demo.Username,
+		})
 		if err != nil {
 			return err
 		}
