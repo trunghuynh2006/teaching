@@ -55,22 +55,6 @@ type rolePayload struct {
 	Data map[string]any `json:"data"`
 }
 
-var demoUsers = []struct {
-	Username string
-	Password string
-	FullName string
-	Role     string
-}{
-	{Username: "learner_alex", Password: "Pass1234!", FullName: "Alex Kim", Role: "learner"},
-	{Username: "learner_mia", Password: "Pass1234!", FullName: "Mia Johnson", Role: "learner"},
-	{Username: "teacher_john", Password: "Teach1234!", FullName: "John Carter", Role: "teacher"},
-	{Username: "teacher_nina", Password: "Teach1234!", FullName: "Nina Patel", Role: "teacher"},
-	{Username: "admin_sara", Password: "Admin1234!", FullName: "Sara Lee", Role: "admin"},
-	{Username: "admin_mike", Password: "Admin1234!", FullName: "Mike Brown", Role: "admin"},
-	{Username: "parent_olivia", Password: "Parent1234!", FullName: "Olivia Wilson", Role: "parent"},
-	{Username: "parent_david", Password: "Parent1234!", FullName: "David Taylor", Role: "parent"},
-}
-
 func main() {
 	_ = godotenv.Load()
 
@@ -98,6 +82,13 @@ func main() {
 	if err := application.initDB(ctx); err != nil {
 		log.Fatalf("failed to initialize db: %v", err)
 	}
+	if len(os.Args) > 1 && os.Args[1] == "seed-users" {
+		if err := application.seedUsers(ctx); err != nil {
+			log.Fatalf("failed to seed users: %v", err)
+		}
+		log.Println("seeded demo users")
+		return
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", application.health)
@@ -111,58 +102,6 @@ func main() {
 	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatalf("server stopped: %v", err)
 	}
-}
-
-func (a *app) initDB(ctx context.Context) error {
-	const createUsersTableSQL = `
-		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
-			username VARCHAR(64) UNIQUE NOT NULL,
-			full_name VARCHAR(120) NOT NULL,
-			role VARCHAR(20) NOT NULL,
-			hashed_password VARCHAR(255) NOT NULL
-		);
-		CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
-		CREATE INDEX IF NOT EXISTS idx_users_role ON users (role);
-	`
-
-	if _, err := a.db.Exec(ctx, createUsersTableSQL); err != nil {
-		return err
-	}
-
-	return a.seedUsers(ctx)
-}
-
-func (a *app) seedUsers(ctx context.Context) error {
-	for _, demo := range demoUsers {
-		var exists bool
-		err := a.db.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM users WHERE username=$1)", demo.Username).Scan(&exists)
-		if err != nil {
-			return err
-		}
-		if exists {
-			continue
-		}
-
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(demo.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return err
-		}
-
-		_, err = a.db.Exec(
-			ctx,
-			"INSERT INTO users (username, full_name, role, hashed_password) VALUES ($1, $2, $3, $4)",
-			demo.Username,
-			demo.FullName,
-			demo.Role,
-			string(hashedPassword),
-		)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func (a *app) health(w http.ResponseWriter, _ *http.Request) {

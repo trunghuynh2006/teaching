@@ -79,4 +79,5 @@ From repo root:
 ```bash
 make start-frontend
 make start-backend
+make seed-users
 ```
