@@ -10,6 +10,10 @@ export class Assessment {
     this.expected_time_minutes = data.expected_time_minutes;
     this.is_published = data.is_published ?? false;
     this.tags = data.tags ?? [];
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -25,6 +29,10 @@ export class Assessment {
     if (data.expected_time_minutes !== undefined && data.expected_time_minutes < 1) return false;
     if (data.is_published !== undefined && !(typeof data.is_published === "boolean")) return false;
     if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -37,6 +45,10 @@ export class Assessment {
       expected_time_minutes: this.expected_time_minutes,
       is_published: this.is_published,
       tags: this.tags,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
@@ -54,6 +66,10 @@ export class Assignment {
     this.submitted_at = data.submitted_at ?? null;
     this.grade = data.grade ?? null;
     this.feedback = data.feedback ?? null;
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -76,6 +92,10 @@ export class Assignment {
     if (data.grade !== undefined && data.grade < 0) return false;
     if (data.grade !== undefined && data.grade > 100) return false;
     if (data.feedback !== undefined && !((data.feedback === null || typeof data.feedback === "string"))) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -92,6 +112,10 @@ export class Assignment {
       submitted_at: this.submitted_at,
       grade: this.grade,
       feedback: this.feedback,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
@@ -104,6 +128,10 @@ export class Lesson {
     this.duration_minutes = data.duration_minutes;
     this.is_published = data.is_published ?? false;
     this.tags = data.tags ?? [];
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -116,6 +144,10 @@ export class Lesson {
     if (data.duration_minutes !== undefined && data.duration_minutes < 1) return false;
     if (data.is_published !== undefined && !(typeof data.is_published === "boolean")) return false;
     if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -127,6 +159,10 @@ export class Lesson {
       duration_minutes: this.duration_minutes,
       is_published: this.is_published,
       tags: this.tags,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
@@ -139,6 +175,10 @@ export class Skill {
     this.difficulty = data.difficulty ?? "beginner";
     this.is_published = data.is_published ?? false;
     this.tags = data.tags ?? [];
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -150,6 +190,10 @@ export class Skill {
     if (data.difficulty !== undefined && !(typeof data.difficulty === "string")) return false;
     if (data.is_published !== undefined && !(typeof data.is_published === "boolean")) return false;
     if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -161,6 +205,10 @@ export class Skill {
       difficulty: this.difficulty,
       is_published: this.is_published,
       tags: this.tags,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
@@ -173,6 +221,10 @@ export class SkillLesson {
     this.order_index = data.order_index;
     this.is_required = data.is_required ?? true;
     this.created_at = data.created_at;
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -187,6 +239,10 @@ export class SkillLesson {
     if (data.order_index !== undefined && data.order_index < 1) return false;
     if (data.is_required !== undefined && !(typeof data.is_required === "boolean")) return false;
     if (data.created_at !== undefined && !(typeof data.created_at === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -198,6 +254,10 @@ export class SkillLesson {
       order_index: this.order_index,
       is_required: this.is_required,
       created_at: this.created_at,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
@@ -212,6 +272,10 @@ export class StudentPerformance {
     this.trend = data.trend ?? "stable";
     this.measured_at = data.measured_at;
     this.updated_at = data.updated_at;
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -231,6 +295,10 @@ export class StudentPerformance {
     if (data.measured_at !== undefined && !(typeof data.measured_at === "string")) return false;
     if (data.updated_at === undefined) return false;
     if (data.updated_at !== undefined && !(typeof data.updated_at === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -244,6 +312,10 @@ export class StudentPerformance {
       trend: this.trend,
       measured_at: this.measured_at,
       updated_at: this.updated_at,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }

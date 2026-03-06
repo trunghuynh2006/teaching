@@ -11,6 +11,10 @@ class Assessment(BaseModel):
     expected_time_minutes: int = ...
     is_published: bool = Field(default=False, description='Publishing state.')
     tags: list[str] = Field(default_factory=list)
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class Assignment(BaseModel):
     id: str = ...
@@ -24,6 +28,10 @@ class Assignment(BaseModel):
     submitted_at: str | None = Field(default=None, description='Submission timestamp (ISO 8601).')
     grade: float | None = Field(default=None, description='Numeric grade in range 0-100.', ge=0, le=100)
     feedback: str | None = Field(default=None, description='Evaluator feedback for the learner.')
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class Lesson(BaseModel):
     id: str = ...
@@ -32,6 +40,10 @@ class Lesson(BaseModel):
     duration_minutes: int | None = Field(default=None, description='Estimated duration in minutes.', ge=1)
     is_published: bool = Field(default=False, description='Publishing state.')
     tags: list[str] = Field(default_factory=list)
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class Skill(BaseModel):
     id: str = ...
@@ -40,6 +52,10 @@ class Skill(BaseModel):
     difficulty: str = Field(default='beginner', description='Relative skill difficulty level.')
     is_published: bool = Field(default=False, description='Publishing state.')
     tags: list[str] = Field(default_factory=list)
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class SkillLesson(BaseModel):
     id: str = ...
@@ -48,6 +64,10 @@ class SkillLesson(BaseModel):
     order_index: int = ...
     is_required: bool = Field(default=True, description='Whether the lesson must be completed to acquire the skill.')
     created_at: str | None = Field(default=None, description='Creation timestamp (ISO 8601).')
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class StudentPerformance(BaseModel):
     id: str = ...
@@ -58,6 +78,10 @@ class StudentPerformance(BaseModel):
     trend: str = Field(default='stable', description='Short-term trend based on recent history.')
     measured_at: str = ...
     updated_at: str = ...
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class StudentPerformanceHistory(BaseModel):
     id: str = ...

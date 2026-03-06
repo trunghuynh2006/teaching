@@ -21,6 +21,10 @@ class AnkiCard(BaseModel):
     tags: list[str] = Field(default_factory=list)
     created_at: str = ...
     updated_at: str = ...
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class AnkiDeck(BaseModel):
     id: str = ...
@@ -35,6 +39,10 @@ class AnkiDeck(BaseModel):
     tags: list[str] = Field(default_factory=list)
     created_at: str = ...
     updated_at: str = ...
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')
 
 class AnkiReviewLog(BaseModel):
     id: str = ...
@@ -61,3 +69,7 @@ class ReviewSession(BaseModel):
     completed_at: str | None = Field(default=None, description='When the session was completed or abandoned (ISO 8601).')
     created_at: str = ...
     updated_at: str = ...
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')

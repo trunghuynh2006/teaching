@@ -14,3 +14,7 @@ class StudentProfile(BaseModel):
     education_system: str = Field(default='US', description='School system used to interpret grade levels.')
     created_at: str = ...
     updated_at: str = ...
+    created_by: str | None = Field(default=None, description='User identifier that created this record.')
+    updated_by: str | None = Field(default=None, description='User identifier that last updated this record.')
+    created_time: str | None = Field(default=None, description='Record creation timestamp (ISO 8601).')
+    updated_time: str | None = Field(default=None, description='Record update timestamp (ISO 8601).')

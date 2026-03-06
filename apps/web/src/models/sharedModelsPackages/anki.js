@@ -20,6 +20,10 @@ export class AnkiCard {
     this.tags = data.tags ?? [];
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -51,6 +55,10 @@ export class AnkiCard {
     if (data.created_at !== undefined && !(typeof data.created_at === "string")) return false;
     if (data.updated_at === undefined) return false;
     if (data.updated_at !== undefined && !(typeof data.updated_at === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -73,6 +81,10 @@ export class AnkiCard {
       tags: this.tags,
       created_at: this.created_at,
       updated_at: this.updated_at,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
@@ -91,6 +103,10 @@ export class AnkiDeck {
     this.tags = data.tags ?? [];
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -114,6 +130,10 @@ export class AnkiDeck {
     if (data.created_at !== undefined && !(typeof data.created_at === "string")) return false;
     if (data.updated_at === undefined) return false;
     if (data.updated_at !== undefined && !(typeof data.updated_at === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -131,6 +151,10 @@ export class AnkiDeck {
       tags: this.tags,
       created_at: this.created_at,
       updated_at: this.updated_at,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
@@ -207,6 +231,10 @@ export class ReviewSession {
     this.completed_at = data.completed_at ?? null;
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -228,6 +256,10 @@ export class ReviewSession {
     if (data.created_at !== undefined && !(typeof data.created_at === "string")) return false;
     if (data.updated_at === undefined) return false;
     if (data.updated_at !== undefined && !(typeof data.updated_at === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -244,6 +276,10 @@ export class ReviewSession {
       completed_at: this.completed_at,
       created_at: this.created_at,
       updated_at: this.updated_at,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }

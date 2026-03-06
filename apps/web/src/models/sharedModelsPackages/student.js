@@ -13,6 +13,10 @@ export class StudentProfile {
     this.education_system = data.education_system ?? "US";
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
+    this.created_by = data.created_by ?? null;
+    this.updated_by = data.updated_by ?? null;
+    this.created_time = data.created_time ?? null;
+    this.updated_time = data.updated_time ?? null;
   }
 
   static validate(data) {
@@ -38,6 +42,10 @@ export class StudentProfile {
     if (data.created_at !== undefined && !(typeof data.created_at === "string")) return false;
     if (data.updated_at === undefined) return false;
     if (data.updated_at !== undefined && !(typeof data.updated_at === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
   }
 
@@ -53,6 +61,10 @@ export class StudentProfile {
       education_system: this.education_system,
       created_at: this.created_at,
       updated_at: this.updated_at,
+      created_by: this.created_by,
+      updated_by: this.updated_by,
+      created_time: this.created_time,
+      updated_time: this.updated_time,
     };
   }
 }
