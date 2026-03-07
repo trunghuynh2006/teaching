@@ -32,3 +32,9 @@ Example request body:
   "language": "English"
 }
 ```
+
+Generate sqlc query code:
+
+```bash
+go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0 generate -f sqlc.yaml
+```

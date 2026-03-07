@@ -29,7 +29,7 @@ Monorepo with:
 
 - Node.js 20+
 - pnpm 9+
-- Go 1.22+
+- Go 1.26+
 - Docker (for local PostgreSQL)
 
 If `pnpm` is not on your PATH, use:
@@ -91,4 +91,6 @@ make start-frontend
 make start-backend
 make start-ai
 make seed-users
+make generate-sqlc
+make generate-sqlc-ai
 ```

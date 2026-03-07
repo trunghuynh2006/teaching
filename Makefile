@@ -5,7 +5,7 @@ AI_DIR := apps/ai
 WEB_DIR := apps/web
 PNPM_BIN ?= /home/trung/.nvm/versions/node/v22.16.0/bin/pnpm
 
-.PHONY: help start-frontend start-backend start-ai seed-users generate-models generate-sqlc
+.PHONY: help start-frontend start-backend start-ai seed-users generate-models generate-sqlc generate-sqlc-ai
 
 help:
 	@echo "Available targets:"
@@ -15,6 +15,7 @@ help:
 	@echo "  make seed-users                     # Seed demo users in PostgreSQL"
 	@echo "  make generate-models                # Generate shared models from JSON schema"
 	@echo "  make generate-sqlc                  # Generate SQLC typed queries for api2"
+	@echo "  make generate-sqlc-ai               # Generate SQLC typed queries for ai"
 
 start-frontend:
 	$(PNPM_BIN) --filter web dev
@@ -33,3 +34,6 @@ generate-models:
 
 generate-sqlc:
 	cd $(API_DIR) && go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0 generate -f sqlc.yaml
+
+generate-sqlc-ai:
+	cd $(AI_DIR) && go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0 generate -f sqlc.yaml

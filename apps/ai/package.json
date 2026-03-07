@@ -6,6 +6,7 @@
     "dev": "go run .",
     "build": "go build ./...",
     "lint": "echo 'lint not configured'",
-    "generate:models": "go run ../../scripts/generate_shared_models.go"
+    "generate:models": "go run ../../scripts/generate_shared_models.go",
+    "generate:sqlc": "go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0 generate -f sqlc.yaml"
   }
 }
