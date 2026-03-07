@@ -40,6 +40,8 @@ var (
 	webPackageOutDir   = filepath.Join(rootDir, "apps", "web", "src", "models", "sharedModelsPackages")
 	api2GoOutDir       = filepath.Join(rootDir, "apps", "api2", "internal", "sharedmodels")
 	api2GoOut          = filepath.Join(api2GoOutDir, "models_gen.go")
+	aiGoOutDir         = filepath.Join(rootDir, "apps", "ai", "internal", "sharedmodels")
+	aiGoOut            = filepath.Join(aiGoOutDir, "models_gen.go")
 	defaultCorePackage = "core"
 )
 
@@ -59,7 +61,11 @@ func main() {
 	if err := writeFile(webOut, generateWebAggregateModule(packageModules)); err != nil {
 		fatal(err)
 	}
-	if err := writeFile(api2GoOut, generateGoModels(entries)); err != nil {
+	goModels := generateGoModels(entries)
+	if err := writeFile(api2GoOut, goModels); err != nil {
+		fatal(err)
+	}
+	if err := writeFile(aiGoOut, goModels); err != nil {
 		fatal(err)
 	}
 
@@ -67,6 +73,7 @@ func main() {
 	fmt.Printf("- WEB (combined): %s\n", webOut)
 	fmt.Printf("- WEB (by package): %s\n", webPackageOutDir)
 	fmt.Printf("- API2 (Go): %s\n", api2GoOut)
+	fmt.Printf("- AI (Go): %s\n", aiGoOut)
 }
 
 func loadSchemaEntries() ([]schemaEntry, error) {

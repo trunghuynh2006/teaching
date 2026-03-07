@@ -3,6 +3,7 @@ node_modules
 .turbo
 .env
 .env.*
+!apps/ai/.env.example
 __pycache__
 *.pyc
 .venv

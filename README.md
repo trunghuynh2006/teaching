@@ -3,6 +3,7 @@
 Monorepo with:
 - `apps/web`: React + Vite frontend with animated UI and sidebar navigation
 - `apps/api2`: Go backend with PostgreSQL + JWT auth
+- `apps/ai`: Go AI service for lesson/skill content generation
 - Tooling: `pnpm` workspaces + `turborepo` for repo management
 
 ## Features
@@ -45,6 +46,15 @@ go run .
 
 Backend URL:
 - API: http://localhost:8000
+- AI: http://localhost:8100
+
+## Run AI service
+
+```bash
+cd apps/ai
+cp .env.example .env
+go run .
+```
 
 ## Run frontend
 
@@ -79,5 +89,6 @@ From repo root:
 ```bash
 make start-frontend
 make start-backend
+make start-ai
 make seed-users
 ```

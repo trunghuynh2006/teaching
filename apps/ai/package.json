@@ -1,0 +1,11 @@
+{
+  "name": "ai",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "go run .",
+    "build": "go build ./...",
+    "lint": "echo 'lint not configured'",
+    "generate:models": "go run ../../scripts/generate_shared_models.go"
+  }
+}
