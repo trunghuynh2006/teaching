@@ -47,6 +47,16 @@ func (q *Queries) CreateGeneratedContent(ctx context.Context, arg CreateGenerate
 	return i, err
 }
 
+const deleteExpiredPromptCacheEntries = `-- name: DeleteExpiredPromptCacheEntries :exec
+DELETE FROM prompt_cache_entries
+WHERE expires_at <= NOW()
+`
+
+func (q *Queries) DeleteExpiredPromptCacheEntries(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteExpiredPromptCacheEntries)
+	return err
+}
+
 const getGeneratedContentByID = `-- name: GetGeneratedContentByID :one
 SELECT id, topic, audience, difficulty, language, lesson, skill, created_at
 FROM generated_contents
@@ -66,6 +76,26 @@ func (q *Queries) GetGeneratedContentByID(ctx context.Context, id int64) (Genera
 		&i.Lesson,
 		&i.Skill,
 		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getPromptCacheEntry = `-- name: GetPromptCacheEntry :one
+SELECT cache_key, response, created_at, expires_at
+FROM prompt_cache_entries
+WHERE cache_key = $1
+  AND expires_at > NOW()
+LIMIT 1
+`
+
+func (q *Queries) GetPromptCacheEntry(ctx context.Context, cacheKey string) (PromptCacheEntry, error) {
+	row := q.db.QueryRow(ctx, getPromptCacheEntry, cacheKey)
+	var i PromptCacheEntry
+	err := row.Scan(
+		&i.CacheKey,
+		&i.Response,
+		&i.CreatedAt,
+		&i.ExpiresAt,
 	)
 	return i, err
 }
@@ -106,6 +136,29 @@ func (q *Queries) InitGeneratedContentsTopicIndex(ctx context.Context) error {
 	return err
 }
 
+const initPromptCacheEntriesExpiresAtIndex = `-- name: InitPromptCacheEntriesExpiresAtIndex :exec
+CREATE INDEX IF NOT EXISTS idx_prompt_cache_entries_expires_at ON prompt_cache_entries (expires_at)
+`
+
+func (q *Queries) InitPromptCacheEntriesExpiresAtIndex(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initPromptCacheEntriesExpiresAtIndex)
+	return err
+}
+
+const initPromptCacheEntriesTable = `-- name: InitPromptCacheEntriesTable :exec
+CREATE TABLE IF NOT EXISTS prompt_cache_entries (
+    cache_key TEXT PRIMARY KEY,
+    response JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
+)
+`
+
+func (q *Queries) InitPromptCacheEntriesTable(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initPromptCacheEntriesTable)
+	return err
+}
+
 const listGeneratedContents = `-- name: ListGeneratedContents :many
 SELECT id, topic, audience, difficulty, language, lesson, skill, created_at
 FROM generated_contents
@@ -140,4 +193,39 @@ func (q *Queries) ListGeneratedContents(ctx context.Context, limit int32) ([]Gen
 		return nil, err
 	}
 	return items, nil
+}
+
+const prunePromptCacheEntries = `-- name: PrunePromptCacheEntries :exec
+DELETE FROM prompt_cache_entries
+WHERE cache_key IN (
+    SELECT cache_key
+    FROM prompt_cache_entries
+    ORDER BY created_at DESC
+    OFFSET $1
+)
+`
+
+func (q *Queries) PrunePromptCacheEntries(ctx context.Context, offset int32) error {
+	_, err := q.db.Exec(ctx, prunePromptCacheEntries, offset)
+	return err
+}
+
+const upsertPromptCacheEntry = `-- name: UpsertPromptCacheEntry :exec
+INSERT INTO prompt_cache_entries (cache_key, response, expires_at)
+VALUES ($1, $2, NOW() + ($3::int * INTERVAL '1 second'))
+ON CONFLICT (cache_key) DO UPDATE
+SET response = EXCLUDED.response,
+    created_at = NOW(),
+    expires_at = EXCLUDED.expires_at
+`
+
+type UpsertPromptCacheEntryParams struct {
+	CacheKey   string `json:"cache_key"`
+	Response   []byte `json:"response"`
+	TtlSeconds int32  `json:"ttl_seconds"`
+}
+
+func (q *Queries) UpsertPromptCacheEntry(ctx context.Context, arg UpsertPromptCacheEntryParams) error {
+	_, err := q.db.Exec(ctx, upsertPromptCacheEntry, arg.CacheKey, arg.Response, arg.TtlSeconds)
+	return err
 }

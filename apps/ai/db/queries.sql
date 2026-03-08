@@ -32,3 +32,42 @@ SELECT id, topic, audience, difficulty, language, lesson, skill, created_at
 FROM generated_contents
 ORDER BY created_at DESC
 LIMIT $1;
+
+-- name: InitPromptCacheEntriesTable :exec
+CREATE TABLE IF NOT EXISTS prompt_cache_entries (
+    cache_key TEXT PRIMARY KEY,
+    response JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+-- name: InitPromptCacheEntriesExpiresAtIndex :exec
+CREATE INDEX IF NOT EXISTS idx_prompt_cache_entries_expires_at ON prompt_cache_entries (expires_at);
+
+-- name: GetPromptCacheEntry :one
+SELECT cache_key, response, created_at, expires_at
+FROM prompt_cache_entries
+WHERE cache_key = $1
+  AND expires_at > NOW()
+LIMIT 1;
+
+-- name: UpsertPromptCacheEntry :exec
+INSERT INTO prompt_cache_entries (cache_key, response, expires_at)
+VALUES ($1, $2, NOW() + (sqlc.arg(ttl_seconds)::int * INTERVAL '1 second'))
+ON CONFLICT (cache_key) DO UPDATE
+SET response = EXCLUDED.response,
+    created_at = NOW(),
+    expires_at = EXCLUDED.expires_at;
+
+-- name: DeleteExpiredPromptCacheEntries :exec
+DELETE FROM prompt_cache_entries
+WHERE expires_at <= NOW();
+
+-- name: PrunePromptCacheEntries :exec
+DELETE FROM prompt_cache_entries
+WHERE cache_key IN (
+    SELECT cache_key
+    FROM prompt_cache_entries
+    ORDER BY created_at DESC
+    OFFSET $1
+);

@@ -51,7 +51,9 @@ Backend URL:
 ## Run AI service
 
 ```bash
-cd apps/ai
+cd apps/api2
+docker compose up -d
+cd ../ai
 cp .env.example .env
 go run .
 ```

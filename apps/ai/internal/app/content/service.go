@@ -2,6 +2,9 @@ package content
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -18,6 +21,7 @@ var (
 
 type Service struct {
 	Generator domaincontent.Generator
+	Cache     domaincontent.Cache
 }
 
 type GenerateInput struct {
@@ -36,12 +40,20 @@ func (s Service) GenerateLessonSkill(ctx context.Context, input GenerateInput) (
 		return domaincontent.GenerateOutput{}, ErrGeneratorUnavailable
 	}
 
-	output, err := s.Generator.GenerateLessonSkill(ctx, domaincontent.GenerateInput{
+	normalizedInput := domaincontent.GenerateInput{
 		Topic:      topic,
 		Audience:   fallback(input.Audience, "middle school students"),
 		Difficulty: normalizeDifficulty(input.Difficulty),
 		Language:   fallback(input.Language, "English"),
-	})
+	}
+	cacheKey := promptCacheKey(normalizedInput)
+	if s.Cache != nil {
+		if cached, ok := s.Cache.Get(ctx, cacheKey); ok {
+			return cached, nil
+		}
+	}
+
+	output, err := s.Generator.GenerateLessonSkill(ctx, normalizedInput)
 	if err != nil {
 		return domaincontent.GenerateOutput{}, err
 	}
@@ -55,8 +67,20 @@ func (s Service) GenerateLessonSkill(ctx context.Context, input GenerateInput) (
 	if strings.TrimSpace(output.Lesson.Title) == "" || strings.TrimSpace(output.Skill.Title) == "" {
 		return domaincontent.GenerateOutput{}, fmt.Errorf("generated content is missing required titles")
 	}
+	if s.Cache != nil {
+		s.Cache.Set(ctx, cacheKey, output)
+	}
 
 	return output, nil
+}
+
+func promptCacheKey(input domaincontent.GenerateInput) string {
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return input.Topic + "|" + input.Audience + "|" + input.Difficulty + "|" + input.Language
+	}
+	sum := sha256.Sum256(payload)
+	return hex.EncodeToString(sum[:])
 }
 
 func fallback(value, defaultValue string) string {

@@ -4,19 +4,32 @@ Basic AI content generation service for lesson/skill drafts.
 
 ## Run locally
 
-1. Set env vars:
+1. Start PostgreSQL (reuse api2 compose):
+
+```bash
+cd ../api2
+docker compose up -d
+cd ../ai
+```
+
+2. Set env vars:
 
 ```bash
 cp .env.example .env
 ```
 
-2. Start server:
+3. Start server:
 
 ```bash
 go run .
 ```
 
 API base URL: http://localhost:8100
+
+Prompt caching:
+- Backed by PostgreSQL table `prompt_cache_entries`
+- `AI_PROMPT_CACHE_TTL_SECONDS` (default `900`)
+- `AI_PROMPT_CACHE_MAX_ENTRIES` (default `512`, set `0` to disable)
 
 ## Endpoint
 

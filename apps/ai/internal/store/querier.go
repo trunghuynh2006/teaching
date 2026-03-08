@@ -10,11 +10,17 @@ import (
 
 type Querier interface {
 	CreateGeneratedContent(ctx context.Context, arg CreateGeneratedContentParams) (GeneratedContent, error)
+	DeleteExpiredPromptCacheEntries(ctx context.Context) error
 	GetGeneratedContentByID(ctx context.Context, id int64) (GeneratedContent, error)
+	GetPromptCacheEntry(ctx context.Context, cacheKey string) (PromptCacheEntry, error)
 	InitGeneratedContentsCreatedAtIndex(ctx context.Context) error
 	InitGeneratedContentsTable(ctx context.Context) error
 	InitGeneratedContentsTopicIndex(ctx context.Context) error
+	InitPromptCacheEntriesExpiresAtIndex(ctx context.Context) error
+	InitPromptCacheEntriesTable(ctx context.Context) error
 	ListGeneratedContents(ctx context.Context, limit int32) ([]GeneratedContent, error)
+	PrunePromptCacheEntries(ctx context.Context, offset int32) error
+	UpsertPromptCacheEntry(ctx context.Context, arg UpsertPromptCacheEntryParams) error
 }
 
 var _ Querier = (*Queries)(nil)

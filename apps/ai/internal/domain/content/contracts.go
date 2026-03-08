@@ -21,3 +21,8 @@ type GenerateOutput struct {
 type Generator interface {
 	GenerateLessonSkill(ctx context.Context, input GenerateInput) (GenerateOutput, error)
 }
+
+type Cache interface {
+	Get(ctx context.Context, key string) (GenerateOutput, bool)
+	Set(ctx context.Context, key string, output GenerateOutput)
+}

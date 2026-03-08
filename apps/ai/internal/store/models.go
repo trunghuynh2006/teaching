@@ -18,3 +18,10 @@ type GeneratedContent struct {
 	Skill      []byte             `json:"skill"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
+
+type PromptCacheEntry struct {
+	CacheKey  string             `json:"cache_key"`
+	Response  []byte             `json:"response"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+}
