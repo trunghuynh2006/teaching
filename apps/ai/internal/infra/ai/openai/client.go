@@ -12,6 +12,7 @@ import (
 	"time"
 
 	domaincontent "ai/internal/domain/content"
+	"ai/internal/prompts"
 	"ai/internal/sharedmodels"
 )
 
@@ -22,6 +23,7 @@ type Client struct {
 	Model      string
 	BaseURL    string
 	HTTPClient *http.Client
+	Prompts    *prompts.Registry
 }
 
 type chatCompletionsRequest struct {
@@ -44,87 +46,131 @@ type chatCompletionsResponse struct {
 	} `json:"choices"`
 }
 
-type generatedPayload struct {
-	Lesson sharedmodels.Lesson `json:"lesson"`
-	Skill  sharedmodels.Skill  `json:"skill"`
-}
-
 type providerErrorResponse struct {
 	Error struct {
 		Message string `json:"message"`
 	} `json:"error"`
 }
 
-func (c Client) GenerateLessonSkill(ctx context.Context, input domaincontent.GenerateInput) (domaincontent.GenerateOutput, error) {
+// ListLessonTitles calls the LLM to generate a list of lesson title candidates.
+func (c Client) ListLessonTitles(ctx context.Context, input domaincontent.ListTitlesInput) ([]string, error) {
+	userPrompt, err := c.Prompts.RenderListTitles(prompts.ListTitlesData{
+		SkillTitle: input.SkillTitle,
+		Count:      input.Count,
+		Audience:   input.Audience,
+		Difficulty: input.Difficulty,
+		Language:   input.Language,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+
+	var result struct {
+		Titles []string `json:"titles"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse lesson titles response: %w", err)
+	}
+	if len(result.Titles) == 0 {
+		return nil, ErrUnexpectedResponse
+	}
+	return result.Titles, nil
+}
+
+// GenerateLesson calls the LLM to generate full content for a single lesson.
+func (c Client) GenerateLesson(ctx context.Context, input domaincontent.GenerateLessonInput) (sharedmodels.Lesson, error) {
+	userPrompt, err := c.Prompts.RenderGenerateLesson(prompts.GenerateLessonData{
+		LessonTitle: input.LessonTitle,
+		SkillTitle:  input.SkillTitle,
+		Audience:    input.Audience,
+		Difficulty:  input.Difficulty,
+		Language:    input.Language,
+	})
+	if err != nil {
+		return sharedmodels.Lesson{}, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return sharedmodels.Lesson{}, err
+	}
+
+	var lesson sharedmodels.Lesson
+	if err := json.Unmarshal([]byte(raw), &lesson); err != nil {
+		return sharedmodels.Lesson{}, fmt.Errorf("parse lesson response: %w", err)
+	}
+	if strings.TrimSpace(lesson.Title) == "" {
+		return sharedmodels.Lesson{}, ErrUnexpectedResponse
+	}
+	return lesson, nil
+}
+
+// complete sends a chat completion request and returns the raw JSON response content.
+func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	if strings.TrimSpace(c.APIKey) == "" {
-		return domaincontent.GenerateOutput{}, errors.New("missing ai api key")
+		return "", errors.New("missing ai api key")
 	}
 
 	payload := chatCompletionsRequest{
 		Model:       fallback(c.Model, "gpt-4o-mini"),
 		Temperature: 0.7,
 		Messages: []chatMessage{
-			{Role: "system", Content: systemPrompt},
-			{Role: "user", Content: buildUserPrompt(input)},
+			{Role: "system", Content: c.Prompts.SystemPrompt()},
+			{Role: "user", Content: userPrompt},
 		},
 		ResponseFormat: map[string]string{"type": "json_object"},
 	}
 
 	encoded, err := json.Marshal(payload)
 	if err != nil {
-		return domaincontent.GenerateOutput{}, err
+		return "", err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint(c.BaseURL), bytes.NewReader(encoded))
 	if err != nil {
-		return domaincontent.GenerateOutput{}, err
+		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.APIKey)
 
-	client := c.HTTPClient
-	if client == nil {
-		client = &http.Client{Timeout: 45 * time.Second}
+	httpClient := c.HTTPClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 45 * time.Second}
 	}
 
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
-		return domaincontent.GenerateOutput{}, err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	rawBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return domaincontent.GenerateOutput{}, err
+		return "", err
 	}
 
 	if resp.StatusCode >= http.StatusBadRequest {
-		return domaincontent.GenerateOutput{}, fmt.Errorf("ai provider returned %d: %s", resp.StatusCode, providerError(rawBody))
+		return "", fmt.Errorf("ai provider returned %d: %s", resp.StatusCode, providerError(rawBody))
 	}
 
 	var completion chatCompletionsResponse
 	if err := json.Unmarshal(rawBody, &completion); err != nil {
-		return domaincontent.GenerateOutput{}, fmt.Errorf("parse chat completion: %w", err)
+		return "", fmt.Errorf("parse chat completion: %w", err)
 	}
 	if len(completion.Choices) == 0 {
-		return domaincontent.GenerateOutput{}, ErrUnexpectedResponse
+		return "", ErrUnexpectedResponse
 	}
 
 	content := strings.TrimSpace(completion.Choices[0].Message.Content)
 	if content == "" {
-		return domaincontent.GenerateOutput{}, ErrUnexpectedResponse
+		return "", ErrUnexpectedResponse
 	}
-
-	var generated generatedPayload
-	if err := json.Unmarshal([]byte(stripFence(content)), &generated); err != nil {
-		return domaincontent.GenerateOutput{}, fmt.Errorf("parse generated payload: %w", err)
-	}
-
-	if strings.TrimSpace(generated.Lesson.Title) == "" || strings.TrimSpace(generated.Skill.Title) == "" {
-		return domaincontent.GenerateOutput{}, ErrUnexpectedResponse
-	}
-
-	return domaincontent.GenerateOutput{Lesson: generated.Lesson, Skill: generated.Skill}, nil
+	return stripFence(content), nil
 }
 
 func endpoint(baseURL string) string {
@@ -148,43 +194,10 @@ func providerError(rawBody []byte) string {
 }
 
 func fallback(value, defaultValue string) string {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return defaultValue
+	if trimmed := strings.TrimSpace(value); trimmed != "" {
+		return trimmed
 	}
-	return trimmed
-}
-
-func buildUserPrompt(input domaincontent.GenerateInput) string {
-	return fmt.Sprintf(`Generate a lesson and skill for this topic.
-
-Topic: %s
-Audience: %s
-Difficulty: %s
-Language: %s
-
-Respond with valid JSON only, no markdown.
-JSON shape:
-{
-  "lesson": {
-    "id": "string",
-    "title": "string",
-    "description": "string",
-    "duration_minutes": 1,
-    "is_published": false,
-    "tags": ["string"]
-  },
-  "skill": {
-    "id": "string",
-    "title": "string",
-    "description": "string",
-    "difficulty": "beginner",
-    "is_published": false,
-    "tags": ["string"]
-  }
-}
-
-Keep titles concise and description under 160 characters.`, input.Topic, input.Audience, input.Difficulty, input.Language)
+	return defaultValue
 }
 
 func stripFence(value string) string {
@@ -194,6 +207,3 @@ func stripFence(value string) string {
 	trimmed = strings.TrimSuffix(trimmed, "```")
 	return strings.TrimSpace(trimmed)
 }
-
-const systemPrompt = `You are a curriculum assistant for teachers.
-Generate practical learning content and follow the requested JSON shape exactly.`

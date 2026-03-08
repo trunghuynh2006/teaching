@@ -1,0 +1,17 @@
+Generate {{.Count}} distinct lesson titles for the skill "{{.SkillTitle}}".
+
+Target audience: {{.Audience}}
+Difficulty level: {{.Difficulty}}
+Language: {{.Language}}
+
+{{.ContentQualityConstraints}}
+
+Additional requirements for lesson titles:
+- Each title must cover a different aspect of the skill
+- Titles should progress from foundational concepts toward more advanced applications
+- Each title must be specific enough to stand alone as a self-contained lesson
+
+Respond with a JSON object in exactly this format:
+{"titles": ["Title 1", "Title 2", "Title 3"]}
+
+Respond with valid JSON only. No markdown fences. No extra text.

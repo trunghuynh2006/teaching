@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	domaincontent "ai/internal/domain/content"
 	"ai/internal/store"
 )
 
@@ -30,37 +29,24 @@ func NewPromptCache(queries *store.Queries, ttl time.Duration, maxEntries int) *
 	}
 }
 
-func (c *PromptCache) Get(ctx context.Context, key string) (domaincontent.GenerateOutput, bool) {
+func (c *PromptCache) Get(ctx context.Context, key string) (json.RawMessage, bool) {
 	if c == nil || c.queries == nil || c.maxEntries == 0 {
-		return domaincontent.GenerateOutput{}, false
+		return nil, false
 	}
-
 	entry, err := c.queries.GetPromptCacheEntry(ctx, key)
 	if err != nil {
-		return domaincontent.GenerateOutput{}, false
+		return nil, false
 	}
-
-	var output domaincontent.GenerateOutput
-	if err := json.Unmarshal(entry.Response, &output); err != nil {
-		return domaincontent.GenerateOutput{}, false
-	}
-
-	return output, true
+	return entry.Response, true
 }
 
-func (c *PromptCache) Set(ctx context.Context, key string, output domaincontent.GenerateOutput) {
+func (c *PromptCache) Set(ctx context.Context, key string, value json.RawMessage) {
 	if c == nil || c.queries == nil || c.maxEntries == 0 {
 		return
 	}
-
-	payload, err := json.Marshal(output)
-	if err != nil {
-		return
-	}
-
 	_ = c.queries.UpsertPromptCacheEntry(ctx, store.UpsertPromptCacheEntryParams{
 		CacheKey:   key,
-		Response:   payload,
+		Response:   value,
 		TtlSeconds: c.ttlSeconds,
 	})
 	_ = c.queries.DeleteExpiredPromptCacheEntries(ctx)

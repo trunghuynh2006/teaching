@@ -12,10 +12,12 @@ import (
 	"unicode"
 
 	domaincontent "ai/internal/domain/content"
+	"ai/internal/sharedmodels"
 )
 
 var (
-	ErrInvalidTopic         = errors.New("topic is required")
+	ErrInvalidSkillTitle    = errors.New("skill title is required")
+	ErrInvalidLessonTitle   = errors.New("lesson title is required")
 	ErrGeneratorUnavailable = errors.New("generator is not configured")
 )
 
@@ -24,71 +26,130 @@ type Service struct {
 	Cache     domaincontent.Cache
 }
 
-type GenerateInput struct {
-	Topic      string
+// ListTitlesInput is the application-layer input for listing lesson title candidates.
+type ListTitlesInput struct {
+	SkillTitle string
+	Count      int
 	Audience   string
 	Difficulty string
 	Language   string
 }
 
-func (s Service) GenerateLessonSkill(ctx context.Context, input GenerateInput) (domaincontent.GenerateOutput, error) {
-	topic := strings.TrimSpace(input.Topic)
-	if topic == "" {
-		return domaincontent.GenerateOutput{}, ErrInvalidTopic
+// GenerateLessonInput is the application-layer input for generating a full lesson.
+type GenerateLessonInput struct {
+	LessonTitle string
+	SkillTitle  string
+	Audience    string
+	Difficulty  string
+	Language    string
+}
+
+// ListLessonTitles generates a list of candidate lesson titles for a skill.
+func (s Service) ListLessonTitles(ctx context.Context, input ListTitlesInput) ([]string, error) {
+	if strings.TrimSpace(input.SkillTitle) == "" {
+		return nil, ErrInvalidSkillTitle
 	}
 	if s.Generator == nil {
-		return domaincontent.GenerateOutput{}, ErrGeneratorUnavailable
+		return nil, ErrGeneratorUnavailable
 	}
 
-	normalizedInput := domaincontent.GenerateInput{
-		Topic:      topic,
+	count := input.Count
+	if count <= 0 {
+		count = 5
+	}
+
+	normalized := domaincontent.ListTitlesInput{
+		SkillTitle: strings.TrimSpace(input.SkillTitle),
+		Count:      count,
 		Audience:   fallback(input.Audience, "middle school students"),
 		Difficulty: normalizeDifficulty(input.Difficulty),
 		Language:   fallback(input.Language, "English"),
 	}
-	cacheKey := promptCacheKey(normalizedInput)
+
+	cacheKey := hashKey("list-titles", normalized)
 	if s.Cache != nil {
-		if cached, ok := s.Cache.Get(ctx, cacheKey); ok {
-			return cached, nil
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var titles []string
+			if err := json.Unmarshal(raw, &titles); err == nil {
+				return titles, nil
+			}
 		}
 	}
 
-	output, err := s.Generator.GenerateLessonSkill(ctx, normalizedInput)
+	titles, err := s.Generator.ListLessonTitles(ctx, normalized)
 	if err != nil {
-		return domaincontent.GenerateOutput{}, err
+		return nil, err
 	}
 
-	if strings.TrimSpace(output.Lesson.Id) == "" {
-		output.Lesson.Id = defaultID("lesson", topic)
-	}
-	if strings.TrimSpace(output.Skill.Id) == "" {
-		output.Skill.Id = defaultID("skill", topic)
-	}
-	if strings.TrimSpace(output.Lesson.Title) == "" || strings.TrimSpace(output.Skill.Title) == "" {
-		return domaincontent.GenerateOutput{}, fmt.Errorf("generated content is missing required titles")
-	}
 	if s.Cache != nil {
-		s.Cache.Set(ctx, cacheKey, output)
+		if raw, err := json.Marshal(titles); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
 	}
-
-	return output, nil
+	return titles, nil
 }
 
-func promptCacheKey(input domaincontent.GenerateInput) string {
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return input.Topic + "|" + input.Audience + "|" + input.Difficulty + "|" + input.Language
+// GenerateLesson generates full lesson content for a given title within a skill.
+func (s Service) GenerateLesson(ctx context.Context, input GenerateLessonInput) (sharedmodels.Lesson, error) {
+	if strings.TrimSpace(input.LessonTitle) == "" {
+		return sharedmodels.Lesson{}, ErrInvalidLessonTitle
 	}
-	sum := sha256.Sum256(payload)
+	if s.Generator == nil {
+		return sharedmodels.Lesson{}, ErrGeneratorUnavailable
+	}
+
+	normalized := domaincontent.GenerateLessonInput{
+		LessonTitle: strings.TrimSpace(input.LessonTitle),
+		SkillTitle:  strings.TrimSpace(input.SkillTitle),
+		Audience:    fallback(input.Audience, "middle school students"),
+		Difficulty:  normalizeDifficulty(input.Difficulty),
+		Language:    fallback(input.Language, "English"),
+	}
+
+	cacheKey := hashKey("generate-lesson", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var lesson sharedmodels.Lesson
+			if err := json.Unmarshal(raw, &lesson); err == nil {
+				return lesson, nil
+			}
+		}
+	}
+
+	lesson, err := s.Generator.GenerateLesson(ctx, normalized)
+	if err != nil {
+		return sharedmodels.Lesson{}, err
+	}
+
+	if strings.TrimSpace(lesson.Id) == "" {
+		lesson.Id = defaultID(normalized.LessonTitle)
+	}
+	if strings.TrimSpace(lesson.Title) == "" {
+		return sharedmodels.Lesson{}, fmt.Errorf("generated lesson is missing a title")
+	}
+
+	if s.Cache != nil {
+		if raw, err := json.Marshal(lesson); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return lesson, nil
+}
+
+func hashKey(prefix string, v any) string {
+	payload, err := json.Marshal(v)
+	if err != nil {
+		return prefix + ":fallback:" + fmt.Sprint(v)
+	}
+	sum := sha256.Sum256(append([]byte(prefix+":"), payload...))
 	return hex.EncodeToString(sum[:])
 }
 
 func fallback(value, defaultValue string) string {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return defaultValue
+	if trimmed := strings.TrimSpace(value); trimmed != "" {
+		return trimmed
 	}
-	return trimmed
+	return defaultValue
 }
 
 func normalizeDifficulty(value string) string {
@@ -100,12 +161,12 @@ func normalizeDifficulty(value string) string {
 	}
 }
 
-func defaultID(prefix, seed string) string {
-	normalized := slugify(seed)
-	if normalized == "" {
-		normalized = "content"
+func defaultID(title string) string {
+	slug := slugify(title)
+	if slug == "" {
+		slug = "lesson"
 	}
-	return fmt.Sprintf("%s-%s-%d", prefix, normalized, time.Now().Unix())
+	return fmt.Sprintf("%s-%d", slug, time.Now().Unix())
 }
 
 func slugify(value string) string {

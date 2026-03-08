@@ -13,6 +13,7 @@ import (
 	appcontent "ai/internal/app/content"
 	"ai/internal/infra/ai/openai"
 	"ai/internal/infra/cache/postgres"
+	"ai/internal/prompts"
 	"ai/internal/store"
 	"ai/internal/transport/httpapi"
 
@@ -33,6 +34,11 @@ func main() {
 	cacheMaxEntries := getenvInt("AI_PROMPT_CACHE_MAX_ENTRIES", 512)
 	ctx := context.Background()
 
+	promptRegistry, err := prompts.New()
+	if err != nil {
+		log.Fatalf("failed to load prompt registry: %v", err)
+	}
+
 	db, err := pgxpool.New(ctx, databaseURL)
 	if err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
@@ -49,6 +55,7 @@ func main() {
 		Model:      model,
 		BaseURL:    baseURL,
 		HTTPClient: &http.Client{Timeout: 45 * time.Second},
+		Prompts:    promptRegistry,
 	}
 	promptCache := postgres.NewPromptCache(queries, time.Duration(cacheTTLSeconds)*time.Second, cacheMaxEntries)
 
@@ -62,7 +69,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handler.Health)
-	mux.HandleFunc("POST /content/generate", handler.GenerateContent)
+	mux.HandleFunc("POST /content/lesson-titles", handler.ListLessonTitles)
+	mux.HandleFunc("POST /content/lesson", handler.GenerateLesson)
 
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("ai listening on %s", addr)

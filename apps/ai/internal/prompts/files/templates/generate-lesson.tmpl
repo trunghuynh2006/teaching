@@ -1,0 +1,15 @@
+Generate complete lesson content for the lesson titled "{{.LessonTitle}}" within the skill "{{.SkillTitle}}".
+
+Target audience: {{.Audience}}
+Difficulty level: {{.Difficulty}}
+Language: {{.Language}}
+
+{{.ContentQualityConstraints}}
+
+{{.LessonConstraints}}
+
+Your response must be a JSON object that conforms to this schema:
+{{.LessonSchema}}
+
+Respond with a single JSON object conforming to the schema above.
+Respond with valid JSON only. No markdown fences. No extra text.

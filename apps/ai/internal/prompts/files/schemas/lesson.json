@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lesson",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "URL-safe kebab-case slug derived from the title (e.g., \"writing-effective-subject-lines\")"
+    },
+    "title": {
+      "type": "string",
+      "description": "Clear, specific, action-oriented lesson title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Learning outcome summary, 160 characters max"
+    },
+    "duration_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Estimated lesson duration in minutes"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Always false — awaits teacher approval"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "2–5 lowercase, hyphenated tags"
+    }
+  }
+}

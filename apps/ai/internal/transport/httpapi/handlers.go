@@ -14,49 +14,96 @@ type Handler struct {
 	AllowedOrigin  string
 }
 
-type GenerateContentRequest struct {
-	Topic      string `json:"topic"`
+func (h *Handler) Health(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
+// ListLessonTitlesRequest is the body for POST /content/lesson-titles.
+type ListLessonTitlesRequest struct {
+	SkillTitle string `json:"skill_title"`
+	Count      int    `json:"count"`
 	Audience   string `json:"audience"`
 	Difficulty string `json:"difficulty"`
 	Language   string `json:"language"`
 }
 
-type GenerateContentResponse struct {
-	Lesson sharedmodels.Lesson `json:"lesson"`
-	Skill  sharedmodels.Skill  `json:"skill"`
+// ListLessonTitlesResponse wraps the generated title candidates.
+type ListLessonTitlesResponse struct {
+	Titles []string `json:"titles"`
 }
 
-func (h *Handler) Health(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
-}
-
-func (h *Handler) GenerateContent(w http.ResponseWriter, r *http.Request) {
-	var payload GenerateContentRequest
+// ListLessonTitles handles POST /content/lesson-titles.
+// It returns a list of candidate lesson titles for the given skill.
+func (h *Handler) ListLessonTitles(w http.ResponseWriter, r *http.Request) {
+	var payload ListLessonTitlesRequest
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
 		return
 	}
 
-	result, err := h.ContentService.GenerateLessonSkill(r.Context(), appcontent.GenerateInput{
-		Topic:      payload.Topic,
+	titles, err := h.ContentService.ListLessonTitles(r.Context(), appcontent.ListTitlesInput{
+		SkillTitle: payload.SkillTitle,
+		Count:      payload.Count,
 		Audience:   payload.Audience,
 		Difficulty: payload.Difficulty,
 		Language:   payload.Language,
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, appcontent.ErrInvalidTopic):
+		case errors.Is(err, appcontent.ErrInvalidSkillTitle):
 			writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: err.Error()})
 		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
 			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
 		default:
-			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: "failed to generate content"})
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: "failed to generate lesson titles"})
 		}
 		return
 	}
 
-	writeJSON(w, http.StatusOK, GenerateContentResponse{
-		Lesson: result.Lesson,
-		Skill:  result.Skill,
+	writeJSON(w, http.StatusOK, ListLessonTitlesResponse{Titles: titles})
+}
+
+// GenerateLessonRequest is the body for POST /content/lesson.
+type GenerateLessonRequest struct {
+	LessonTitle string `json:"lesson_title"`
+	SkillTitle  string `json:"skill_title"`
+	Audience    string `json:"audience"`
+	Difficulty  string `json:"difficulty"`
+	Language    string `json:"language"`
+}
+
+// GenerateLessonResponse wraps the generated lesson.
+type GenerateLessonResponse struct {
+	Lesson sharedmodels.Lesson `json:"lesson"`
+}
+
+// GenerateLesson handles POST /content/lesson.
+// It returns fully populated lesson content for the given title.
+func (h *Handler) GenerateLesson(w http.ResponseWriter, r *http.Request) {
+	var payload GenerateLessonRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
+		return
+	}
+
+	lesson, err := h.ContentService.GenerateLesson(r.Context(), appcontent.GenerateLessonInput{
+		LessonTitle: payload.LessonTitle,
+		SkillTitle:  payload.SkillTitle,
+		Audience:    payload.Audience,
+		Difficulty:  payload.Difficulty,
+		Language:    payload.Language,
 	})
+	if err != nil {
+		switch {
+		case errors.Is(err, appcontent.ErrInvalidLessonTitle):
+			writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: err.Error()})
+		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
+			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
+		default:
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: "failed to generate lesson"})
+		}
+		return
+	}
+
+	writeJSON(w, http.StatusOK, GenerateLessonResponse{Lesson: lesson})
 }
