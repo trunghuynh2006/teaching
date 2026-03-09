@@ -1,0 +1,50 @@
+[
+  {
+    "title": "English Grammar Foundations",
+    "description": "Build core grammar skills: nouns, verbs, tense consistency, and sentence structure.",
+    "difficulty": "beginner",
+    "tags": ["english", "grammar", "foundation"]
+  },
+  {
+    "title": "Parts of Speech Mastery",
+    "description": "Identify and correctly use nouns, pronouns, verbs, adjectives, adverbs, and prepositions.",
+    "difficulty": "beginner",
+    "tags": ["english", "grammar", "parts-of-speech"]
+  },
+  {
+    "title": "Reading Comprehension Strategies",
+    "description": "Use skimming, scanning, and inference to understand informational and narrative texts.",
+    "difficulty": "intermediate",
+    "tags": ["english", "reading", "comprehension"]
+  },
+  {
+    "title": "Academic Vocabulary Development",
+    "description": "Expand high-frequency academic vocabulary and apply words accurately in context.",
+    "difficulty": "intermediate",
+    "tags": ["english", "vocabulary", "academic"]
+  },
+  {
+    "title": "Paragraph Writing",
+    "description": "Write clear paragraphs with topic sentences, supporting details, and effective transitions.",
+    "difficulty": "intermediate",
+    "tags": ["english", "writing", "composition"]
+  },
+  {
+    "title": "Essay Writing and Argumentation",
+    "description": "Plan and write multi-paragraph essays with claims, evidence, and coherent structure.",
+    "difficulty": "advanced",
+    "tags": ["english", "essay", "argument"]
+  },
+  {
+    "title": "Listening for Main Ideas",
+    "description": "Identify main ideas and supporting details from spoken English in classroom contexts.",
+    "difficulty": "beginner",
+    "tags": ["english", "listening", "communication"]
+  },
+  {
+    "title": "Oral Presentation Skills",
+    "description": "Deliver structured presentations with clear pronunciation, pacing, and audience awareness.",
+    "difficulty": "advanced",
+    "tags": ["english", "speaking", "presentation"]
+  }
+]

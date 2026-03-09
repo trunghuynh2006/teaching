@@ -9,12 +9,20 @@ import (
 )
 
 type Querier interface {
+	CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	DeleteSkillByID(ctx context.Context, id string) (int64, error)
+	GetSkillByID(ctx context.Context, id string) (Skill, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUserHashByUsername(ctx context.Context, username string) (string, error)
+	InitSkillsCreatedTimeIndex(ctx context.Context) error
+	InitSkillsTable(ctx context.Context) error
 	InitUsersRoleIndex(ctx context.Context) error
 	InitUsersTable(ctx context.Context) error
 	InitUsersUsernameIndex(ctx context.Context) error
+	ListSkills(ctx context.Context) ([]Skill, error)
+	PublishSkillByID(ctx context.Context, arg PublishSkillByIDParams) (Skill, error)
+	UpdateSkillByID(ctx context.Context, arg UpdateSkillByIDParams) (Skill, error)
 	UpdateUserByUsername(ctx context.Context, arg UpdateUserByUsernameParams) error
 }
 

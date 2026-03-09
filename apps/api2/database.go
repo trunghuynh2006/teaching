@@ -37,6 +37,12 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitUsersRoleIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitSkillsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitSkillsCreatedTimeIndex(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

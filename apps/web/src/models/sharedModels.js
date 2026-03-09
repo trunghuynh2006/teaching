@@ -2,6 +2,6 @@
 // Do not edit manually.
 
 export { AnkiCard, AnkiDeck, AnkiReviewLog, ReviewSession } from "./sharedModelsPackages/anki.js";
-export { Assessment, Assignment, Lesson, Skill, SkillLesson, StudentPerformance, StudentPerformanceSnapshot, StudentPerformanceTimeline } from "./sharedModelsPackages/core.js";
+export { Assessment, Assignment, Lesson, Skill, SkillInput, SkillLesson, StudentPerformance, StudentPerformanceSnapshot, StudentPerformanceTimeline } from "./sharedModelsPackages/core.js";
 export { StudentProfile } from "./sharedModelsPackages/student.js";
 

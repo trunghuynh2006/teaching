@@ -8,11 +8,13 @@ import (
 	appauth "api2/internal/app/auth"
 	"api2/internal/app/profile"
 	"api2/internal/domain/user"
+	"api2/internal/store"
 )
 
 type Handler struct {
 	AuthService    appauth.Service
 	ProfileService profile.Service
+	Queries        *store.Queries
 	AllowedOrigin  string
 }
 

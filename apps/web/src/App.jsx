@@ -15,12 +15,12 @@ const DEFAULT_MENU = {
   parent: 'Child Overview'
 }
 
-function renderLanding(role, activeItem) {
+function renderLanding(role, activeItem, token) {
   switch (role) {
     case 'learner':
       return <LearnerLanding activeItem={activeItem} />
     case 'teacher':
-      return <TeacherLanding activeItem={activeItem} />
+      return <TeacherLanding activeItem={activeItem} token={token} />
     case 'admin':
       return <AdminLanding activeItem={activeItem} />
     case 'parent':
@@ -69,9 +69,17 @@ export default function App() {
       }
 
       const data = await response.json()
-      setToken(data.access_token)
-      setUser(data.user)
-      setActiveItem(DEFAULT_MENU[data.user.role])
+      const accessToken = data.access_token ?? data.AccessToken ?? ''
+      const userPayload = data.user ?? data.User ?? null
+      const role = userPayload?.role ?? userPayload?.Role ?? ''
+
+      if (!accessToken || !userPayload || !role) {
+        throw new Error('Login response is missing required fields')
+      }
+
+      setToken(accessToken)
+      setUser(userPayload)
+      setActiveItem(DEFAULT_MENU[role] || '')
       setUsername('')
       setPassword('')
     } catch (err) {
@@ -130,7 +138,7 @@ export default function App() {
           </div>
           <button onClick={handleLogout}>Logout</button>
         </header>
-        {renderLanding(user.role, activeItem)}
+        {renderLanding(user.role, activeItem, token)}
       </section>
     </main>
   )

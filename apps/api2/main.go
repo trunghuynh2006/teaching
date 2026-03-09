@@ -56,6 +56,7 @@ func main() {
 	handler := &httpapi.Handler{
 		AuthService:    authService,
 		ProfileService: profile.Service{},
+		Queries:        queries,
 		AllowedOrigin:  "http://localhost:5173",
 	}
 
@@ -80,6 +81,12 @@ func main() {
 	mux.HandleFunc("POST /auth/login", handler.Login)
 	mux.HandleFunc("GET /me", handler.Auth(handler.Me))
 	mux.HandleFunc("GET /role/", handler.Auth(handler.RoleData))
+	mux.HandleFunc("GET /skills", handler.Auth(handler.ListSkills))
+	mux.HandleFunc("GET /skills/{id}", handler.Auth(handler.GetSkill))
+	mux.HandleFunc("POST /skills", handler.Auth(handler.CreateSkill))
+	mux.HandleFunc("PUT /skills/{id}", handler.Auth(handler.UpdateSkill))
+	mux.HandleFunc("POST /skills/{id}/publish", handler.Auth(handler.PublishSkill))
+	mux.HandleFunc("DELETE /skills/{id}", handler.Auth(handler.DeleteSkill))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)

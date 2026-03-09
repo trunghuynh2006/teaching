@@ -9,6 +9,48 @@ import (
 	"context"
 )
 
+const createSkill = `-- name: CreateSkill :one
+INSERT INTO skills (id, title, description, difficulty, tags, created_by, updated_by)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+`
+
+type CreateSkillParams struct {
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Difficulty  string   `json:"difficulty"`
+	Tags        []string `json:"tags"`
+	CreatedBy   string   `json:"created_by"`
+	UpdatedBy   string   `json:"updated_by"`
+}
+
+func (q *Queries) CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error) {
+	row := q.db.QueryRow(ctx, createSkill,
+		arg.ID,
+		arg.Title,
+		arg.Description,
+		arg.Difficulty,
+		arg.Tags,
+		arg.CreatedBy,
+		arg.UpdatedBy,
+	)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Difficulty,
+		&i.IsPublished,
+		&i.Tags,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+		&i.CreatedTime,
+		&i.UpdatedTime,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :exec
 INSERT INTO users (username, full_name, role, hashed_password)
 VALUES ($1, $2, $3, $4)
@@ -29,6 +71,44 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 		arg.HashedPassword,
 	)
 	return err
+}
+
+const deleteSkillByID = `-- name: DeleteSkillByID :execrows
+DELETE FROM skills
+WHERE id = $1
+`
+
+func (q *Queries) DeleteSkillByID(ctx context.Context, id string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteSkillByID, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const getSkillByID = `-- name: GetSkillByID :one
+SELECT id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+FROM skills
+WHERE id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetSkillByID(ctx context.Context, id string) (Skill, error) {
+	row := q.db.QueryRow(ctx, getSkillByID, id)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Difficulty,
+		&i.IsPublished,
+		&i.Tags,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+		&i.CreatedTime,
+		&i.UpdatedTime,
+	)
+	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
@@ -65,6 +145,36 @@ func (q *Queries) GetUserHashByUsername(ctx context.Context, username string) (s
 	return hashed_password, err
 }
 
+const initSkillsCreatedTimeIndex = `-- name: InitSkillsCreatedTimeIndex :exec
+CREATE INDEX IF NOT EXISTS idx_skills_created_time ON skills (created_time DESC)
+`
+
+func (q *Queries) InitSkillsCreatedTimeIndex(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initSkillsCreatedTimeIndex)
+	return err
+}
+
+const initSkillsTable = `-- name: InitSkillsTable :exec
+CREATE TABLE IF NOT EXISTS skills (
+    id VARCHAR(64) PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    difficulty VARCHAR(20) NOT NULL DEFAULT 'beginner',
+    is_published BOOLEAN NOT NULL DEFAULT FALSE,
+    tags TEXT[] NOT NULL DEFAULT '{}',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_skills_difficulty CHECK (difficulty IN ('beginner', 'intermediate', 'advanced'))
+)
+`
+
+func (q *Queries) InitSkillsTable(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initSkillsTable)
+	return err
+}
+
 const initUsersRoleIndex = `-- name: InitUsersRoleIndex :exec
 CREATE INDEX IF NOT EXISTS idx_users_role ON users (role)
 `
@@ -96,6 +206,121 @@ CREATE INDEX IF NOT EXISTS idx_users_username ON users (username)
 func (q *Queries) InitUsersUsernameIndex(ctx context.Context) error {
 	_, err := q.db.Exec(ctx, initUsersUsernameIndex)
 	return err
+}
+
+const listSkills = `-- name: ListSkills :many
+SELECT id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+FROM skills
+ORDER BY created_time DESC
+`
+
+func (q *Queries) ListSkills(ctx context.Context) ([]Skill, error) {
+	rows, err := q.db.Query(ctx, listSkills)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Skill
+	for rows.Next() {
+		var i Skill
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Description,
+			&i.Difficulty,
+			&i.IsPublished,
+			&i.Tags,
+			&i.CreatedBy,
+			&i.UpdatedBy,
+			&i.CreatedTime,
+			&i.UpdatedTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const publishSkillByID = `-- name: PublishSkillByID :one
+UPDATE skills
+SET is_published = TRUE,
+    updated_by = $2,
+    updated_time = NOW()
+WHERE id = $1
+RETURNING id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+`
+
+type PublishSkillByIDParams struct {
+	ID        string `json:"id"`
+	UpdatedBy string `json:"updated_by"`
+}
+
+func (q *Queries) PublishSkillByID(ctx context.Context, arg PublishSkillByIDParams) (Skill, error) {
+	row := q.db.QueryRow(ctx, publishSkillByID, arg.ID, arg.UpdatedBy)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Difficulty,
+		&i.IsPublished,
+		&i.Tags,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+		&i.CreatedTime,
+		&i.UpdatedTime,
+	)
+	return i, err
+}
+
+const updateSkillByID = `-- name: UpdateSkillByID :one
+UPDATE skills
+SET title = $2,
+    description = $3,
+    difficulty = $4,
+    tags = $5,
+    updated_by = $6,
+    updated_time = NOW()
+WHERE id = $1
+RETURNING id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+`
+
+type UpdateSkillByIDParams struct {
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Difficulty  string   `json:"difficulty"`
+	Tags        []string `json:"tags"`
+	UpdatedBy   string   `json:"updated_by"`
+}
+
+func (q *Queries) UpdateSkillByID(ctx context.Context, arg UpdateSkillByIDParams) (Skill, error) {
+	row := q.db.QueryRow(ctx, updateSkillByID,
+		arg.ID,
+		arg.Title,
+		arg.Description,
+		arg.Difficulty,
+		arg.Tags,
+		arg.UpdatedBy,
+	)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Difficulty,
+		&i.IsPublished,
+		&i.Tags,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+		&i.CreatedTime,
+		&i.UpdatedTime,
+	)
+	return i, err
 }
 
 const updateUserByUsername = `-- name: UpdateUserByUsername :exec

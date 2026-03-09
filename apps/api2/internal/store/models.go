@@ -4,6 +4,23 @@
 
 package store
 
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+type Skill struct {
+	ID          string             `json:"id"`
+	Title       string             `json:"title"`
+	Description string             `json:"description"`
+	Difficulty  string             `json:"difficulty"`
+	IsPublished bool               `json:"is_published"`
+	Tags        []string           `json:"tags"`
+	CreatedBy   string             `json:"created_by"`
+	UpdatedBy   string             `json:"updated_by"`
+	CreatedTime pgtype.Timestamptz `json:"created_time"`
+	UpdatedTime pgtype.Timestamptz `json:"updated_time"`
+}
+
 type User struct {
 	ID             int32  `json:"id"`
 	Username       string `json:"username"`

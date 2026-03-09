@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SkillInput",
+  "description": "Payload used to create or update a skill from the teacher content studio.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Skill title."
+    },
+    "description": {
+      "type": "string",
+      "default": "",
+      "description": "Short skill description."
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner",
+      "description": "Relative skill difficulty level."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Skill tags."
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

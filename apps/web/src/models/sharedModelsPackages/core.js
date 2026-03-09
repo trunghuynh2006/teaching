@@ -213,6 +213,33 @@ export class Skill {
   }
 }
 
+export class SkillInput {
+  constructor(data = {}) {
+    this.description = data.description ?? "";
+    this.difficulty = data.difficulty ?? "beginner";
+    this.tags = data.tags ?? [];
+    this.title = data.title;
+  }
+
+  static validate(data) {
+    if (data.description !== undefined && !(typeof data.description === "string")) return false;
+    if (data.difficulty !== undefined && !(typeof data.difficulty === "string")) return false;
+    if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
+    if (data.title === undefined) return false;
+    if (data.title !== undefined && !(typeof data.title === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      description: this.description,
+      difficulty: this.difficulty,
+      tags: this.tags,
+      title: this.title,
+    };
+  }
+}
+
 export class SkillLesson {
   constructor(data = {}) {
     this.created_at = data.created_at;
