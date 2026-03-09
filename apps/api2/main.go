@@ -86,7 +86,8 @@ func main() {
 	mux.HandleFunc("POST /skills", handler.Auth(handler.CreateSkill))
 	mux.HandleFunc("PUT /skills/{id}", handler.Auth(handler.UpdateSkill))
 	mux.HandleFunc("POST /skills/{id}/publish", handler.Auth(handler.PublishSkill))
-	mux.HandleFunc("DELETE /skills/{id}", handler.Auth(handler.DeleteSkill))
+	mux.HandleFunc("POST /skills/{id}/archive", handler.Auth(handler.ArchiveSkill))
+	mux.HandleFunc("POST /skills/{id}/draft", handler.Auth(handler.MoveSkillToDraft))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)

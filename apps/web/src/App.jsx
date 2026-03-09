@@ -15,8 +15,15 @@ const LANDING_BY_ROLE = {
 export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [token, setToken] = useState('')
-  const [user, setUser] = useState(null)
+  const [token, setToken] = useState(() => localStorage.getItem('token') || '')
+  const [user, setUser] = useState(() => {
+    try {
+      const raw = localStorage.getItem('user')
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  })
 
   const role = user?.role ?? user?.Role ?? ''
   const menuItems = useMemo(() => MENU_BY_ROLE[role] || [], [role])
@@ -31,12 +38,16 @@ export default function App() {
   }, [defaultPath, location.pathname, menuItems, navigate, token, user])
 
   const handleLogin = ({ token, user, defaultPath }) => {
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(user))
     setToken(token)
     setUser(user)
     navigate(defaultPath, { replace: true })
   }
 
   const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
     setToken('')
     setUser(null)
     navigate('/', { replace: true })

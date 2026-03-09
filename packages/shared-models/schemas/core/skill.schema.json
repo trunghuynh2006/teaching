@@ -27,10 +27,15 @@
       "default": "beginner",
       "description": "Relative skill difficulty level."
     },
-    "is_published": {
-      "type": "boolean",
-      "default": false,
-      "description": "Publishing state."
+    "status": {
+      "type": "string",
+      "enum": [
+        "published",
+        "archived",
+        "draft"
+      ],
+      "default": "draft",
+      "description": "Skill lifecycle status."
     },
     "tags": {
       "type": "array",

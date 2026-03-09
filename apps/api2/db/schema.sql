@@ -14,13 +14,14 @@ CREATE TABLE IF NOT EXISTS skills (
     title VARCHAR(200) NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     difficulty VARCHAR(20) NOT NULL DEFAULT 'beginner',
-    is_published BOOLEAN NOT NULL DEFAULT FALSE,
+    status VARCHAR(20) NOT NULL DEFAULT 'draft',
     tags TEXT[] NOT NULL DEFAULT '{}',
     created_by VARCHAR(64) NOT NULL,
     updated_by VARCHAR(64) NOT NULL,
     created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT chk_skills_difficulty CHECK (difficulty IN ('beginner', 'intermediate', 'advanced'))
+    CONSTRAINT chk_skills_difficulty CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
+    CONSTRAINT chk_skills_status CHECK (status IN ('draft', 'published', 'archived'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_skills_created_time ON skills (created_time DESC);

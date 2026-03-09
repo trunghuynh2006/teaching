@@ -299,9 +299,19 @@ button.danger {
   font-weight: 600;
 }
 
-.pill.live {
+.pill.status-published {
   background: #dff5f0;
   color: #0f6e60;
+}
+
+.pill.status-archived {
+  background: #edf1f3;
+  color: #40515f;
+}
+
+.pill.status-draft {
+  background: #eef4f8;
+  color: #375368;
 }
 
 .skill-meta {

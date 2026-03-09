@@ -128,7 +128,7 @@ type Skill struct {
 	Description *string `json:"description,omitempty"`
 	Difficulty *string `json:"difficulty,omitempty"`
 	Id string `json:"id"`
-	IsPublished *bool `json:"is_published,omitempty"`
+	Status *string `json:"status,omitempty"`
 	Tags []string `json:"tags,omitempty"`
 	Title string `json:"title"`
 	UpdatedBy *string `json:"updated_by,omitempty"`

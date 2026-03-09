@@ -123,7 +123,7 @@ func (h *Handler) UpdateSkill(w http.ResponseWriter, r *http.Request, currentUse
 	writeJSON(w, http.StatusOK, toSharedSkill(row))
 }
 
-func (h *Handler) DeleteSkill(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+func (h *Handler) ArchiveSkill(w http.ResponseWriter, r *http.Request, currentUser user.User) {
 	if !canManageSkills(currentUser.Role) {
 		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "Forbidden for this role"})
 		return
@@ -135,17 +135,20 @@ func (h *Handler) DeleteSkill(w http.ResponseWriter, r *http.Request, currentUse
 		return
 	}
 
-	affected, err := h.Queries.DeleteSkillByID(r.Context(), id)
+	row, err := h.Queries.ArchiveSkillByID(r.Context(), store.ArchiveSkillByIDParams{
+		ID:        id,
+		UpdatedBy: currentUser.Username,
+	})
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Skill not found"})
+			return
+		}
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
-	if affected == 0 {
-		writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Skill not found"})
-		return
-	}
 
-	w.WriteHeader(http.StatusNoContent)
+	writeJSON(w, http.StatusOK, toSharedSkill(row))
 }
 
 func (h *Handler) PublishSkill(w http.ResponseWriter, r *http.Request, currentUser user.User) {
@@ -161,6 +164,34 @@ func (h *Handler) PublishSkill(w http.ResponseWriter, r *http.Request, currentUs
 	}
 
 	row, err := h.Queries.PublishSkillByID(r.Context(), store.PublishSkillByIDParams{
+		ID:        id,
+		UpdatedBy: currentUser.Username,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Skill not found"})
+			return
+		}
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, toSharedSkill(row))
+}
+
+func (h *Handler) MoveSkillToDraft(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+	if !canManageSkills(currentUser.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "Forbidden for this role"})
+		return
+	}
+
+	id := strings.TrimSpace(r.PathValue("id"))
+	if id == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Skill id is required"})
+		return
+	}
+
+	row, err := h.Queries.MoveSkillToDraftByID(r.Context(), store.MoveSkillToDraftByIDParams{
 		ID:        id,
 		UpdatedBy: currentUser.Username,
 	})
@@ -246,14 +277,14 @@ func toSharedSkill(s store.Skill) sharedmodels.Skill {
 	createdBy := s.CreatedBy
 	updatedBy := s.UpdatedBy
 	difficulty := s.Difficulty
-	isPublished := s.IsPublished
+	status := s.Status
 
 	out := sharedmodels.Skill{
 		Id:          s.ID,
 		Title:       s.Title,
 		Description: &s.Description,
 		Difficulty:  &difficulty,
-		IsPublished: &isPublished,
+		Status:      &status,
 		Tags:        s.Tags,
 		CreatedBy:   &createdBy,
 		UpdatedBy:   &updatedBy,

@@ -10,6 +10,12 @@ const DEFAULT_FORM = {
   tags: ''
 }
 
+const SKILL_STATUS = {
+  PUBLISHED: 'published',
+  ARCHIVED: 'archived',
+  DRAFT: 'draft'
+}
+
 function parseTags(rawTags) {
   return rawTags
     .split(',')
@@ -59,6 +65,24 @@ async function parseError(response) {
   }
 
   return response.statusText || 'Request failed'
+}
+
+function getSkillStatus(skill) {
+  const status = typeof skill?.status === 'string' ? skill.status.toLowerCase() : ''
+  if (status === SKILL_STATUS.PUBLISHED || status === SKILL_STATUS.ARCHIVED || status === SKILL_STATUS.DRAFT) {
+    return status
+  }
+  return SKILL_STATUS.DRAFT
+}
+
+function formatSkillStatus(status) {
+  if (status === SKILL_STATUS.PUBLISHED) {
+    return 'Published'
+  }
+  if (status === SKILL_STATUS.ARCHIVED) {
+    return 'Archived'
+  }
+  return 'Draft'
 }
 
 export default function TeacherSkillManager({ token, mode = 'list' }) {
@@ -195,34 +219,11 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
     navigate(`../create?edit=${encodeURIComponent(skill.id)}`, { relative: 'path' })
   }
 
-  const handleDelete = async (skill) => {
-    if (!window.confirm(`Delete skill "${skill.title}"?`)) {
-      return
-    }
-
+  const updateSkillStatus = async ({ skill, endpoint, successNotice, failureNotice }) => {
     setError('')
     setNotice('')
     try {
-      const response = await fetch(`${API_URL}/skills/${skill.id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (!response.ok) {
-        throw new Error(await parseError(response))
-      }
-
-      setNotice('Skill deleted')
-      await fetchSkills()
-    } catch (err) {
-      setError(err.message || 'Failed to delete skill')
-    }
-  }
-
-  const handlePublish = async (skill) => {
-    setError('')
-    setNotice('')
-    try {
-      const response = await fetch(`${API_URL}/skills/${skill.id}/publish`, {
+      const response = await fetch(`${API_URL}/skills/${skill.id}/${endpoint}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -230,11 +231,41 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
         throw new Error(await parseError(response))
       }
 
-      setNotice('Skill published')
+      setNotice(successNotice)
       await fetchSkills()
     } catch (err) {
-      setError(err.message || 'Failed to publish skill')
+      setError(err.message || failureNotice)
     }
+  }
+
+  const handlePublish = async (skill) => {
+    await updateSkillStatus({
+      skill,
+      endpoint: 'publish',
+      successNotice: 'Skill published',
+      failureNotice: 'Failed to publish skill'
+    })
+  }
+
+  const handleArchive = async (skill) => {
+    if (!window.confirm(`Archive skill "${skill.title}"?`)) {
+      return
+    }
+    await updateSkillStatus({
+      skill,
+      endpoint: 'archive',
+      successNotice: 'Skill archived',
+      failureNotice: 'Failed to archive skill'
+    })
+  }
+
+  const handleReturnToDraft = async (skill) => {
+    await updateSkillStatus({
+      skill,
+      endpoint: 'draft',
+      successNotice: 'Skill moved back to draft',
+      failureNotice: 'Failed to move skill to draft'
+    })
   }
 
   return (
@@ -329,38 +360,46 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
           {skills.length === 0 && !loadingList ? (
             <p>No skills yet. Use "New Skill" to create one.</p>
           ) : (
-            skills.map((skill) => (
-              <article className="skill-item" key={skill.id}>
-                <header>
-                  <h4>{skill.title}</h4>
-                  <span className={`pill ${skill.is_published ? 'live' : ''}`}>
-                    {skill.is_published ? 'Published' : 'Draft'}
-                  </span>
-                </header>
-                {skill.description && <p>{skill.description}</p>}
-                <div className="skill-meta">
-                  <span>Difficulty: {skill.difficulty || 'beginner'}</span>
-                  <span>Tags: {(skill.tags || []).join(', ') || '-'}</span>
-                  <span>Created by: {skill.created_by || '-'}</span>
-                  <span>Created: {formatDate(skill.created_time)}</span>
-                  <span>Updated by: {skill.updated_by || '-'}</span>
-                  <span>Updated: {formatDate(skill.updated_time)}</span>
-                </div>
-                <div className="skill-actions">
-                  {!skill.is_published && (
-                    <button type="button" className="secondary" onClick={() => handlePublish(skill)}>
-                      Publish
+            skills.map((skill) => {
+              const status = getSkillStatus(skill)
+              return (
+                <article className="skill-item" key={skill.id}>
+                  <header>
+                    <h4>{skill.title}</h4>
+                    <span className={`pill status-${status}`}>{formatSkillStatus(status)}</span>
+                  </header>
+                  {skill.description && <p>{skill.description}</p>}
+                  <div className="skill-meta">
+                    <span>Difficulty: {skill.difficulty || 'beginner'}</span>
+                    <span>Tags: {(skill.tags || []).join(', ') || '-'}</span>
+                    <span>Created by: {skill.created_by || '-'}</span>
+                    <span>Created: {formatDate(skill.created_time)}</span>
+                    <span>Updated by: {skill.updated_by || '-'}</span>
+                    <span>Updated: {formatDate(skill.updated_time)}</span>
+                  </div>
+                  <div className="skill-actions">
+                    {status !== SKILL_STATUS.PUBLISHED && (
+                      <button type="button" className="secondary" onClick={() => handlePublish(skill)}>
+                        Publish
+                      </button>
+                    )}
+                    {status !== SKILL_STATUS.DRAFT && (
+                      <button type="button" className="secondary" onClick={() => handleReturnToDraft(skill)}>
+                        Return to Draft
+                      </button>
+                    )}
+                    {status !== SKILL_STATUS.ARCHIVED && (
+                      <button type="button" className="secondary" onClick={() => handleArchive(skill)}>
+                        Archive
+                      </button>
+                    )}
+                    <button type="button" onClick={() => handleEdit(skill)}>
+                      Edit
                     </button>
-                  )}
-                  <button type="button" onClick={() => handleEdit(skill)}>
-                    Edit
-                  </button>
-                  <button type="button" className="danger" onClick={() => handleDelete(skill)}>
-                    Delete
-                  </button>
-                </div>
-              </article>
-            ))
+                  </div>
+                </article>
+              )
+            })
           )}
         </div>
       )}

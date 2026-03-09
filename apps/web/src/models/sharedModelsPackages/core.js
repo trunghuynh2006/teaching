@@ -174,7 +174,7 @@ export class Skill {
     this.description = data.description;
     this.difficulty = data.difficulty ?? "beginner";
     this.id = data.id;
-    this.is_published = data.is_published ?? false;
+    this.status = data.status ?? "draft";
     this.tags = data.tags ?? [];
     this.title = data.title;
     this.updated_by = data.updated_by;
@@ -188,7 +188,7 @@ export class Skill {
     if (data.difficulty !== undefined && !(typeof data.difficulty === "string")) return false;
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
-    if (data.is_published !== undefined && !(typeof data.is_published === "boolean")) return false;
+    if (data.status !== undefined && !(typeof data.status === "string")) return false;
     if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
     if (data.title === undefined) return false;
     if (data.title !== undefined && !(typeof data.title === "string")) return false;
@@ -204,7 +204,7 @@ export class Skill {
       description: this.description,
       difficulty: this.difficulty,
       id: this.id,
-      is_published: this.is_published,
+      status: this.status,
       tags: this.tags,
       title: this.title,
       updated_by: this.updated_by,

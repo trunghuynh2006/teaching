@@ -9,10 +9,42 @@ import (
 	"context"
 )
 
+const archiveSkillByID = `-- name: ArchiveSkillByID :one
+UPDATE skills
+SET status = 'archived',
+    updated_by = $2,
+    updated_time = NOW()
+WHERE id = $1
+RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
+`
+
+type ArchiveSkillByIDParams struct {
+	ID        string `json:"id"`
+	UpdatedBy string `json:"updated_by"`
+}
+
+func (q *Queries) ArchiveSkillByID(ctx context.Context, arg ArchiveSkillByIDParams) (Skill, error) {
+	row := q.db.QueryRow(ctx, archiveSkillByID, arg.ID, arg.UpdatedBy)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Difficulty,
+		&i.Status,
+		&i.Tags,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+		&i.CreatedTime,
+		&i.UpdatedTime,
+	)
+	return i, err
+}
+
 const createSkill = `-- name: CreateSkill :one
 INSERT INTO skills (id, title, description, difficulty, tags, created_by, updated_by)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 `
 
 type CreateSkillParams struct {
@@ -41,7 +73,7 @@ func (q *Queries) CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill
 		&i.Title,
 		&i.Description,
 		&i.Difficulty,
-		&i.IsPublished,
+		&i.Status,
 		&i.Tags,
 		&i.CreatedBy,
 		&i.UpdatedBy,
@@ -73,21 +105,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
-const deleteSkillByID = `-- name: DeleteSkillByID :execrows
-DELETE FROM skills
-WHERE id = $1
-`
-
-func (q *Queries) DeleteSkillByID(ctx context.Context, id string) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteSkillByID, id)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected(), nil
-}
-
 const getSkillByID = `-- name: GetSkillByID :one
-SELECT id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+SELECT id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 FROM skills
 WHERE id = $1
 LIMIT 1
@@ -101,7 +120,7 @@ func (q *Queries) GetSkillByID(ctx context.Context, id string) (Skill, error) {
 		&i.Title,
 		&i.Description,
 		&i.Difficulty,
-		&i.IsPublished,
+		&i.Status,
 		&i.Tags,
 		&i.CreatedBy,
 		&i.UpdatedBy,
@@ -154,19 +173,57 @@ func (q *Queries) InitSkillsCreatedTimeIndex(ctx context.Context) error {
 	return err
 }
 
+const initSkillsStatusState = `-- name: InitSkillsStatusState :exec
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'skills'
+          AND column_name = 'is_published'
+    ) THEN
+        ALTER TABLE skills ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'draft';
+        UPDATE skills
+        SET status = CASE
+            WHEN is_published THEN 'published'
+            ELSE 'draft'
+        END
+        WHERE status IS NULL OR status = 'draft';
+        ALTER TABLE skills DROP COLUMN IF EXISTS is_published;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'chk_skills_status'
+          AND conrelid = 'skills'::regclass
+    ) THEN
+        ALTER TABLE skills
+        ADD CONSTRAINT chk_skills_status CHECK (status IN ('draft', 'published', 'archived'));
+    END IF;
+END $$
+`
+
+func (q *Queries) InitSkillsStatusState(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initSkillsStatusState)
+	return err
+}
+
 const initSkillsTable = `-- name: InitSkillsTable :exec
 CREATE TABLE IF NOT EXISTS skills (
     id VARCHAR(64) PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     difficulty VARCHAR(20) NOT NULL DEFAULT 'beginner',
-    is_published BOOLEAN NOT NULL DEFAULT FALSE,
+    status VARCHAR(20) NOT NULL DEFAULT 'draft',
     tags TEXT[] NOT NULL DEFAULT '{}',
     created_by VARCHAR(64) NOT NULL,
     updated_by VARCHAR(64) NOT NULL,
     created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT chk_skills_difficulty CHECK (difficulty IN ('beginner', 'intermediate', 'advanced'))
+    CONSTRAINT chk_skills_difficulty CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
+    CONSTRAINT chk_skills_status CHECK (status IN ('draft', 'published', 'archived'))
 )
 `
 
@@ -209,7 +266,7 @@ func (q *Queries) InitUsersUsernameIndex(ctx context.Context) error {
 }
 
 const listSkills = `-- name: ListSkills :many
-SELECT id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+SELECT id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 FROM skills
 ORDER BY created_time DESC
 `
@@ -228,7 +285,7 @@ func (q *Queries) ListSkills(ctx context.Context) ([]Skill, error) {
 			&i.Title,
 			&i.Description,
 			&i.Difficulty,
-			&i.IsPublished,
+			&i.Status,
 			&i.Tags,
 			&i.CreatedBy,
 			&i.UpdatedBy,
@@ -245,13 +302,45 @@ func (q *Queries) ListSkills(ctx context.Context) ([]Skill, error) {
 	return items, nil
 }
 
-const publishSkillByID = `-- name: PublishSkillByID :one
+const moveSkillToDraftByID = `-- name: MoveSkillToDraftByID :one
 UPDATE skills
-SET is_published = TRUE,
+SET status = 'draft',
     updated_by = $2,
     updated_time = NOW()
 WHERE id = $1
-RETURNING id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
+`
+
+type MoveSkillToDraftByIDParams struct {
+	ID        string `json:"id"`
+	UpdatedBy string `json:"updated_by"`
+}
+
+func (q *Queries) MoveSkillToDraftByID(ctx context.Context, arg MoveSkillToDraftByIDParams) (Skill, error) {
+	row := q.db.QueryRow(ctx, moveSkillToDraftByID, arg.ID, arg.UpdatedBy)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Difficulty,
+		&i.Status,
+		&i.Tags,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+		&i.CreatedTime,
+		&i.UpdatedTime,
+	)
+	return i, err
+}
+
+const publishSkillByID = `-- name: PublishSkillByID :one
+UPDATE skills
+SET status = 'published',
+    updated_by = $2,
+    updated_time = NOW()
+WHERE id = $1
+RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 `
 
 type PublishSkillByIDParams struct {
@@ -267,7 +356,7 @@ func (q *Queries) PublishSkillByID(ctx context.Context, arg PublishSkillByIDPara
 		&i.Title,
 		&i.Description,
 		&i.Difficulty,
-		&i.IsPublished,
+		&i.Status,
 		&i.Tags,
 		&i.CreatedBy,
 		&i.UpdatedBy,
@@ -286,7 +375,7 @@ SET title = $2,
     updated_by = $6,
     updated_time = NOW()
 WHERE id = $1
-RETURNING id, title, description, difficulty, is_published, tags, created_by, updated_by, created_time, updated_time
+RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 `
 
 type UpdateSkillByIDParams struct {
@@ -313,7 +402,7 @@ func (q *Queries) UpdateSkillByID(ctx context.Context, arg UpdateSkillByIDParams
 		&i.Title,
 		&i.Description,
 		&i.Difficulty,
-		&i.IsPublished,
+		&i.Status,
 		&i.Tags,
 		&i.CreatedBy,
 		&i.UpdatedBy,
