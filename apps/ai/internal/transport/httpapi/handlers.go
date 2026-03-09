@@ -6,11 +6,13 @@ import (
 	"net/http"
 
 	appcontent "ai/internal/app/content"
+	"ai/internal/infra/security"
 	"ai/internal/sharedmodels"
 )
 
 type Handler struct {
 	ContentService appcontent.Service
+	JWT            security.JWT
 	AllowedOrigin  string
 }
 
@@ -32,9 +34,13 @@ type ListLessonTitlesResponse struct {
 	Titles []string `json:"titles"`
 }
 
-// ListLessonTitles handles POST /content/lesson-titles.
-// It returns a list of candidate lesson titles for the given skill.
-func (h *Handler) ListLessonTitles(w http.ResponseWriter, r *http.Request) {
+// ListLessonTitles handles POST /content/lesson-titles (teacher/admin only).
+func (h *Handler) ListLessonTitles(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+
 	var payload ListLessonTitlesRequest
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
@@ -77,9 +83,13 @@ type GenerateLessonResponse struct {
 	Lesson sharedmodels.Lesson `json:"lesson"`
 }
 
-// GenerateLesson handles POST /content/lesson.
-// It returns fully populated lesson content for the given title.
-func (h *Handler) GenerateLesson(w http.ResponseWriter, r *http.Request) {
+// GenerateLesson handles POST /content/lesson (teacher/admin only).
+func (h *Handler) GenerateLesson(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+
 	var payload GenerateLessonRequest
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
@@ -106,4 +116,8 @@ func (h *Handler) GenerateLesson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, GenerateLessonResponse{Lesson: lesson})
+}
+
+func isContentEditor(role string) bool {
+	return role == "teacher" || role == "admin"
 }

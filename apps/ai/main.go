@@ -13,6 +13,7 @@ import (
 	appcontent "ai/internal/app/content"
 	"ai/internal/infra/ai/openai"
 	"ai/internal/infra/cache/postgres"
+	"ai/internal/infra/security"
 	"ai/internal/prompts"
 	"ai/internal/store"
 	"ai/internal/transport/httpapi"
@@ -32,6 +33,8 @@ func main() {
 	baseURL := strings.TrimSuffix(getenv("AI_BASE_URL", "https://api.openai.com/v1"), "/")
 	cacheTTLSeconds := getenvInt("AI_PROMPT_CACHE_TTL_SECONDS", 900)
 	cacheMaxEntries := getenvInt("AI_PROMPT_CACHE_MAX_ENTRIES", 512)
+	jwtSecret := mustGetenv("JWT_SECRET")
+	jwtAlgorithm := getenv("JWT_ALGORITHM", "HS256")
 	ctx := context.Background()
 
 	promptRegistry, err := prompts.New()
@@ -64,13 +67,17 @@ func main() {
 			Generator: aiClient,
 			Cache:     promptCache,
 		},
+		JWT: security.JWT{
+			Secret:    jwtSecret,
+			Algorithm: jwtAlgorithm,
+		},
 		AllowedOrigin: allowedOrigin,
 	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handler.Health)
-	mux.HandleFunc("POST /content/lesson-titles", handler.ListLessonTitles)
-	mux.HandleFunc("POST /content/lesson", handler.GenerateLesson)
+	mux.HandleFunc("POST /content/lesson-titles", handler.Auth(handler.ListLessonTitles))
+	mux.HandleFunc("POST /content/lesson", handler.Auth(handler.GenerateLesson))
 
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("ai listening on %s", addr)
