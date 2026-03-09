@@ -18,7 +18,14 @@ const MENU_BY_ROLE = {
   teacher: [
     { label: 'My Classes', path: '/teacher/classes' },
     { label: 'Gradebook', path: '/teacher/gradebook' },
-    { label: 'Content Studio', path: '/teacher/content-studio', nested: true }
+    {
+      label: 'Content Studio',
+      path: '/teacher/content-studio',
+      nested: true,
+      children: [
+        { label: 'Skill Library', path: '/teacher/content-studio/skills' }
+      ]
+    }
   ],
   admin: [
     { label: 'User Management', path: '/admin/user-management' },

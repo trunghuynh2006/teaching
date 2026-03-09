@@ -9,14 +9,30 @@ export default function Sidebar({ role, menuItems, activePath, onNavigate }) {
             activePath === item.path || activePath.startsWith(`${item.path}/`)
 
           return (
-            <button
-              key={item.path}
-              className={`nav-item ${isActive ? 'active' : ''}`}
-              style={{ animationDelay: `${idx * 70}ms` }}
-              onClick={() => onNavigate(item.path)}
-            >
-              {item.label}
-            </button>
+            <div key={item.path}>
+              <button
+                className={`nav-item ${isActive ? 'active' : ''}`}
+                style={{ animationDelay: `${idx * 70}ms` }}
+                onClick={() => onNavigate(item.path)}
+              >
+                {item.label}
+              </button>
+              {isActive &&
+                item.children?.map((child) => {
+                  const isChildActive =
+                    activePath === child.path ||
+                    activePath.startsWith(`${child.path}/`)
+                  return (
+                    <button
+                      key={child.path}
+                      className={`nav-item nav-child ${isChildActive ? 'active' : ''}`}
+                      onClick={() => onNavigate(child.path)}
+                    >
+                      {child.label}
+                    </button>
+                  )
+                })}
+            </div>
           )
         })}
       </nav>
