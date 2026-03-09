@@ -1,4 +1,4 @@
-import TeacherSkillManager from '../components/TeacherSkillManager'
+import TeacherContentStudio from '../components/TeacherContentStudio'
 
 export function LearnerLanding({ activeItem }) {
   return (
@@ -21,7 +21,7 @@ export function TeacherLanding({ activeItem, token }) {
       <h2>Teacher Workspace</h2>
       <p>Manage classes, review submissions, and publish engaging lesson plans.</p>
       {activeItem === 'Content Studio' ? (
-        <TeacherSkillManager token={token} />
+        <TeacherContentStudio token={token} />
       ) : (
         <div className="cards-grid">
           <article className="card glow">Pending Grading: 14 submissions</article>

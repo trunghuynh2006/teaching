@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { API_URL } from '../config'
 import { SkillInput } from '../models/sharedModelsPackages/core'
 
@@ -60,17 +61,30 @@ async function parseError(response) {
   return response.statusText || 'Request failed'
 }
 
-export default function TeacherSkillManager({ token }) {
+export default function TeacherSkillManager({ token, mode = 'list' }) {
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [skills, setSkills] = useState([])
   const [form, setForm] = useState(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [loadingList, setLoadingList] = useState(false)
+  const [loadingForm, setLoadingForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
+  const isFormMode = mode === 'form'
+  const isListMode = mode === 'list'
+  const editSkillId = searchParams.get('edit') || ''
+  const isEditing = useMemo(() => editingId.length > 0, [editingId])
+
+  const resetForm = () => {
+    setForm(DEFAULT_FORM)
+    setEditingId('')
+  }
+
   const fetchSkills = useCallback(async () => {
-    setLoading(true)
+    setLoadingList(true)
     setError('')
     try {
       const response = await fetch(`${API_URL}/skills`, {
@@ -85,19 +99,58 @@ export default function TeacherSkillManager({ token }) {
     } catch (err) {
       setError(err.message || 'Failed to load skills')
     } finally {
-      setLoading(false)
+      setLoadingList(false)
     }
   }, [token])
 
   useEffect(() => {
+    if (!isListMode) {
+      return
+    }
     fetchSkills()
-  }, [fetchSkills])
+  }, [fetchSkills, isListMode])
 
-  const isEditing = useMemo(() => editingId.length > 0, [editingId])
+  useEffect(() => {
+    if (!isFormMode) {
+      return
+    }
 
-  const resetForm = () => {
-    setForm(DEFAULT_FORM)
-    setEditingId('')
+    if (!editSkillId) {
+      resetForm()
+      return
+    }
+
+    const loadSkill = async () => {
+      setLoadingForm(true)
+      setError('')
+      try {
+        const response = await fetch(`${API_URL}/skills/${editSkillId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (!response.ok) {
+          throw new Error(await parseError(response))
+        }
+
+        const payload = await response.json()
+        setEditingId(payload.id || editSkillId)
+        setForm(toFormState(payload))
+      } catch (err) {
+        setError(err.message || 'Failed to load skill')
+      } finally {
+        setLoadingForm(false)
+      }
+    }
+
+    loadSkill()
+  }, [editSkillId, isFormMode, token])
+
+  const clearEdit = ({ clearFeedback = true } = {}) => {
+    setSearchParams({})
+    if (clearFeedback) {
+      setNotice('')
+      setError('')
+    }
+    resetForm()
   }
 
   const handleSubmit = async (event) => {
@@ -130,8 +183,7 @@ export default function TeacherSkillManager({ token }) {
       }
 
       setNotice(isEditing ? 'Skill updated' : 'Skill created')
-      resetForm()
-      await fetchSkills()
+      clearEdit({ clearFeedback: false })
     } catch (err) {
       setError(err.message || 'Failed to save skill')
     } finally {
@@ -140,10 +192,7 @@ export default function TeacherSkillManager({ token }) {
   }
 
   const handleEdit = (skill) => {
-    setError('')
-    setNotice('')
-    setEditingId(skill.id)
-    setForm(toFormState(skill))
+    navigate(`../create?edit=${encodeURIComponent(skill.id)}`, { relative: 'path' })
   }
 
   const handleDelete = async (skill) => {
@@ -162,9 +211,6 @@ export default function TeacherSkillManager({ token }) {
         throw new Error(await parseError(response))
       }
 
-      if (editingId === skill.id) {
-        resetForm()
-      }
       setNotice('Skill deleted')
       await fetchSkills()
     } catch (err) {
@@ -194,106 +240,130 @@ export default function TeacherSkillManager({ token }) {
   return (
     <section className="skill-studio">
       <div className="skill-studio-header">
-        <h3>Skill Studio</h3>
-        <button type="button" className="secondary" onClick={fetchSkills} disabled={loading}>
-          {loading ? 'Refreshing...' : 'Refresh'}
-        </button>
-      </div>
-
-      <form className="skill-form" onSubmit={handleSubmit}>
-        <label>
-          Title
-          <input
-            value={form.title}
-            onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-            placeholder="Linear Equations"
-            required
-          />
-        </label>
-
-        <label>
-          Description
-          <input
-            value={form.description}
-            onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
-            placeholder="Foundational equation-solving skill"
-          />
-        </label>
-
-        <label>
-          Difficulty
-          <select
-            value={form.difficulty}
-            onChange={(event) => setForm((prev) => ({ ...prev, difficulty: event.target.value }))}
-          >
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-        </label>
-
-        <label>
-          Tags (comma-separated)
-          <input
-            value={form.tags}
-            onChange={(event) => setForm((prev) => ({ ...prev, tags: event.target.value }))}
-            placeholder="algebra, equations, grade-8"
-          />
-        </label>
-
-        <div className="skill-actions">
-          <button type="submit" disabled={saving}>
-            {saving ? 'Saving...' : isEditing ? 'Update Skill' : 'Create Skill'}
-          </button>
-          {isEditing && (
-            <button type="button" className="secondary" onClick={resetForm}>
-              Cancel Edit
+        <h3>{isFormMode ? (isEditing ? 'Edit Skill' : 'Create Skill') : 'Skill Library'}</h3>
+        <div className="skill-actions compact">
+          {isListMode && (
+            <>
+              <button type="button" className="secondary" onClick={fetchSkills} disabled={loadingList}>
+                {loadingList ? 'Refreshing...' : 'Refresh'}
+              </button>
+              <button type="button" onClick={() => navigate('../create', { relative: 'path' })}>
+                New Skill
+              </button>
+            </>
+          )}
+          {isFormMode && (
+            <button type="button" className="secondary" onClick={() => navigate('../skills', { relative: 'path' })}>
+              Back to List
             </button>
           )}
         </div>
-      </form>
+      </div>
 
       {notice && <div className="notice">{notice}</div>}
       {error && <div className="error">{error}</div>}
 
-      <div className="skill-list">
-        {skills.length === 0 && !loading ? (
-          <p>No skills yet. Create your first one above.</p>
-        ) : (
-          skills.map((skill) => (
-            <article className="skill-item" key={skill.id}>
-              <header>
-                <h4>{skill.title}</h4>
-                <span className={`pill ${skill.is_published ? 'live' : ''}`}>
-                  {skill.is_published ? 'Published' : 'Draft'}
-                </span>
-              </header>
-              {skill.description && <p>{skill.description}</p>}
-              <div className="skill-meta">
-                <span>Difficulty: {skill.difficulty || 'beginner'}</span>
-                <span>Tags: {(skill.tags || []).join(', ') || '-'}</span>
-                <span>Created by: {skill.created_by || '-'}</span>
-                <span>Created: {formatDate(skill.created_time)}</span>
-                <span>Updated by: {skill.updated_by || '-'}</span>
-                <span>Updated: {formatDate(skill.updated_time)}</span>
-              </div>
+      {isFormMode && (
+        <form className="skill-form" onSubmit={handleSubmit}>
+          {loadingForm ? (
+            <p>Loading skill...</p>
+          ) : (
+            <>
+              <label>
+                Title
+                <input
+                  value={form.title}
+                  onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
+                  placeholder="Linear Equations"
+                  required
+                />
+              </label>
+
+              <label>
+                Description
+                <input
+                  value={form.description}
+                  onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
+                  placeholder="Foundational equation-solving skill"
+                />
+              </label>
+
+              <label>
+                Difficulty
+                <select
+                  value={form.difficulty}
+                  onChange={(event) => setForm((prev) => ({ ...prev, difficulty: event.target.value }))}
+                >
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </label>
+
+              <label>
+                Tags (comma-separated)
+                <input
+                  value={form.tags}
+                  onChange={(event) => setForm((prev) => ({ ...prev, tags: event.target.value }))}
+                  placeholder="algebra, equations, grade-8"
+                />
+              </label>
+
               <div className="skill-actions">
-                {!skill.is_published && (
-                  <button type="button" className="secondary" onClick={() => handlePublish(skill)}>
-                    Publish
+                <button type="submit" disabled={saving || loadingForm}>
+                  {saving ? 'Saving...' : isEditing ? 'Update Skill' : 'Create Skill'}
+                </button>
+                {isEditing && (
+                  <button type="button" className="secondary" onClick={clearEdit}>
+                    Cancel Edit
                   </button>
                 )}
-                <button type="button" onClick={() => handleEdit(skill)}>
-                  Edit
-                </button>
-                <button type="button" className="danger" onClick={() => handleDelete(skill)}>
-                  Delete
-                </button>
               </div>
-            </article>
-          ))
-        )}
-      </div>
+            </>
+          )}
+        </form>
+      )}
+
+      {isListMode && (
+        <div className="skill-list">
+          {skills.length === 0 && !loadingList ? (
+            <p>No skills yet. Use "New Skill" to create one.</p>
+          ) : (
+            skills.map((skill) => (
+              <article className="skill-item" key={skill.id}>
+                <header>
+                  <h4>{skill.title}</h4>
+                  <span className={`pill ${skill.is_published ? 'live' : ''}`}>
+                    {skill.is_published ? 'Published' : 'Draft'}
+                  </span>
+                </header>
+                {skill.description && <p>{skill.description}</p>}
+                <div className="skill-meta">
+                  <span>Difficulty: {skill.difficulty || 'beginner'}</span>
+                  <span>Tags: {(skill.tags || []).join(', ') || '-'}</span>
+                  <span>Created by: {skill.created_by || '-'}</span>
+                  <span>Created: {formatDate(skill.created_time)}</span>
+                  <span>Updated by: {skill.updated_by || '-'}</span>
+                  <span>Updated: {formatDate(skill.updated_time)}</span>
+                </div>
+                <div className="skill-actions">
+                  {!skill.is_published && (
+                    <button type="button" className="secondary" onClick={() => handlePublish(skill)}>
+                      Publish
+                    </button>
+                  )}
+                  <button type="button" onClick={() => handleEdit(skill)}>
+                    Edit
+                  </button>
+                  <button type="button" className="danger" onClick={() => handleDelete(skill)}>
+                    Delete
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      )}
     </section>
   )
 }

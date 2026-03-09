@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import {
   LearnerLanding,
@@ -8,11 +9,27 @@ import {
 } from './pages/LandingPages'
 import { API_URL } from './config'
 
-const DEFAULT_MENU = {
-  learner: 'My Courses',
-  teacher: 'My Classes',
-  admin: 'User Management',
-  parent: 'Child Overview'
+const MENU_BY_ROLE = {
+  learner: [
+    { label: 'My Courses', path: '/learner/courses' },
+    { label: 'Assignments', path: '/learner/assignments' },
+    { label: 'Progress', path: '/learner/progress' }
+  ],
+  teacher: [
+    { label: 'My Classes', path: '/teacher/classes' },
+    { label: 'Gradebook', path: '/teacher/gradebook' },
+    { label: 'Content Studio', path: '/teacher/content-studio', nested: true }
+  ],
+  admin: [
+    { label: 'User Management', path: '/admin/user-management' },
+    { label: 'System Health', path: '/admin/system-health' },
+    { label: 'Reports', path: '/admin/reports' }
+  ],
+  parent: [
+    { label: 'Child Overview', path: '/parent/child-overview' },
+    { label: 'Attendance', path: '/parent/attendance' },
+    { label: 'Teacher Notes', path: '/parent/teacher-notes' }
+  ]
 }
 
 function renderLanding(role, activeItem, token) {
@@ -31,12 +48,13 @@ function renderLanding(role, activeItem, token) {
 }
 
 export default function App() {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [token, setToken] = useState('')
   const [user, setUser] = useState(null)
   const [error, setError] = useState('')
-  const [activeItem, setActiveItem] = useState('')
 
   const demoUsers = useMemo(
     () => [
@@ -51,6 +69,29 @@ export default function App() {
     ],
     []
   )
+
+  const role = user?.role ?? user?.Role ?? ''
+  const menuItems = useMemo(() => MENU_BY_ROLE[role] || [], [role])
+  const defaultPath = menuItems[0]?.path || '/'
+  const activeItem =
+    menuItems.find(
+      (item) =>
+        location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)
+    )?.label || ''
+
+  useEffect(() => {
+    if (!token || !user || menuItems.length === 0) {
+      return
+    }
+
+    const isKnownPath = menuItems.some(
+      (item) =>
+        location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)
+    )
+    if (!isKnownPath) {
+      navigate(defaultPath, { replace: true })
+    }
+  }, [defaultPath, location.pathname, menuItems, navigate, token, user])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -79,7 +120,8 @@ export default function App() {
 
       setToken(accessToken)
       setUser(userPayload)
-      setActiveItem(DEFAULT_MENU[role] || '')
+      const roleRoutes = MENU_BY_ROLE[role] || []
+      navigate(roleRoutes[0]?.path || '/', { replace: true })
       setUsername('')
       setPassword('')
     } catch (err) {
@@ -90,7 +132,7 @@ export default function App() {
   const handleLogout = () => {
     setToken('')
     setUser(null)
-    setActiveItem('')
+    navigate('/', { replace: true })
   }
 
   if (!token || !user) {
@@ -129,16 +171,30 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <Sidebar role={user.role} activeItem={activeItem} onSelect={setActiveItem} />
+      <Sidebar
+        role={role}
+        menuItems={menuItems}
+        activePath={location.pathname}
+        onNavigate={navigate}
+      />
       <section className="content-area">
         <header className="topbar">
           <div>
-            <h1>Welcome, {user.full_name}</h1>
-            <p>{user.role} dashboard</p>
+            <h1>Welcome, {user.full_name ?? user.FullName}</h1>
+            <p>{role} dashboard</p>
           </div>
           <button onClick={handleLogout}>Logout</button>
         </header>
-        {renderLanding(user.role, activeItem, token)}
+        <Routes>
+          {menuItems.map((item) => (
+            <Route
+              key={item.path}
+              path={item.nested ? `${item.path}/*` : item.path}
+              element={renderLanding(role, item.label, token)}
+            />
+          ))}
+          <Route path="*" element={<Navigate to={defaultPath} replace />} />
+        </Routes>
       </section>
     </main>
   )

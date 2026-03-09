@@ -215,8 +215,42 @@ button.danger {
   font-weight: 600;
 }
 
-.skill-studio {
+.content-studio-shell {
   margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 0.9rem;
+}
+
+.content-studio-submenu {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.studio-link {
+  display: block;
+  text-decoration: none;
+  background: #eef4f8;
+  border: 1px solid #d5e4ea;
+  color: #1e3141;
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  font-weight: 600;
+  transition: all 150ms ease;
+}
+
+.studio-link:hover {
+  background: #e4edf2;
+}
+
+.studio-link.active {
+  background: #dff5f0;
+  border-color: #b4e6dc;
+  color: #0c6557;
+}
+
+.skill-studio {
   display: grid;
   gap: 1rem;
 }
@@ -303,6 +337,10 @@ button.danger {
   margin-top: 0.75rem;
 }
 
+.skill-actions.compact {
+  margin-top: 0;
+}
+
 @keyframes pop-in {
   from {
     opacity: 0;
@@ -349,6 +387,14 @@ button.danger {
 
   .cards-grid {
     grid-template-columns: 1fr;
+  }
+
+  .content-studio-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .content-studio-submenu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .skill-meta {
