@@ -6,8 +6,7 @@ import {
   AdminLanding,
   ParentLanding
 } from './pages/LandingPages'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+import { API_URL } from './config'
 
 const DEFAULT_MENU = {
   learner: 'My Courses',
