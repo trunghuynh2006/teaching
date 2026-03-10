@@ -21,7 +21,8 @@ export const MENU_BY_ROLE: Record<Role, MenuItem[]> = {
       path: '/teacher/content-studio',
       nested: true,
       children: [
-        { label: 'Skill Library', path: '/teacher/content-studio/skills' }
+        { label: 'Skill Library', path: '/teacher/content-studio/skills' },
+        { label: 'Voice Recorder', path: '/teacher/content-studio/recorder' }
       ]
     }
   ],

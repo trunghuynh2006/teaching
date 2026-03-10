@@ -16,6 +16,7 @@ type Handler struct {
 	ProfileService profile.Service
 	Queries        *store.Queries
 	AllowedOrigin  string
+	UploadDir      string
 }
 
 type LoginRequest struct {

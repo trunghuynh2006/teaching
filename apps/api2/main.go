@@ -58,6 +58,7 @@ func main() {
 		ProfileService: profile.Service{},
 		Queries:        queries,
 		AllowedOrigin:  "http://localhost:5173",
+		UploadDir:      getenv("UPLOAD_DIR", "./uploads"),
 	}
 
 	application := &app{
@@ -88,6 +89,7 @@ func main() {
 	mux.HandleFunc("POST /skills/{id}/publish", handler.Auth(handler.PublishSkill))
 	mux.HandleFunc("POST /skills/{id}/archive", handler.Auth(handler.ArchiveSkill))
 	mux.HandleFunc("POST /skills/{id}/draft", handler.Auth(handler.MoveSkillToDraft))
+	mux.HandleFunc("POST /recordings", handler.Auth(handler.UploadRecording))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)
