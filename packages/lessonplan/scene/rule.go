@@ -5,7 +5,7 @@
 //  2. Register the instance in registry.go.
 package scene
 
-import "lesson-plan-generator/internal/domain"
+import "t2t.dev/lessonplan/domain"
 
 // Rule knows how to turn a SceneScript + audio timing into a scene dict.
 type Rule interface {

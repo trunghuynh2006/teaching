@@ -17,10 +17,10 @@ type SceneScript struct {
 }
 
 type LessonContent struct {
-	LessonID     string            `json:"lesson_id"`
-	Title        string            `json:"title"`
+	LessonID     string             `json:"lesson_id"`
+	Title        string             `json:"title"`
 	Narration    []NarrationSegment `json:"narration"`
-	SceneScripts []SceneScript     `json:"scene_scripts"`
+	SceneScripts []SceneScript      `json:"scene_scripts"`
 }
 
 // ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-package pipeline
+package lessonplan
 
 import (
 	"bytes"
@@ -10,11 +10,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"lesson-plan-generator/internal/audio"
-	"lesson-plan-generator/internal/domain"
+	"t2t.dev/lessonplan/audio"
+	"t2t.dev/lessonplan/domain"
 )
 
-// steps 3 & 4 – call OpenAI TTS for each segment, save MP3 files, measure durations.
+// generateTTS calls OpenAI TTS for each segment, saves MP3 files, and measures durations.
 func (g *Generator) generateTTS(ctx context.Context, segments []domain.NarrationSegment, lessonID string) ([]domain.AudioSegment, error) {
 	audioDir := filepath.Join(g.outputDir, lessonID, "audio")
 	if err := os.MkdirAll(audioDir, 0o755); err != nil {

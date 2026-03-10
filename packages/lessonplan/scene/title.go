@@ -1,6 +1,6 @@
 package scene
 
-import "lesson-plan-generator/internal/domain"
+import "t2t.dev/lessonplan/domain"
 
 type titleRule struct{}
 

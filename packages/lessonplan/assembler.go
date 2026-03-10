@@ -1,12 +1,12 @@
-package pipeline
+package lessonplan
 
 import (
 	"math"
 
-	"lesson-plan-generator/internal/domain"
+	"t2t.dev/lessonplan/domain"
 )
 
-// step 7 – assemble the final VideoPlan JSON contract.
+// assemble builds the final VideoPlan JSON contract.
 func assemble(lessonID string, segments []domain.AudioSegment, fullAudioFile string, scenes []map[string]any) domain.VideoPlan {
 	var total float64
 	for _, s := range segments {

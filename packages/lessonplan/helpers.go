@@ -1,4 +1,4 @@
-package pipeline
+package lessonplan
 
 import "math"
 

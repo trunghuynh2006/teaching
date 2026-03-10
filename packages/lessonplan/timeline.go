@@ -1,11 +1,11 @@
-package pipeline
+package lessonplan
 
 import (
-	"lesson-plan-generator/internal/domain"
-	"lesson-plan-generator/internal/scene"
+	"t2t.dev/lessonplan/domain"
+	"t2t.dev/lessonplan/scene"
 )
 
-// step 6 – assign absolute timestamps.
+// computeTimeline assigns absolute timestamps.
 //
 // Audio segments: start times are relative to the audio file (0-based).
 // Scenes:         start times are in the video timeline (sequential).

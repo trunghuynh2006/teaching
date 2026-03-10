@@ -1,13 +1,13 @@
-package pipeline
+package lessonplan
 
-import "lesson-plan-generator/internal/domain"
+import "t2t.dev/lessonplan/domain"
 
 type sceneEntry struct {
 	script   domain.SceneScript
 	duration float64
 }
 
-// step 5 – map scene scripts to (script, duration) pairs.
+// generateScenes maps scene scripts to (script, duration) pairs.
 // Duration = sum of assigned audio segment durations, or data["duration"] for narration-free scenes.
 func generateScenes(scripts []domain.SceneScript, audio []domain.AudioSegment) []sceneEntry {
 	durMap := make(map[string]float64, len(audio))

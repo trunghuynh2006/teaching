@@ -1,5 +1,5 @@
-// Package pipeline orchestrates the lesson-plan generation steps.
-package pipeline
+// Package lessonplan generates a VideoPlan (audio track + scene timeline) from a LessonContent.
+package lessonplan
 
 import (
 	"context"
@@ -7,7 +7,17 @@ import (
 	"net/http"
 	"time"
 
-	"lesson-plan-generator/internal/domain"
+	"t2t.dev/lessonplan/domain"
+)
+
+// Re-export domain types so callers only need to import t2t.dev/lessonplan.
+type (
+	LessonContent     = domain.LessonContent
+	NarrationSegment  = domain.NarrationSegment
+	SceneScript       = domain.SceneScript
+	AudioSegment      = domain.AudioSegment
+	AudioTrack        = domain.AudioTrack
+	VideoPlan         = domain.VideoPlan
 )
 
 // Generator holds configuration and runs the full plan pipeline.
@@ -27,17 +37,13 @@ func New(apiKey, voice, outputDir string) *Generator {
 	}
 }
 
-func (g *Generator) GeneratePlan(ctx context.Context, lessonID string) (domain.VideoPlan, error) {
-	// 1. Load lesson
-	lesson, err := loadLesson(lessonID)
-	if err != nil {
-		return domain.VideoPlan{}, fmt.Errorf("load: %w", err)
-	}
+func (g *Generator) GeneratePlan(ctx context.Context, lesson domain.LessonContent) (domain.VideoPlan, error) {
+	lessonID := lesson.LessonID
 
-	// 2. Split narration
+	// 1. Split narration
 	segments := splitNarration(lesson)
 
-	// 3 & 4. Generate TTS + measure durations
+	// 2 & 3. Generate TTS + measure durations
 	audioSegments, err := g.generateTTS(ctx, segments, lessonID)
 	if err != nil {
 		return domain.VideoPlan{}, fmt.Errorf("tts: %w", err)
@@ -49,15 +55,15 @@ func (g *Generator) GeneratePlan(ctx context.Context, lessonID string) (domain.V
 		return domain.VideoPlan{}, fmt.Errorf("concatenate: %w", err)
 	}
 
-	// 5. Map scene scripts → (script, duration)
+	// 4. Map scene scripts → (script, duration)
 	sceneData := generateScenes(lesson.SceneScripts, audioSegments)
 
-	// 6. Compute video timeline + assign audio start times
+	// 5. Compute video timeline + assign audio start times
 	scenes, timedSegments, err := computeTimeline(sceneData, audioSegments)
 	if err != nil {
 		return domain.VideoPlan{}, fmt.Errorf("timeline: %w", err)
 	}
 
-	// 7. Assemble final VideoPlan
+	// 6. Assemble final VideoPlan
 	return assemble(lessonID, timedSegments, fullAudioFile, scenes), nil
 }

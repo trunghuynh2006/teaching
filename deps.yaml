@@ -15,18 +15,12 @@ services:
   api2:
     port: 8000
     source_dir: apps/api2
-    may_call: [ai, lesson-plan-generator]
+    may_call: [ai]
     # web's port appears in CORS AllowedOrigin config — not an outbound call
     cors_from: [web]
 
   ai:
     port: 8100
     source_dir: apps/ai
-    may_call: []
-    cors_from: [web]
-
-  lesson-plan-generator:
-    port: 8200
-    source_dir: apps/lesson-plan-generator
     may_call: []
     cors_from: [web]
