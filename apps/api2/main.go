@@ -59,6 +59,7 @@ func main() {
 		Queries:        queries,
 		AllowedOrigin:  "http://localhost:5173",
 		UploadDir:      getenv("UPLOAD_DIR", "./uploads"),
+		OpenAIKey:      getenv("OPENAI_API_KEY", ""),
 	}
 
 	application := &app{
@@ -92,6 +93,7 @@ func main() {
 	mux.HandleFunc("POST /recordings/sessions", handler.Auth(handler.CreateRecordingSession))
 	mux.HandleFunc("POST /recordings/sessions/{id}/chunks", handler.Auth(handler.UploadChunk))
 	mux.HandleFunc("POST /recordings/sessions/{id}/finalize", handler.Auth(handler.FinalizeRecording))
+	mux.HandleFunc("GET /audio-records", handler.Auth(handler.ListAudioRecords))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)

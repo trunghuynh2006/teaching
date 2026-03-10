@@ -25,3 +25,14 @@ CREATE TABLE IF NOT EXISTS skills (
 );
 
 CREATE INDEX IF NOT EXISTS idx_skills_created_time ON skills (created_time DESC);
+
+CREATE TABLE IF NOT EXISTS audio_records (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL DEFAULT 0,
+    transcript TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audio_records_user_id ON audio_records (user_id);

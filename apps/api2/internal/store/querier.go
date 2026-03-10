@@ -10,6 +10,11 @@ import (
 
 type Querier interface {
 	ArchiveSkillByID(ctx context.Context, arg ArchiveSkillByIDParams) (Skill, error)
+	CreateAudioRecord(ctx context.Context, arg CreateAudioRecordParams) (AudioRecord, error)
+	InitAudioRecordsTable(ctx context.Context) error
+	InitAudioRecordsUserIndex(ctx context.Context) error
+	ListAudioRecords(ctx context.Context) ([]AudioRecord, error)
+	ListAudioRecordsByUser(ctx context.Context, userID string) ([]AudioRecord, error)
 	CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	GetSkillByID(ctx context.Context, id string) (Skill, error)

@@ -9,6 +9,132 @@ import (
 	"context"
 )
 
+const initAudioRecordsTable = `-- name: InitAudioRecordsTable :exec
+CREATE TABLE IF NOT EXISTS audio_records (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL DEFAULT 0,
+    transcript TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+)
+`
+
+func (q *Queries) InitAudioRecordsTable(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initAudioRecordsTable)
+	return err
+}
+
+const initAudioRecordsUserIndex = `-- name: InitAudioRecordsUserIndex :exec
+CREATE INDEX IF NOT EXISTS idx_audio_records_user_id ON audio_records (user_id)
+`
+
+func (q *Queries) InitAudioRecordsUserIndex(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initAudioRecordsUserIndex)
+	return err
+}
+
+const createAudioRecord = `-- name: CreateAudioRecord :one
+INSERT INTO audio_records (id, user_id, filename, file_size, transcript)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, user_id, filename, file_size, transcript, created_at
+`
+
+type CreateAudioRecordParams struct {
+	ID         string `json:"id"`
+	UserID     string `json:"user_id"`
+	Filename   string `json:"filename"`
+	FileSize   int64  `json:"file_size"`
+	Transcript string `json:"transcript"`
+}
+
+func (q *Queries) CreateAudioRecord(ctx context.Context, arg CreateAudioRecordParams) (AudioRecord, error) {
+	row := q.db.QueryRow(ctx, createAudioRecord,
+		arg.ID,
+		arg.UserID,
+		arg.Filename,
+		arg.FileSize,
+		arg.Transcript,
+	)
+	var i AudioRecord
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Filename,
+		&i.FileSize,
+		&i.Transcript,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listAudioRecords = `-- name: ListAudioRecords :many
+SELECT id, user_id, filename, file_size, transcript, created_at
+FROM audio_records
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListAudioRecords(ctx context.Context) ([]AudioRecord, error) {
+	rows, err := q.db.Query(ctx, listAudioRecords)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AudioRecord
+	for rows.Next() {
+		var i AudioRecord
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Filename,
+			&i.FileSize,
+			&i.Transcript,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAudioRecordsByUser = `-- name: ListAudioRecordsByUser :many
+SELECT id, user_id, filename, file_size, transcript, created_at
+FROM audio_records
+WHERE user_id = $1
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListAudioRecordsByUser(ctx context.Context, userID string) ([]AudioRecord, error) {
+	rows, err := q.db.Query(ctx, listAudioRecordsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AudioRecord
+	for rows.Next() {
+		var i AudioRecord
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Filename,
+			&i.FileSize,
+			&i.Transcript,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const archiveSkillByID = `-- name: ArchiveSkillByID :one
 UPDATE skills
 SET status = 'archived',

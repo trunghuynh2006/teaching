@@ -127,6 +127,35 @@ SET status = 'archived',
 WHERE id = $1
 RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time;
 
+-- name: InitAudioRecordsTable :exec
+CREATE TABLE IF NOT EXISTS audio_records (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL DEFAULT 0,
+    transcript TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- name: InitAudioRecordsUserIndex :exec
+CREATE INDEX IF NOT EXISTS idx_audio_records_user_id ON audio_records (user_id);
+
+-- name: CreateAudioRecord :one
+INSERT INTO audio_records (id, user_id, filename, file_size, transcript)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, user_id, filename, file_size, transcript, created_at;
+
+-- name: ListAudioRecords :many
+SELECT id, user_id, filename, file_size, transcript, created_at
+FROM audio_records
+ORDER BY created_at DESC;
+
+-- name: ListAudioRecordsByUser :many
+SELECT id, user_id, filename, file_size, transcript, created_at
+FROM audio_records
+WHERE user_id = $1
+ORDER BY created_at DESC;
+
 -- name: MoveSkillToDraftByID :one
 UPDATE skills
 SET status = 'draft',

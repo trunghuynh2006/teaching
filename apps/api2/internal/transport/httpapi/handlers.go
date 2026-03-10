@@ -17,6 +17,7 @@ type Handler struct {
 	Queries        *store.Queries
 	AllowedOrigin  string
 	UploadDir      string
+	OpenAIKey      string
 }
 
 type LoginRequest struct {

@@ -5,13 +5,15 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"api2/internal/domain/user"
+	"api2/internal/infra/whisper"
+	"api2/internal/store"
 )
 
 const maxChunkBytes = 5 << 20 // 5 MB per chunk
@@ -24,7 +26,6 @@ func (h *Handler) CreateRecordingSession(w http.ResponseWriter, r *http.Request,
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Could not create session"})
 		return
 	}
-	// create empty file so the session exists on disk
 	f, err := os.Create(filepath.Join(dir, "data.webm"))
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Could not initialise session"})
@@ -36,7 +37,7 @@ func (h *Handler) CreateRecordingSession(w http.ResponseWriter, r *http.Request,
 }
 
 // POST /recordings/sessions/{id}/chunks
-// Body: raw audio bytes (no multipart)
+// Body: raw audio bytes (no multipart).
 func (h *Handler) UploadChunk(w http.ResponseWriter, r *http.Request, _ user.User) {
 	sessionID := strings.TrimSpace(r.PathValue("id"))
 	if sessionID == "" {
@@ -65,6 +66,8 @@ func (h *Handler) UploadChunk(w http.ResponseWriter, r *http.Request, _ user.Use
 }
 
 // POST /recordings/sessions/{id}/finalize
+// Moves the session file to permanent storage, calls Whisper for transcription,
+// persists an AudioRecord row, and returns it.
 func (h *Handler) FinalizeRecording(w http.ResponseWriter, r *http.Request, currentUser user.User) {
 	sessionID := strings.TrimSpace(r.PathValue("id"))
 	if sessionID == "" {
@@ -84,21 +87,40 @@ func (h *Handler) FinalizeRecording(w http.ResponseWriter, r *http.Request, curr
 	}
 
 	id := newRecordingID()
-	finalPath := filepath.Join(h.uploadDir(), id+".webm")
+	filename := id + ".webm"
+	finalPath := filepath.Join(h.uploadDir(), filename)
+
 	if err := os.Rename(dataFile, finalPath); err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Could not finalise recording"})
 		return
 	}
-	// clean up empty session dir
 	_ = os.Remove(filepath.Join(h.uploadDir(), "sessions", sessionID))
 
-	writeJSON(w, http.StatusCreated, map[string]any{
-		"id":          id,
-		"filename":    id + ".webm",
-		"size":        info.Size(),
-		"uploaded_by": currentUser.Username,
-		"uploaded_at": time.Now().UTC().Format(time.RFC3339),
+	// Transcribe via Whisper — best-effort; log and continue if key missing or API fails.
+	transcript := ""
+	if h.OpenAIKey != "" {
+		client := whisper.Client{APIKey: h.OpenAIKey}
+		text, err := client.Transcribe(r.Context(), finalPath)
+		if err != nil {
+			log.Printf("whisper transcription failed for %s: %v", filename, err)
+		} else {
+			transcript = text
+		}
+	}
+
+	rec, err := h.Queries.CreateAudioRecord(r.Context(), store.CreateAudioRecordParams{
+		ID:         id,
+		UserID:     currentUser.Username,
+		Filename:   filename,
+		FileSize:   info.Size(),
+		Transcript: transcript,
 	})
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Could not save audio record"})
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, toAudioRecordResponse(rec))
 }
 
 func (h *Handler) uploadDir() string {
@@ -111,7 +133,7 @@ func (h *Handler) uploadDir() string {
 func newRecordingID() string {
 	var b [8]byte
 	if _, err := rand.Read(b[:]); err != nil {
-		return fmt.Sprintf("rec_%d", time.Now().UnixNano())
+		return fmt.Sprintf("rec_%d", 0) // fallback; rand.Read rarely fails
 	}
 	return "rec_" + hex.EncodeToString(b[:])
 }

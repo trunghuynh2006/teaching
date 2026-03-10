@@ -46,6 +46,12 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitSkillsCreatedTimeIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitAudioRecordsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitAudioRecordsUserIndex(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

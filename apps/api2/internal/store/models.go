@@ -21,6 +21,15 @@ type Skill struct {
 	UpdatedTime pgtype.Timestamptz `json:"updated_time"`
 }
 
+type AudioRecord struct {
+	ID         string             `json:"id"`
+	UserID     string             `json:"user_id"`
+	Filename   string             `json:"filename"`
+	FileSize   int64              `json:"file_size"`
+	Transcript string             `json:"transcript"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+}
+
 type User struct {
 	ID             int32  `json:"id"`
 	Username       string `json:"username"`
