@@ -3,7 +3,33 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { API_URL } from '../config'
 import { SkillInput } from '../models/sharedModelsPackages/core'
 
-const DEFAULT_FORM = {
+interface SkillItem {
+  id: string
+  title: string
+  description?: string
+  difficulty?: string
+  tags?: string[]
+  status?: string
+  created_by?: string
+  created_time?: string
+  updated_by?: string
+  updated_time?: string
+}
+
+interface FormState {
+  title: string
+  description: string
+  difficulty: string
+  tags: string
+}
+
+interface TeacherSkillManagerProps {
+  token: string
+  mode?: 'list' | 'form'
+  onUnauthorized?: () => void
+}
+
+const DEFAULT_FORM: FormState = {
   title: '',
   description: '',
   difficulty: 'beginner',
@@ -14,16 +40,18 @@ const SKILL_STATUS = {
   PUBLISHED: 'published',
   ARCHIVED: 'archived',
   DRAFT: 'draft'
-}
+} as const
 
-function parseTags(rawTags) {
+type SkillStatus = typeof SKILL_STATUS[keyof typeof SKILL_STATUS]
+
+function parseTags(rawTags: string): string[] {
   return rawTags
     .split(',')
     .map((tag) => tag.trim())
     .filter((tag) => tag.length > 0)
 }
 
-function toSkillInputPayload(form) {
+function toSkillInputPayload(form: FormState) {
   return new SkillInput({
     title: form.title.trim(),
     description: form.description.trim(),
@@ -32,7 +60,7 @@ function toSkillInputPayload(form) {
   }).toJSON()
 }
 
-function toFormState(skill) {
+function toFormState(skill: SkillItem): FormState {
   return {
     title: skill.title ?? '',
     description: skill.description ?? '',
@@ -41,7 +69,7 @@ function toFormState(skill) {
   }
 }
 
-function formatDate(dateTime) {
+function formatDate(dateTime: string | undefined): string {
   if (!dateTime) {
     return '-'
   }
@@ -54,7 +82,7 @@ function formatDate(dateTime) {
   return parsed.toLocaleString()
 }
 
-async function parseError(response) {
+async function parseError(response: Response): Promise<string> {
   try {
     const payload = await response.json()
     if (payload?.detail) {
@@ -67,7 +95,7 @@ async function parseError(response) {
   return response.statusText || 'Request failed'
 }
 
-function getSkillStatus(skill) {
+function getSkillStatus(skill: SkillItem): SkillStatus {
   const status = typeof skill?.status === 'string' ? skill.status.toLowerCase() : ''
   if (status === SKILL_STATUS.PUBLISHED || status === SKILL_STATUS.ARCHIVED || status === SKILL_STATUS.DRAFT) {
     return status
@@ -75,7 +103,7 @@ function getSkillStatus(skill) {
   return SKILL_STATUS.DRAFT
 }
 
-function formatSkillStatus(status) {
+function formatSkillStatus(status: SkillStatus): string {
   if (status === SKILL_STATUS.PUBLISHED) {
     return 'Published'
   }
@@ -85,11 +113,11 @@ function formatSkillStatus(status) {
   return 'Draft'
 }
 
-export default function TeacherSkillManager({ token, mode = 'list' }) {
+export default function TeacherSkillManager({ token, mode = 'list', onUnauthorized }: TeacherSkillManagerProps) {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [skills, setSkills] = useState([])
-  const [form, setForm] = useState(DEFAULT_FORM)
+  const [skills, setSkills] = useState<SkillItem[]>([])
+  const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
   const [loadingList, setLoadingList] = useState(false)
   const [loadingForm, setLoadingForm] = useState(false)
@@ -114,6 +142,10 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
       const response = await fetch(`${API_URL}/skills`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (response.status === 401) {
+        onUnauthorized?.()
+        return
+      }
       if (!response.ok) {
         throw new Error(await parseError(response))
       }
@@ -121,11 +153,11 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
       const payload = await response.json()
       setSkills(Array.isArray(payload) ? payload : [])
     } catch (err) {
-      setError(err.message || 'Failed to load skills')
+      setError((err as Error).message || 'Failed to load skills')
     } finally {
       setLoadingList(false)
     }
-  }, [token])
+  }, [token, onUnauthorized])
 
   useEffect(() => {
     if (!isListMode) {
@@ -151,22 +183,26 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
         const response = await fetch(`${API_URL}/skills/${editSkillId}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
+        if (response.status === 401) {
+          onUnauthorized?.()
+          return
+        }
         if (!response.ok) {
           throw new Error(await parseError(response))
         }
 
-        const payload = await response.json()
+        const payload: SkillItem = await response.json()
         setEditingId(payload.id || editSkillId)
         setForm(toFormState(payload))
       } catch (err) {
-        setError(err.message || 'Failed to load skill')
+        setError((err as Error).message || 'Failed to load skill')
       } finally {
         setLoadingForm(false)
       }
     }
 
     loadSkill()
-  }, [editSkillId, isFormMode, token])
+  }, [editSkillId, isFormMode, token, onUnauthorized])
 
   const clearEdit = ({ clearFeedback = true } = {}) => {
     setSearchParams({})
@@ -177,13 +213,13 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
     resetForm()
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError('')
     setNotice('')
 
     const payload = toSkillInputPayload(form)
-    if (!SkillInput.validate(payload)) {
+    if (!SkillInput.validate(payload as Record<string, unknown>)) {
       setError('Invalid skill payload. Check form values and try again.')
       return
     }
@@ -202,6 +238,10 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
         }
       )
 
+      if (response.status === 401) {
+        onUnauthorized?.()
+        return
+      }
       if (!response.ok) {
         throw new Error(await parseError(response))
       }
@@ -209,17 +249,27 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
       setNotice(isEditing ? 'Skill updated' : 'Skill created')
       clearEdit({ clearFeedback: false })
     } catch (err) {
-      setError(err.message || 'Failed to save skill')
+      setError((err as Error).message || 'Failed to save skill')
     } finally {
       setSaving(false)
     }
   }
 
-  const handleEdit = (skill) => {
+  const handleEdit = (skill: SkillItem) => {
     navigate(`../create?edit=${encodeURIComponent(skill.id)}`, { relative: 'path' })
   }
 
-  const updateSkillStatus = async ({ skill, endpoint, successNotice, failureNotice }) => {
+  const updateSkillStatus = async ({
+    skill,
+    endpoint,
+    successNotice,
+    failureNotice
+  }: {
+    skill: SkillItem
+    endpoint: string
+    successNotice: string
+    failureNotice: string
+  }) => {
     setError('')
     setNotice('')
     try {
@@ -227,6 +277,10 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (response.status === 401) {
+        onUnauthorized?.()
+        return
+      }
       if (!response.ok) {
         throw new Error(await parseError(response))
       }
@@ -234,11 +288,11 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
       setNotice(successNotice)
       await fetchSkills()
     } catch (err) {
-      setError(err.message || failureNotice)
+      setError((err as Error).message || failureNotice)
     }
   }
 
-  const handlePublish = async (skill) => {
+  const handlePublish = async (skill: SkillItem) => {
     await updateSkillStatus({
       skill,
       endpoint: 'publish',
@@ -247,7 +301,7 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
     })
   }
 
-  const handleArchive = async (skill) => {
+  const handleArchive = async (skill: SkillItem) => {
     if (!window.confirm(`Archive skill "${skill.title}"?`)) {
       return
     }
@@ -259,7 +313,7 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
     })
   }
 
-  const handleReturnToDraft = async (skill) => {
+  const handleReturnToDraft = async (skill: SkillItem) => {
     await updateSkillStatus({
       skill,
       endpoint: 'draft',
@@ -345,7 +399,7 @@ export default function TeacherSkillManager({ token, mode = 'list' }) {
                   {saving ? 'Saving...' : isEditing ? 'Update Skill' : 'Create Skill'}
                 </button>
                 {isEditing && (
-                  <button type="button" className="secondary" onClick={clearEdit}>
+                  <button type="button" className="secondary" onClick={() => clearEdit()}>
                     Cancel Edit
                   </button>
                 )}

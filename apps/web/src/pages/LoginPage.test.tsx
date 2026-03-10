@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import LoginPage from './LoginPage'
 
-async function fillAndSubmit(username, password) {
+async function fillAndSubmit(username: string, password: string) {
   const user = userEvent.setup()
   await user.type(screen.getByPlaceholderText('Username'), username)
   await user.type(screen.getByPlaceholderText('Password'), password)
@@ -38,13 +38,13 @@ describe('LoginPage', () => {
 
   it('calls onLogin with token and user on successful login', async () => {
     const onLogin = vi.fn()
-    global.fetch.mockResolvedValueOnce({
+    vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         access_token: 'tok123',
         user: { role: 'teacher', full_name: 'John' }
       })
-    })
+    } as Response)
 
     render(<LoginPage onLogin={onLogin} />)
     await fillAndSubmit('teacher_john', 'Teach1234!')
@@ -57,10 +57,10 @@ describe('LoginPage', () => {
   })
 
   it('shows error message on failed login', async () => {
-    global.fetch.mockResolvedValueOnce({
+    vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ detail: 'Invalid credentials' })
-    })
+    } as Response)
 
     render(<LoginPage onLogin={vi.fn()} />)
     await fillAndSubmit('bad_user', 'wrong')
@@ -71,10 +71,10 @@ describe('LoginPage', () => {
   })
 
   it('shows generic error when response is missing required fields', async () => {
-    global.fetch.mockResolvedValueOnce({
+    vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ access_token: '', user: null })
-    })
+    } as Response)
 
     render(<LoginPage onLogin={vi.fn()} />)
     await fillAndSubmit('teacher_john', 'Teach1234!')
@@ -85,7 +85,7 @@ describe('LoginPage', () => {
   })
 
   it('shows error when fetch throws a network error', async () => {
-    global.fetch.mockRejectedValueOnce(new Error('Network error'))
+    vi.mocked(global.fetch).mockRejectedValueOnce(new Error('Network error'))
 
     render(<LoginPage onLogin={vi.fn()} />)
     await fillAndSubmit('teacher_john', 'Teach1234!')

@@ -1,0 +1,18 @@
+import { Navigate, Route, Routes } from 'react-router-dom'
+import TeacherSkillManager from './TeacherSkillManager'
+
+interface TeacherContentStudioProps {
+  token: string
+  onUnauthorized: () => void
+}
+
+export default function TeacherContentStudio({ token, onUnauthorized }: TeacherContentStudioProps) {
+  return (
+    <Routes>
+      <Route index element={<Navigate to="skills" replace />} />
+      <Route path="skills" element={<TeacherSkillManager token={token} mode="list" onUnauthorized={onUnauthorized} />} />
+      <Route path="create" element={<TeacherSkillManager token={token} mode="form" onUnauthorized={onUnauthorized} />} />
+      <Route path="*" element={<Navigate to="skills" replace />} />
+    </Routes>
+  )
+}

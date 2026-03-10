@@ -1,6 +1,12 @@
 import TeacherContentStudio from '../components/TeacherContentStudio'
 
-export function LearnerLanding({ activeItem }) {
+interface LandingProps {
+  activeItem?: string
+  token?: string
+  onUnauthorized?: () => void
+}
+
+export function LearnerLanding({ activeItem }: LandingProps) {
   return (
     <section className="panel">
       <h2>Learner Home</h2>
@@ -15,13 +21,13 @@ export function LearnerLanding({ activeItem }) {
   )
 }
 
-export function TeacherLanding({ activeItem, token }) {
+export function TeacherLanding({ activeItem, token, onUnauthorized }: LandingProps) {
   return (
     <section className="panel">
       <h2>Teacher Workspace</h2>
       <p>Manage classes, review submissions, and publish engaging lesson plans.</p>
       {activeItem === 'Content Studio' ? (
-        <TeacherContentStudio token={token} />
+        <TeacherContentStudio token={token!} onUnauthorized={onUnauthorized!} />
       ) : (
         <div className="cards-grid">
           <article className="card glow">Pending Grading: 14 submissions</article>
@@ -34,7 +40,7 @@ export function TeacherLanding({ activeItem, token }) {
   )
 }
 
-export function AdminLanding({ activeItem }) {
+export function AdminLanding({ activeItem }: LandingProps) {
   return (
     <section className="panel">
       <h2>Admin Control Center</h2>
@@ -49,11 +55,11 @@ export function AdminLanding({ activeItem }) {
   )
 }
 
-export function ParentLanding({ activeItem }) {
+export function ParentLanding({ activeItem }: LandingProps) {
   return (
     <section className="panel">
       <h2>Parent Snapshot</h2>
-      <p>Stay informed on your child’s progress, attendance, and teacher feedback.</p>
+      <p>Stay informed on your child's progress, attendance, and teacher feedback.</p>
       <div className="cards-grid">
         <article className="card glow">Attendance: 96%</article>
         <article className="card">Latest Feedback: Great participation</article>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { API_URL } from '../config'
-import { MENU_BY_ROLE } from '../config/menu'
+import { MENU_BY_ROLE, Role } from '../config/menu'
 
 const DEMO_USERS = [
   'learner_alex / Pass1234!',
@@ -13,14 +13,31 @@ const DEMO_USERS = [
   'parent_david / Parent1234!'
 ]
 
-export default function LoginPage({ onLogin }) {
+interface User {
+  role?: string
+  Role?: string
+  full_name?: string
+  FullName?: string
+}
+
+interface LoginData {
+  token: string
+  user: User
+  defaultPath: string
+}
+
+interface LoginPageProps {
+  onLogin: (data: LoginData) => void
+}
+
+export default function LoginPage({ onLogin }: LoginPageProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
   const demoUsers = useMemo(() => DEMO_USERS, [])
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     try {
@@ -36,18 +53,18 @@ export default function LoginPage({ onLogin }) {
       }
 
       const data = await response.json()
-      const accessToken = data.access_token ?? data.AccessToken ?? ''
-      const userPayload = data.user ?? data.User ?? null
-      const role = userPayload?.role ?? userPayload?.Role ?? ''
+      const accessToken: string = data.access_token ?? data.AccessToken ?? ''
+      const userPayload: User | null = data.user ?? data.User ?? null
+      const role: string = userPayload?.role ?? userPayload?.Role ?? ''
 
       if (!accessToken || !userPayload || !role) {
         throw new Error('Login response is missing required fields')
       }
 
-      const defaultPath = MENU_BY_ROLE[role]?.[0]?.path || '/'
+      const defaultPath = MENU_BY_ROLE[role as Role]?.[0]?.path || '/'
       onLogin({ token: accessToken, user: userPayload, defaultPath })
     } catch (err) {
-      setError(err.message)
+      setError((err as Error).message)
     }
   }
 

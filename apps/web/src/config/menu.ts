@@ -1,4 +1,13 @@
-export const MENU_BY_ROLE = {
+export interface MenuItem {
+  label: string
+  path: string
+  nested?: boolean
+  children?: MenuItem[]
+}
+
+export type Role = 'learner' | 'teacher' | 'admin' | 'parent'
+
+export const MENU_BY_ROLE: Record<Role, MenuItem[]> = {
   learner: [
     { label: 'My Courses', path: '/learner/courses' },
     { label: 'Assignments', path: '/learner/assignments' },

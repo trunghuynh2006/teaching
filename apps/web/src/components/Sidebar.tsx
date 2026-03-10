@@ -1,4 +1,13 @@
-export default function Sidebar({ role, menuItems, activePath, onNavigate }) {
+import { MenuItem } from '../config/menu'
+
+interface SidebarProps {
+  role: string
+  menuItems: MenuItem[]
+  activePath: string
+  onNavigate: (path: string) => void
+}
+
+export default function Sidebar({ role, menuItems, activePath, onNavigate }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="brand">Study Platform</div>
