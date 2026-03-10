@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
-    "lint": "turbo run lint",
+    "lint": "python3 scripts/check_deps.py && turbo run lint",
     "generate:models": "go run ./scripts/generate_shared_models.go",
     "dev:web": "/home/trung/.nvm/versions/node/v22.16.0/bin/pnpm --filter web dev",
     "dev:api": "cd apps/api2 && go run .",
-    "dev:ai": "cd apps/ai && go run ."
+    "dev:ai": "cd apps/ai && go run .",
+    "dev:lesson-plan-generator": "cd apps/lesson-plan-generator && go run ."
   },
   "devDependencies": {
     "turbo": "^2.1.3"

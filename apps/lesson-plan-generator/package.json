@@ -1,0 +1,10 @@
+{
+  "name": "lesson-plan-generator",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "go run .",
+    "build": "go build ./...",
+    "lint": "echo 'lint not configured'"
+  }
+}

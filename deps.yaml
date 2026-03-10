@@ -1,0 +1,32 @@
+# Service dependency rules for the teaching platform monorepo.
+#
+# may_call: services this app is allowed to reach at runtime.
+# An empty list means the service only calls external APIs (OpenAI, etc.).
+#
+# The check_deps.py script enforces these rules by scanning each app's
+# source files for hardcoded port references to forbidden services.
+
+services:
+  web:
+    port: 5173
+    source_dir: apps/web/src
+    may_call: [api2]
+
+  api2:
+    port: 8000
+    source_dir: apps/api2
+    may_call: [ai, lesson-plan-generator]
+    # web's port appears in CORS AllowedOrigin config — not an outbound call
+    cors_from: [web]
+
+  ai:
+    port: 8100
+    source_dir: apps/ai
+    may_call: []
+    cors_from: [web]
+
+  lesson-plan-generator:
+    port: 8200
+    source_dir: apps/lesson-plan-generator
+    may_call: []
+    cors_from: [web]
