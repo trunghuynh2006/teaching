@@ -53,13 +53,7 @@ func main() {
 		log.Fatalf("failed to initialize cache schema: %v", err)
 	}
 
-	aiClient := openai.Client{
-		APIKey:     apiKey,
-		Model:      model,
-		BaseURL:    baseURL,
-		HTTPClient: &http.Client{Timeout: 45 * time.Second},
-		Prompts:    promptRegistry,
-	}
+	aiClient := openai.NewOpenAIClient(apiKey, model, baseURL, promptRegistry)
 	promptCache := postgres.NewPromptCache(queries, time.Duration(cacheTTLSeconds)*time.Second, cacheMaxEntries)
 
 	handler := &httpapi.Handler{
