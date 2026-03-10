@@ -89,7 +89,9 @@ func main() {
 	mux.HandleFunc("POST /skills/{id}/publish", handler.Auth(handler.PublishSkill))
 	mux.HandleFunc("POST /skills/{id}/archive", handler.Auth(handler.ArchiveSkill))
 	mux.HandleFunc("POST /skills/{id}/draft", handler.Auth(handler.MoveSkillToDraft))
-	mux.HandleFunc("POST /recordings", handler.Auth(handler.UploadRecording))
+	mux.HandleFunc("POST /recordings/sessions", handler.Auth(handler.CreateRecordingSession))
+	mux.HandleFunc("POST /recordings/sessions/{id}/chunks", handler.Auth(handler.UploadChunk))
+	mux.HandleFunc("POST /recordings/sessions/{id}/finalize", handler.Auth(handler.FinalizeRecording))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)

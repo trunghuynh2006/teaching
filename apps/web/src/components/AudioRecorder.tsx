@@ -1,20 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
 
-type RecordingState = 'idle' | 'recording' | 'stopped'
-type UploadStatus = 'idle' | 'uploading' | 'done' | 'error'
+type RecordingState = 'idle' | 'recording' | 'finalizing' | 'done' | 'error'
 
 interface AudioRecorderProps {
   token: string
   onUnauthorized: () => void
 }
 
+interface RecordingResult {
+  filename: string
+  size: number
+}
+
 export default function AudioRecorder({ token, onUnauthorized }: AudioRecorderProps) {
   const [state, setState] = useState<RecordingState>('idle')
   const [duration, setDuration] = useState(0)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle')
-  const [uploadResult, setUploadResult] = useState<string | null>(null)
+  const [result, setResult] = useState<RecordingResult | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -22,7 +26,13 @@ export default function AudioRecorder({ token, onUnauthorized }: AudioRecorderPr
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animFrameRef = useRef<number>(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const chunksRef = useRef<Blob[]>([])
+  // local chunks for playback
+  const localChunksRef = useRef<Blob[]>([])
+  // in-flight chunk upload promises
+  const pendingUploadsRef = useRef<Promise<void>[]>([])
+  const sessionIdRef = useRef<string | null>(null)
+  const tokenRef = useRef(token)
+  tokenRef.current = token
 
   const drawWaveform = useCallback(() => {
     const canvas = canvasRef.current
@@ -50,7 +60,6 @@ export default function AudioRecorder({ token, onUnauthorized }: AudioRecorderPr
         const barH = Math.max(4, val * H * 0.88)
         const x = i * (barW + 2)
         const y = (H - barH) / 2
-
         ctx.fillStyle = `rgba(14, 133, 118, ${0.45 + val * 0.55})`
         ctx.beginPath()
         ctx.roundRect(x, y, barW, barH, 3)
@@ -61,27 +70,65 @@ export default function AudioRecorder({ token, onUnauthorized }: AudioRecorderPr
     draw()
   }, [])
 
+  const authHeaders = useCallback(
+    () => ({ Authorization: `Bearer ${tokenRef.current}` }),
+    []
+  )
+
+  const uploadChunk = useCallback(
+    (sessionId: string, chunk: Blob): Promise<void> => {
+      return fetch(`${API_URL}/recordings/sessions/${sessionId}/chunks`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: chunk,
+      }).then((res) => {
+        if (res.status === 401) onUnauthorized()
+      })
+    },
+    [authHeaders, onUnauthorized]
+  )
+
   const stopRecording = useCallback(() => {
     cancelAnimationFrame(animFrameRef.current)
     if (timerRef.current) clearInterval(timerRef.current)
     mediaRecorderRef.current?.stop()
     streamRef.current?.getTracks().forEach((t) => t.stop())
-    setState('stopped')
   }, [])
 
   const startRecording = useCallback(async () => {
-    // Clean up previous session
+    // clean up previous
     cancelAnimationFrame(animFrameRef.current)
     if (timerRef.current) clearInterval(timerRef.current)
     streamRef.current?.getTracks().forEach((t) => t.stop())
     if (audioUrl) URL.revokeObjectURL(audioUrl)
 
     setAudioUrl(null)
-    setUploadStatus('idle')
-    setUploadResult(null)
+    setResult(null)
+    setErrorMsg(null)
     setDuration(0)
-    chunksRef.current = []
+    localChunksRef.current = []
+    pendingUploadsRef.current = []
+    sessionIdRef.current = null
 
+    // 1. Create session
+    let sessionId: string
+    try {
+      const res = await fetch(`${API_URL}/recordings/sessions`, {
+        method: 'POST',
+        headers: authHeaders(),
+      })
+      if (res.status === 401) { onUnauthorized(); return }
+      if (!res.ok) { setState('error'); setErrorMsg('Could not start session'); return }
+      const data = await res.json()
+      sessionId = data.session_id
+      sessionIdRef.current = sessionId
+    } catch {
+      setState('error')
+      setErrorMsg('Network error — could not create recording session')
+      return
+    }
+
+    // 2. Mic + waveform
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
@@ -94,55 +141,63 @@ export default function AudioRecorder({ token, onUnauthorized }: AudioRecorderPr
       analyserRef.current = analyser
 
       const recorder = new MediaRecorder(stream)
+
       recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data)
-      }
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
-        setAudioUrl(URL.createObjectURL(blob))
+        if (e.data.size === 0) return
+        localChunksRef.current.push(e.data)
+        // upload chunk immediately
+        pendingUploadsRef.current.push(uploadChunk(sessionId, e.data))
       }
 
-      recorder.start()
+      recorder.onstop = async () => {
+        // build local playback URL
+        const blob = new Blob(localChunksRef.current, { type: 'audio/webm' })
+        setAudioUrl(URL.createObjectURL(blob))
+
+        setState('finalizing')
+
+        // wait for all in-flight chunk uploads
+        try {
+          await Promise.all(pendingUploadsRef.current)
+        } catch {
+          setState('error')
+          setErrorMsg('Some chunks failed to upload')
+          return
+        }
+
+        // finalize
+        try {
+          const res = await fetch(
+            `${API_URL}/recordings/sessions/${sessionId}/finalize`,
+            { method: 'POST', headers: authHeaders() }
+          )
+          if (res.status === 401) { onUnauthorized(); return }
+          const data = await res.json()
+          if (!res.ok) {
+            setState('error')
+            setErrorMsg(data.detail || 'Finalize failed')
+            return
+          }
+          setResult({ filename: data.filename, size: data.size })
+          setState('done')
+        } catch {
+          setState('error')
+          setErrorMsg('Network error during finalize')
+        }
+      }
+
+      // timeslice: emit a chunk every second while recording
+      recorder.start(1000)
       mediaRecorderRef.current = recorder
       setState('recording')
 
       timerRef.current = setInterval(() => setDuration((d) => d + 1), 1000)
       drawWaveform()
     } catch {
-      alert('Could not access microphone. Please allow microphone permission and try again.')
+      setState('error')
+      setErrorMsg('Could not access microphone — please allow permission and try again')
     }
-  }, [audioUrl, drawWaveform])
-
-  const uploadRecording = useCallback(async () => {
-    if (!chunksRef.current.length) return
-    const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
-    const form = new FormData()
-    form.append('audio', blob, 'recording.webm')
-
-    setUploadStatus('uploading')
-    try {
-      const res = await fetch(`${API_URL}/recordings`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: form,
-      })
-      if (res.status === 401) {
-        onUnauthorized()
-        return
-      }
-      const data = await res.json()
-      if (!res.ok) {
-        setUploadStatus('error')
-        setUploadResult(data.detail || 'Upload failed')
-        return
-      }
-      setUploadStatus('done')
-      setUploadResult(`Saved: ${data.filename} (${formatBytes(data.size)})`)
-    } catch {
-      setUploadStatus('error')
-      setUploadResult('Network error — check your connection and try again.')
-    }
-  }, [token, onUnauthorized])
+  }, [audioUrl, authHeaders, drawWaveform, onUnauthorized, uploadChunk])
 
   useEffect(() => {
     return () => {
@@ -152,41 +207,52 @@ export default function AudioRecorder({ token, onUnauthorized }: AudioRecorderPr
     }
   }, [])
 
+  const canRecord = state === 'idle' || state === 'done' || state === 'error'
+  const isRecording = state === 'recording'
+  const isFinalizing = state === 'finalizing'
+
   return (
     <div className="audio-recorder">
       <div className="recorder-canvas-wrap">
         <canvas ref={canvasRef} width={520} height={88} className="recorder-canvas" />
         {state === 'idle' && <p className="recorder-hint">Press record to start</p>}
-        {state === 'recording' && (
-          <span className="recorder-timer">{formatTime(duration)}</span>
-        )}
+        {isRecording && <span className="recorder-timer">{formatTime(duration)}</span>}
+        {isFinalizing && <p className="recorder-hint">Saving…</p>}
       </div>
 
       <div className="recorder-controls">
-        {state !== 'recording' ? (
+        {canRecord && (
           <button className="rec-btn" onClick={startRecording}>
             <span className="rec-dot" />
-            {state === 'stopped' ? 'Re-record' : 'Record'}
+            {state === 'done' || state === 'error' ? 'Re-record' : 'Record'}
           </button>
-        ) : (
+        )}
+        {isRecording && (
           <button className="rec-btn rec-btn--stop" onClick={stopRecording}>
             <span className="rec-square" />
             Stop
           </button>
         )}
+        {isFinalizing && (
+          <button className="rec-btn" disabled>
+            <span className="rec-dot" />
+            Saving…
+          </button>
+        )}
       </div>
 
-      {audioUrl && state === 'stopped' && (
+      {audioUrl && (
         <div className="recorder-playback">
           <audio src={audioUrl} controls />
-          <div className="recorder-upload-row">
-            <button onClick={uploadRecording} disabled={uploadStatus === 'uploading'}>
-              {uploadStatus === 'uploading' ? 'Uploading…' : 'Upload Recording'}
-            </button>
-          </div>
-          {uploadStatus === 'done' && <p className="notice">{uploadResult}</p>}
-          {uploadStatus === 'error' && <p className="error">{uploadResult}</p>}
+          {state === 'done' && result && (
+            <p className="notice">Saved: {result.filename} ({formatBytes(result.size)})</p>
+          )}
+          {state === 'error' && errorMsg && <p className="error">{errorMsg}</p>}
         </div>
+      )}
+
+      {state === 'error' && !audioUrl && errorMsg && (
+        <p className="error">{errorMsg}</p>
       )}
     </div>
   )
