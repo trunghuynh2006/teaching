@@ -429,6 +429,67 @@ button.danger {
   flex-wrap: wrap;
 }
 
+/* ── Audio Record List ───────────────────────────────────── */
+
+.ar-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ar-empty {
+  color: #7a92a3;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.ar-item {
+  background: #fff;
+  border: 1px solid #e2ecef;
+  border-radius: 12px;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ar-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ar-filename {
+  font-weight: 600;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.ar-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #5a7080;
+  margin: 0;
+}
+
+.ar-transcript {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  background: #f4f8fb;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.88rem;
+  color: #1e3040;
+  line-height: 1.55;
+}
+
+.ar-no-transcript {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #9aafbc;
+  font-style: italic;
+}
+
 /* ───────────────────────────────────────────────────────── */
 
 @keyframes pop-in {

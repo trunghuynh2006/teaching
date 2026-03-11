@@ -10,7 +10,14 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+	"unicode"
 )
+
+// minAudioBytes is the minimum file size we'll send to Whisper.
+// A WebM header alone is ~400 B; a 1-second Opus clip is ~8–16 KB.
+// Files below this threshold contain no meaningful audio.
+const minAudioBytes = 8192 // 8 KB
 
 type Client struct {
 	APIKey string
@@ -23,8 +30,18 @@ type transcribeResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// Transcribe sends an audio file to the OpenAI Whisper API and returns the transcript.
+// Transcribe sends an audio file to the OpenAI Whisper API and returns the
+// transcript. It returns ("", nil) when the file is too short or Whisper
+// produces a hallucinated response (emoji-only, punctuation-only, etc.).
 func (c *Client) Transcribe(ctx context.Context, audioPath string) (string, error) {
+	info, err := os.Stat(audioPath)
+	if err != nil {
+		return "", fmt.Errorf("stat audio: %w", err)
+	}
+	if info.Size() < minAudioBytes {
+		return "", nil // too short — no real speech
+	}
+
 	f, err := os.Open(audioPath)
 	if err != nil {
 		return "", fmt.Errorf("open audio: %w", err)
@@ -72,6 +89,25 @@ func (c *Client) Transcribe(ctx context.Context, audioPath string) (string, erro
 	if result.Error != nil {
 		return "", fmt.Errorf("whisper error: %s", result.Error.Message)
 	}
-	fmt.Printf("Whisper response: %s\n", result.Text)
-	return result.Text, nil
+
+	text := strings.TrimSpace(result.Text)
+	if isHallucination(text) {
+		return "", nil
+	}
+	return text, nil
+}
+
+// isHallucination returns true when Whisper's response contains no actual
+// letters or digits — i.e. it's only emoji, punctuation, or whitespace.
+// These are the characteristic hallucinations produced on silent audio.
+func isHallucination(text string) bool {
+	if text == "" {
+		return false
+	}
+	for _, r := range text {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			return false
+		}
+	}
+	return true
 }
