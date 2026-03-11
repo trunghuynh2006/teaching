@@ -25,12 +25,27 @@ type GenerateLessonInput struct {
 	Language    string
 }
 
+// GenerateAnkiCardsInput describes a request to generate Anki cards from source text.
+type GenerateAnkiCardsInput struct {
+	SourceText string
+	Language   string
+}
+
+// GeneratedAnkiCard is a suggested card returned by the AI before it is persisted.
+type GeneratedAnkiCard struct {
+	FrontText string   `json:"front_text"`
+	BackText  string   `json:"back_text"`
+	Tags      []string `json:"tags,omitempty"`
+}
+
 // Generator produces AI-generated curriculum content.
 type Generator interface {
 	// ListLessonTitles returns Count candidate lesson titles for the given skill.
 	ListLessonTitles(ctx context.Context, input ListTitlesInput) ([]string, error)
 	// GenerateLesson returns fully populated lesson content for a given title.
 	GenerateLesson(ctx context.Context, input GenerateLessonInput) (sharedmodels.Lesson, error)
+	// GenerateAnkiCards returns suggested Anki cards derived from the given source text.
+	GenerateAnkiCards(ctx context.Context, input GenerateAnkiCardsInput) ([]GeneratedAnkiCard, error)
 }
 
 // Cache stores and retrieves serialised generation results keyed by a prompt hash.

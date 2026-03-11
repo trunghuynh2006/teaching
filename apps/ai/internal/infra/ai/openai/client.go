@@ -91,6 +91,33 @@ func (c Client) GenerateLesson(ctx context.Context, input domaincontent.Generate
 	return lesson, nil
 }
 
+// GenerateAnkiCards calls the LLM to generate Anki card suggestions from source text.
+func (c Client) GenerateAnkiCards(ctx context.Context, input domaincontent.GenerateAnkiCardsInput) ([]domaincontent.GeneratedAnkiCard, error) {
+	userPrompt, err := c.Prompts.RenderGenerateAnkiCards(prompts.GenerateAnkiCardsData{
+		SourceText: input.SourceText,
+		Language:   input.Language,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+
+	var result struct {
+		Cards []domaincontent.GeneratedAnkiCard `json:"cards"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse anki cards response: %w", err)
+	}
+	if len(result.Cards) == 0 {
+		return nil, ErrUnexpectedResponse
+	}
+	return result.Cards, nil
+}
+
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	return c.LLM.Complete(ctx, llm.Request{
 		SystemPrompt: c.Prompts.SystemPrompt(),

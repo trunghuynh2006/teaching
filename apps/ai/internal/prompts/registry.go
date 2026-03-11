@@ -22,8 +22,11 @@ type Registry struct {
 	contentQualityConstraints string
 	lessonConstraints         string
 	lessonSchema              string
+	ankiCardsConstraints      string
+	ankiCardsSchema           string
 	listTitlesTmpl            *template.Template
 	generateLessonTmpl        *template.Template
+	generateAnkiCardsTmpl     *template.Template
 }
 
 // New loads all prompt files from the embedded filesystem and compiles templates.
@@ -64,11 +67,23 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	ankiCardsConstraints, err := read("files/constraints/anki-cards.md")
+	if err != nil {
+		return nil, err
+	}
+	ankiCardsSchema, err := read("files/schemas/anki-cards.json")
+	if err != nil {
+		return nil, err
+	}
 	listTitlesTmpl, err := parse("list-lesson-titles", "files/templates/list-lesson-titles.tmpl")
 	if err != nil {
 		return nil, err
 	}
 	generateLessonTmpl, err := parse("generate-lesson", "files/templates/generate-lesson.tmpl")
+	if err != nil {
+		return nil, err
+	}
+	generateAnkiCardsTmpl, err := parse("generate-anki-cards", "files/templates/generate-anki-cards.tmpl")
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +93,11 @@ func New() (*Registry, error) {
 		contentQualityConstraints: contentQuality,
 		lessonConstraints:         lessonConstraints,
 		lessonSchema:              lessonSchema,
+		ankiCardsConstraints:      ankiCardsConstraints,
+		ankiCardsSchema:           ankiCardsSchema,
 		listTitlesTmpl:            listTitlesTmpl,
 		generateLessonTmpl:        generateLessonTmpl,
+		generateAnkiCardsTmpl:     generateAnkiCardsTmpl,
 	}, nil
 }
 
@@ -120,6 +138,30 @@ type GenerateLessonData struct {
 	Audience    string
 	Difficulty  string
 	Language    string
+}
+
+// GenerateAnkiCardsData is the input data for the generate-anki-cards template.
+type GenerateAnkiCardsData struct {
+	SourceText string
+	Language   string
+}
+
+// RenderGenerateAnkiCards renders the user prompt for generating Anki cards from source text.
+func (r *Registry) RenderGenerateAnkiCards(data GenerateAnkiCardsData) (string, error) {
+	type td struct {
+		GenerateAnkiCardsData
+		AnkiCardsConstraints string
+		AnkiCardsSchema      string
+	}
+	var buf bytes.Buffer
+	if err := r.generateAnkiCardsTmpl.Execute(&buf, td{
+		GenerateAnkiCardsData: data,
+		AnkiCardsConstraints:  r.ankiCardsConstraints,
+		AnkiCardsSchema:       r.ankiCardsSchema,
+	}); err != nil {
+		return "", fmt.Errorf("render generate-anki-cards: %w", err)
+	}
+	return buf.String(), nil
 }
 
 // RenderGenerateLesson renders the user prompt for generating full lesson content.

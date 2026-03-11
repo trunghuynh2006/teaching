@@ -18,6 +18,7 @@ import (
 var (
 	ErrInvalidSkillTitle    = errors.New("skill title is required")
 	ErrInvalidLessonTitle   = errors.New("lesson title is required")
+	ErrInvalidSourceText    = errors.New("source text is required")
 	ErrGeneratorUnavailable = errors.New("generator is not configured")
 )
 
@@ -42,6 +43,12 @@ type GenerateLessonInput struct {
 	Audience    string
 	Difficulty  string
 	Language    string
+}
+
+// GenerateAnkiCardsInput is the application-layer input for generating Anki cards.
+type GenerateAnkiCardsInput struct {
+	SourceText string
+	Language   string
 }
 
 // ListLessonTitles generates a list of candidate lesson titles for a skill.
@@ -134,6 +141,43 @@ func (s Service) GenerateLesson(ctx context.Context, input GenerateLessonInput) 
 		}
 	}
 	return lesson, nil
+}
+
+// GenerateAnkiCards generates Anki flashcard suggestions from a given article or lesson text.
+func (s Service) GenerateAnkiCards(ctx context.Context, input GenerateAnkiCardsInput) ([]domaincontent.GeneratedAnkiCard, error) {
+	if strings.TrimSpace(input.SourceText) == "" {
+		return nil, ErrInvalidSourceText
+	}
+	if s.Generator == nil {
+		return nil, ErrGeneratorUnavailable
+	}
+
+	normalized := domaincontent.GenerateAnkiCardsInput{
+		SourceText: strings.TrimSpace(input.SourceText),
+		Language:   fallback(input.Language, "English"),
+	}
+
+	cacheKey := hashKey("generate-anki-cards", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var cards []domaincontent.GeneratedAnkiCard
+			if err := json.Unmarshal(raw, &cards); err == nil {
+				return cards, nil
+			}
+		}
+	}
+
+	cards, err := s.Generator.GenerateAnkiCards(ctx, normalized)
+	if err != nil {
+		return nil, err
+	}
+
+	if s.Cache != nil {
+		if raw, err := json.Marshal(cards); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return cards, nil
 }
 
 func hashKey(prefix string, v any) string {
