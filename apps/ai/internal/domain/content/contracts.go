@@ -33,9 +33,10 @@ type GenerateAnkiCardsInput struct {
 
 // GeneratedAnkiCard is a suggested card returned by the AI before it is persisted.
 type GeneratedAnkiCard struct {
-	FrontText string   `json:"front_text"`
-	BackText  string   `json:"back_text"`
-	Tags      []string `json:"tags,omitempty"`
+	FrontText  string   `json:"front_text"`
+	BackText   string   `json:"back_text"`
+	BloomLevel string   `json:"bloom_level"`
+	Tags       []string `json:"tags,omitempty"`
 }
 
 // Generator produces AI-generated curriculum content.

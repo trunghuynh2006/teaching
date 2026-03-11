@@ -83,6 +83,12 @@
       "default": false,
       "description": "Whether this card is temporarily excluded from reviews."
     },
+    "bloom_level": {
+      "type": ["string", "null"],
+      "enum": ["remember", "understand", "apply", "analyze", "evaluate", "create", null],
+      "default": null,
+      "description": "Bloom's Taxonomy cognitive level this card targets."
+    },
     "tags": {
       "type": "array",
       "items": {

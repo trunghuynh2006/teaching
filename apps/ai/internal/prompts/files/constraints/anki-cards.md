@@ -6,3 +6,4 @@
 - Cards must be self-contained: the student should not need the source text to answer
 - Do not duplicate cards with the same concept phrased differently
 - Generate between 5 and 20 cards depending on the length and density of the source text
+- Assign a bloom_level to every card: use "remember" for pure recall, "understand" for explanation, "apply" for usage in context, "analyze" for breaking down concepts, "evaluate" for judgement, "create" for synthesis
