@@ -8,6 +8,7 @@ import (
 	appauth "api2/internal/app/auth"
 	"api2/internal/app/profile"
 	"api2/internal/domain/user"
+	infra_ai "api2/internal/infra/ai"
 	"api2/internal/store"
 )
 
@@ -18,6 +19,7 @@ type Handler struct {
 	AllowedOrigin  string
 	UploadDir      string
 	OpenAIKey      string
+	AIClient       *infra_ai.Client
 }
 
 type LoginRequest struct {

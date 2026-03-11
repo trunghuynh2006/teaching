@@ -11,6 +11,7 @@ import (
 
 	appauth "api2/internal/app/auth"
 	"api2/internal/app/profile"
+	infra_ai "api2/internal/infra/ai"
 	"api2/internal/infra/persistence/postgres"
 	"api2/internal/infra/security"
 	"api2/internal/store"
@@ -60,6 +61,7 @@ func main() {
 		AllowedOrigin:  "http://localhost:5173",
 		UploadDir:      getenv("UPLOAD_DIR", "./uploads"),
 		OpenAIKey:      getenv("OPENAI_API_KEY", ""),
+		AIClient:       &infra_ai.Client{BaseURL: getenv("AI_SERVICE_URL", "http://localhost:8100")},
 	}
 
 	application := &app{
@@ -94,6 +96,7 @@ func main() {
 	mux.HandleFunc("POST /recordings/sessions/{id}/chunks", handler.Auth(handler.UploadChunk))
 	mux.HandleFunc("POST /recordings/sessions/{id}/finalize", handler.Auth(handler.FinalizeRecording))
 	mux.HandleFunc("GET /audio-records", handler.Auth(handler.ListAudioRecords))
+	mux.HandleFunc("POST /ai/anki-cards", handler.Auth(handler.GenerateAnkiCards))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)
