@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -53,7 +54,7 @@ func main() {
 		log.Fatalf("failed to initialize cache schema: %v", err)
 	}
 
-	aiClient := openai.NewOpenAIClient(apiKey, model, baseURL, promptRegistry)
+	aiClient := openai.NewOpenAIClient(apiKey, model, baseURL, promptRegistry, newLLMLogger())
 	promptCache := postgres.NewPromptCache(queries, time.Duration(cacheTTLSeconds)*time.Second, cacheMaxEntries)
 
 	handler := &httpapi.Handler{
@@ -107,6 +108,22 @@ func mustGetenv(key string) string {
 		log.Fatalf("missing required environment variable: %s", key)
 	}
 	return value
+}
+
+// newLLMLogger returns a slog.Logger that writes JSON lines to LLM_LOG_FILE.
+// If LLM_LOG_FILE is unset, returns nil (no logging).
+func newLLMLogger() *slog.Logger {
+	path := strings.TrimSpace(os.Getenv("LLM_LOG_FILE"))
+	if path == "" {
+		return nil
+	}
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
+	if err != nil {
+		log.Printf("warning: could not open LLM_LOG_FILE %q: %v — prompt logging disabled", path, err)
+		return nil
+	}
+	log.Printf("llm prompt logging → %s", path)
+	return slog.New(slog.NewJSONHandler(f, &slog.HandlerOptions{Level: slog.LevelDebug}))
 }
 
 func initCacheSchema(ctx context.Context, queries *store.Queries) error {

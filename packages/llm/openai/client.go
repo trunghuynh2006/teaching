@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -24,6 +25,9 @@ type Client struct {
 	Model      string // default model; overridden per-request if Request.Model is set
 	BaseURL    string // defaults to https://api.openai.com/v1
 	HTTPClient *http.Client
+	// Logger receives one structured log entry per completion with the prompt and response.
+	// If nil, no logging is performed.
+	Logger *slog.Logger
 }
 
 // Complete sends a chat completion request and returns the model's text response.
@@ -70,6 +74,14 @@ func (c *Client) Complete(ctx context.Context, req llm.Request) (string, error) 
 
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {
+		if c.Logger != nil {
+			c.Logger.ErrorContext(ctx, "llm request failed",
+				"model", model,
+				"system_prompt", req.SystemPrompt,
+				"user_prompt", req.UserPrompt,
+				"error", err,
+			)
+		}
 		return "", err
 	}
 	defer resp.Body.Close()
@@ -80,7 +92,17 @@ func (c *Client) Complete(ctx context.Context, req llm.Request) (string, error) 
 	}
 
 	if resp.StatusCode >= http.StatusBadRequest {
-		return "", fmt.Errorf("llm/openai: provider returned %d: %s", resp.StatusCode, providerError(rawBody))
+		provErr := providerError(rawBody)
+		if c.Logger != nil {
+			c.Logger.ErrorContext(ctx, "llm provider error",
+				"model", model,
+				"status", resp.StatusCode,
+				"system_prompt", req.SystemPrompt,
+				"user_prompt", req.UserPrompt,
+				"provider_error", provErr,
+			)
+		}
+		return "", fmt.Errorf("llm/openai: provider returned %d: %s", resp.StatusCode, provErr)
 	}
 
 	var completion chatResponse
@@ -98,6 +120,16 @@ func (c *Client) Complete(ctx context.Context, req llm.Request) (string, error) 
 	if req.JSONMode {
 		content = stripFence(content)
 	}
+
+	if c.Logger != nil {
+		c.Logger.InfoContext(ctx, "llm completion",
+			"model", model,
+			"system_prompt", req.SystemPrompt,
+			"user_prompt", req.UserPrompt,
+			"response", content,
+		)
+	}
+
 	return content, nil
 }
 

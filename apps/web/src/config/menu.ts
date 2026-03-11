@@ -23,7 +23,8 @@ export const MENU_BY_ROLE: Record<Role, MenuItem[]> = {
       children: [
         { label: 'Skill Library', path: '/teacher/content-studio/skills' },
         { label: 'Voice Recorder', path: '/teacher/content-studio/recorder' },
-        { label: 'Audio Records', path: '/teacher/content-studio/audio-records' }
+        { label: 'Audio Records', path: '/teacher/content-studio/audio-records' },
+        { label: 'Anki Generator', path: '/teacher/content-studio/anki-generator' }
       ]
     }
   ],

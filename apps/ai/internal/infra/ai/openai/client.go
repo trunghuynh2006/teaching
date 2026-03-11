@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	domaincontent "ai/internal/domain/content"
@@ -22,12 +23,14 @@ type Client struct {
 }
 
 // NewOpenAIClient constructs a Client backed by the OpenAI-compatible provider.
-func NewOpenAIClient(apiKey, model, baseURL string, prompts *prompts.Registry) Client {
+// Pass a non-nil logger to write every prompt/response to a log file.
+func NewOpenAIClient(apiKey, model, baseURL string, prompts *prompts.Registry, logger *slog.Logger) Client {
 	return Client{
 		LLM: &llmopenai.Client{
 			APIKey:  apiKey,
 			Model:   model,
 			BaseURL: baseURL,
+			Logger:  logger,
 		},
 		Prompts: prompts,
 	}
