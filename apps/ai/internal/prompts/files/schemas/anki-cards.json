@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AnkiCards",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cards"],
+  "properties": {
+    "cards": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["front_text", "back_text"],
+        "properties": {
+          "front_text": {
+            "type": "string",
+            "description": "The question or prompt shown on the front of the card"
+          },
+          "back_text": {
+            "type": "string",
+            "description": "The answer or explanation shown on the back of the card"
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "2–4 lowercase, hyphenated tags related to the card topic"
+          }
+        }
+      }
+    }
+  }
+}
