@@ -28,6 +28,7 @@ interface SpaceManagerProps {
   onUnauthorized?: () => void
   onCountChange?: (count: number) => void
   addTrigger?: number
+  filterSpaceId?: string
 }
 
 async function parseError(res: Response): Promise<string> {
@@ -280,7 +281,7 @@ function SpaceBlock({ space, token, onUnauthorized, onEdit, onDelete }: SpaceBlo
 
 // ── SpaceManager ─────────────────────────────────────────────
 
-export default function SpaceManager({ folderId, token, onUnauthorized, onCountChange, addTrigger }: SpaceManagerProps) {
+export default function SpaceManager({ folderId, token, onUnauthorized, onCountChange, addTrigger, filterSpaceId }: SpaceManagerProps) {
   const [spaces, setSpaces] = useState<SpaceData[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editingSpace, setEditingSpace] = useState<SpaceData | null>(null)
@@ -380,7 +381,7 @@ export default function SpaceManager({ folderId, token, onUnauthorized, onCountC
         {spaces.length === 0 && !showForm ? (
           <p className="space-empty">No spaces yet.</p>
         ) : (
-          spaces.map((space) => (
+          spaces.filter((s) => !filterSpaceId || s.id === filterSpaceId).map((space) => (
             <SpaceBlock
               key={space.id}
               space={space}

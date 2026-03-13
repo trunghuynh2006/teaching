@@ -664,11 +664,20 @@ button.danger {
   border-radius: 8px;
   font-size: 0.82rem;
   color: var(--text);
-  cursor: default;
+  cursor: pointer;
 }
 
 .space-items-sidebar-item:hover {
   background: rgba(14, 133, 118, 0.06);
+}
+
+.space-items-sidebar-item.active {
+  background: rgba(14, 133, 118, 0.12);
+  color: var(--primary);
+}
+
+.space-items-sidebar-item.active .space-items-sidebar-index {
+  color: var(--primary);
 }
 
 .space-items-sidebar-index {
@@ -693,10 +702,36 @@ button.danger {
   margin: 0;
 }
 
+.space-item-detail {
+  padding: 1.5rem 2rem;
+  max-width: 720px;
+}
+
+.space-item-detail-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+.space-item-detail-content {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.space-item-detail-empty {
+  color: #b0bec8;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
 .folder-sidebar-divider {
   width: 1px;
   background: #e2ecef;
-  margin: 0 1rem;
+  margin: 0 0.4rem;
   align-self: stretch;
 }
 

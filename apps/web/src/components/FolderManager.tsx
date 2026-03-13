@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { API_URL } from '../config'
 import KnowledgeManager from './KnowledgeManager'
 import SpaceManager from './SpaceManager'
-import SpaceItemsSidebar from './SpaceItemsSidebar'
+import SpaceItemsSidebar, { type SpaceItemData } from './SpaceItemsSidebar'
 
 interface FolderItem {
   id: string
@@ -61,6 +61,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [spacesAddTrigger, setSpacesAddTrigger] = useState(0)
   const [sidebarSpaces, setSidebarSpaces] = useState<SidebarSpace[]>([])
   const [selectedSpace, setSelectedSpace] = useState<SidebarSpace | null>(null)
+  const [selectedSpaceItem, setSelectedSpaceItem] = useState<SpaceItemData | null>(null)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -70,6 +71,9 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [notice, setNotice] = useState('')
 
   const headers = { Authorization: `Bearer ${token}` }
+
+  const isDetailSpace = (s: SidebarSpace) =>
+    s.space_type === 'Problem' || s.space_type === 'Exercise'
 
   const fetchFolders = useCallback(async () => {
     setLoading(true)
@@ -171,6 +175,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     setSpacesCount(0)
     setSidebarSpaces([])
     setSelectedSpace(null)
+    setSelectedSpaceItem(null)
     setError('')
     setNotice('')
     fetchSidebarSpaces(folder.id)
@@ -293,7 +298,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
           <button
             className="folder-sidebar-add-btn always-visible"
             title="Add space"
-            onClick={() => { setSpacesAddTrigger((n) => n + 1); setActiveSection('spaces') }}
+            onClick={() => { setSpacesAddTrigger((n) => n + 1); setActiveSection('spaces'); setSelectedSpace(null); setSelectedSpaceItem(null) }}
           >
             +
           </button>
@@ -304,7 +309,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
           <button
             key={space.id}
             className={`folder-sidebar-space-item${selectedSpace?.id === space.id ? ' active' : ''}`}
-            onClick={() => { setSelectedSpace(space); setActiveSection('spaces') }}
+            onClick={() => { setSelectedSpace(space); setSelectedSpaceItem(null); setActiveSection('spaces') }}
           >
             <span className="folder-sidebar-space-name">{space.name}</span>
             {space.space_type && <span className="space-type-pill">{space.space_type}</span>}
@@ -317,14 +322,16 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
 
       <div className="folder-sidebar-divider" />
 
-      {/* Space items sidebar — only when a space is selected */}
-      {selectedSpace && (
+      {/* Space items sidebar — only for Problem/Exercise spaces */}
+      {selectedSpace && isDetailSpace(selectedSpace) && (
         <>
           <SpaceItemsSidebar
             space={selectedSpace}
             token={token}
             onUnauthorized={onUnauthorized}
-            onClose={() => setSelectedSpace(null)}
+            onClose={() => { setSelectedSpace(null); setSelectedSpaceItem(null) }}
+            selectedItemId={selectedSpaceItem?.id}
+            onSelectItem={setSelectedSpaceItem}
           />
           <div className="folder-sidebar-divider" />
         </>
@@ -340,13 +347,26 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             addTrigger={knowledgeAddTrigger}
           />
         )}
-        {activeSection === 'spaces' && (
+        {activeSection === 'spaces' && selectedSpace && isDetailSpace(selectedSpace) && (
+          <div className="space-item-detail">
+            {selectedSpaceItem ? (
+              <>
+                {selectedSpaceItem.title && <h3 className="space-item-detail-title">{selectedSpaceItem.title}</h3>}
+                <p className="space-item-detail-content">{selectedSpaceItem.content}</p>
+              </>
+            ) : (
+              <p className="space-item-detail-empty">No items in this space.</p>
+            )}
+          </div>
+        )}
+        {activeSection === 'spaces' && (!selectedSpace || !isDetailSpace(selectedSpace)) && (
           <SpaceManager
             folderId={selectedFolder.id}
             token={token}
             onUnauthorized={onUnauthorized}
             onCountChange={setSpacesCount}
             addTrigger={spacesAddTrigger}
+            filterSpaceId={selectedSpace?.id}
           />
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
 
 interface SpaceInfo {
@@ -7,7 +7,7 @@ interface SpaceInfo {
   space_type?: string
 }
 
-interface SpaceItemData {
+export interface SpaceItemData {
   id: string
   title?: string
   content: string
@@ -19,10 +19,14 @@ interface SpaceItemsSidebarProps {
   token: string
   onUnauthorized?: () => void
   onClose: () => void
+  selectedItemId?: string
+  onSelectItem?: (item: SpaceItemData) => void
 }
 
-export default function SpaceItemsSidebar({ space, token, onUnauthorized, onClose }: SpaceItemsSidebarProps) {
+export default function SpaceItemsSidebar({ space, token, onUnauthorized, onClose, selectedItemId, onSelectItem }: SpaceItemsSidebarProps) {
   const [items, setItems] = useState<SpaceItemData[]>([])
+  const onSelectItemRef = useRef(onSelectItem)
+  onSelectItemRef.current = onSelectItem
 
   const fetchItems = useCallback(async () => {
     try {
@@ -32,7 +36,11 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, onClos
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) return
       const data = await res.json()
-      setItems(Array.isArray(data) ? data : [])
+      const list: SpaceItemData[] = Array.isArray(data) ? data : []
+      setItems(list)
+      if (list.length > 0) {
+        onSelectItemRef.current?.(list[0])
+      }
     } catch (_) {}
   }, [space.id, token])
 
@@ -51,7 +59,11 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, onClos
           <p className="space-items-sidebar-empty">No items</p>
         ) : (
           items.map((item, idx) => (
-            <div className="space-items-sidebar-item" key={item.id}>
+            <div
+              className={`space-items-sidebar-item${item.id === selectedItemId ? ' active' : ''}`}
+              key={item.id}
+              onClick={() => onSelectItemRef.current?.(item)}
+            >
               <span className="space-items-sidebar-index">{idx + 1}</span>
               <span className="space-items-sidebar-label">
                 {item.title || item.content.slice(0, 50) || '—'}
