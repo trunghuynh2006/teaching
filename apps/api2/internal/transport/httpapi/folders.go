@@ -50,8 +50,12 @@ func (h *Handler) GetFolder(w http.ResponseWriter, r *http.Request, _ user.User)
 	writeJSON(w, http.StatusOK, toSharedFolder(row))
 }
 
+func canManageFolders(role string) bool {
+	return role == "teacher" || role == "admin" || role == "learner"
+}
+
 func (h *Handler) CreateFolder(w http.ResponseWriter, r *http.Request, currentUser user.User) {
-	if !canManageSkills(currentUser.Role) {
+	if !canManageFolders(currentUser.Role) {
 		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "Forbidden for this role"})
 		return
 	}
@@ -78,7 +82,7 @@ func (h *Handler) CreateFolder(w http.ResponseWriter, r *http.Request, currentUs
 }
 
 func (h *Handler) UpdateFolder(w http.ResponseWriter, r *http.Request, currentUser user.User) {
-	if !canManageSkills(currentUser.Role) {
+	if !canManageFolders(currentUser.Role) {
 		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "Forbidden for this role"})
 		return
 	}
@@ -114,7 +118,7 @@ func (h *Handler) UpdateFolder(w http.ResponseWriter, r *http.Request, currentUs
 }
 
 func (h *Handler) DeleteFolder(w http.ResponseWriter, r *http.Request, currentUser user.User) {
-	if !canManageSkills(currentUser.Role) {
+	if !canManageFolders(currentUser.Role) {
 		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "Forbidden for this role"})
 		return
 	}
@@ -164,7 +168,7 @@ func (h *Handler) ListFolderSkills(w http.ResponseWriter, r *http.Request, _ use
 }
 
 func (h *Handler) AddSkillToFolder(w http.ResponseWriter, r *http.Request, currentUser user.User) {
-	if !canManageSkills(currentUser.Role) {
+	if !canManageFolders(currentUser.Role) {
 		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "Forbidden for this role"})
 		return
 	}
@@ -189,7 +193,7 @@ func (h *Handler) AddSkillToFolder(w http.ResponseWriter, r *http.Request, curre
 }
 
 func (h *Handler) RemoveSkillFromFolder(w http.ResponseWriter, r *http.Request, currentUser user.User) {
-	if !canManageSkills(currentUser.Role) {
+	if !canManageFolders(currentUser.Role) {
 		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "Forbidden for this role"})
 		return
 	}

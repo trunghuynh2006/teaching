@@ -72,6 +72,7 @@ export default function App() {
       const section = TEACHER_SECTIONS.find((s) => location.pathname.startsWith(s.path))
       return section ? (SIDEBAR_BY_SECTION[section.path] ?? []) : []
     }
+    if (role === 'learner') return []
     return MENU_BY_ROLE[role as Role] ?? []
   }, [role, location.pathname])
 
@@ -79,6 +80,8 @@ export default function App() {
   const defaultPath =
     role === 'teacher'
       ? '/teacher/content-studio/skills'
+      : role === 'learner'
+      ? '/learner/folders'
       : menuItems[0]?.path ?? '/'
 
   // Redirect unknown paths for non-teacher roles
@@ -117,10 +120,11 @@ export default function App() {
     <main className="app-shell">
       <Sidebar
         menuItems={sidebarItems}
-        activePath={location.pathname}
+        activePath={location.pathname + location.search}
         userName={user.full_name ?? user.FullName ?? role}
         onNavigate={navigate}
         onLogout={handleLogout}
+        folderSection={role === 'learner' ? { token, activePath: location.pathname + location.search, onNavigate: navigate } : undefined}
       />
       <section className="content-area">
         <header className="topbar">
@@ -150,6 +154,14 @@ export default function App() {
                 element={<TeacherContentStudio token={token} onUnauthorized={handleLogout} />}
               />
               <Route path="*" element={<Navigate to="/teacher/content-studio/skills" replace />} />
+            </>
+          ) : role === 'learner' ? (
+            <>
+              <Route path="/learner/folders" element={<LearnerLanding activeItem="Folders" token={token} onUnauthorized={handleLogout} />} />
+              <Route path="/learner/recorder" element={<LearnerLanding activeItem="Voice Recorder" token={token} onUnauthorized={handleLogout} />} />
+              <Route path="/learner/audio-records" element={<LearnerLanding activeItem="Audio Records" token={token} onUnauthorized={handleLogout} />} />
+              <Route path="/learner/anki-review" element={<LearnerLanding activeItem="Anki Review" token={token} onUnauthorized={handleLogout} />} />
+              <Route path="*" element={<Navigate to="/learner/folders" replace />} />
             </>
           ) : (
             <>

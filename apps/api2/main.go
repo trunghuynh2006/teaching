@@ -108,6 +108,11 @@ func main() {
 	mux.HandleFunc("GET /folders/{id}/skills", handler.Auth(handler.ListFolderSkills))
 	mux.HandleFunc("POST /folders/{id}/skills/{skill_id}", handler.Auth(handler.AddSkillToFolder))
 	mux.HandleFunc("DELETE /folders/{id}/skills/{skill_id}", handler.Auth(handler.RemoveSkillFromFolder))
+	mux.HandleFunc("GET /folders/{id}/knowledges", handler.Auth(handler.ListFolderKnowledges))
+	mux.HandleFunc("POST /folders/{id}/knowledges", handler.Auth(handler.CreateKnowledge))
+	mux.HandleFunc("GET /knowledges/{id}", handler.Auth(handler.GetKnowledge))
+	mux.HandleFunc("PUT /knowledges/{id}", handler.Auth(handler.UpdateKnowledge))
+	mux.HandleFunc("DELETE /knowledges/{id}", handler.Auth(handler.DeleteKnowledge))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)

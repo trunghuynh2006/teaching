@@ -81,3 +81,17 @@ CREATE TABLE IF NOT EXISTS skill_folders (
     added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     PRIMARY KEY (folder_id, skill_id)
 );
+
+CREATE TABLE IF NOT EXISTS knowledges (
+    id VARCHAR(64) PRIMARY KEY,
+    folder_id VARCHAR(64) NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+    title VARCHAR(200) NOT NULL DEFAULT '',
+    content TEXT NOT NULL DEFAULT '',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_knowledges_folder_id ON knowledges (folder_id);
+CREATE INDEX IF NOT EXISTS idx_knowledges_created_time ON knowledges (created_time DESC);

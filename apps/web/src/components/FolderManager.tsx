@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { API_URL } from '../config'
+import KnowledgeManager from './KnowledgeManager'
 
 interface FolderItem {
   id: string
@@ -48,6 +50,7 @@ function formatDate(dateTime: string | undefined): string {
 }
 
 export default function FolderManager({ token, onUnauthorized }: FolderManagerProps) {
+  const [searchParams] = useSearchParams()
   const [folders, setFolders] = useState<FolderItem[]>([])
   const [allSkills, setAllSkills] = useState<SkillItem[]>([])
   const [folderSkills, setFolderSkills] = useState<SkillItem[]>([])
@@ -180,6 +183,17 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     setNotice('')
     await fetchFolderSkills(folder.id)
   }
+
+  // Auto-open folder from ?folder= URL param
+  const targetFolderId = searchParams.get('folder')
+  useEffect(() => {
+    if (!targetFolderId || folders.length === 0) return
+    const match = folders.find((f) => f.id === targetFolderId)
+    if (match && selectedFolder?.id !== targetFolderId) {
+      openFolder(match)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetFolderId, folders])
 
   const closeFolder = () => {
     setSelectedFolder(null)
@@ -348,6 +362,9 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
               </div>
             </div>
           )}
+
+          <div className="knowledge-section-divider" />
+          <KnowledgeManager folderId={selectedFolder.id} token={token} onUnauthorized={onUnauthorized} />
         </div>
       )}
     </section>

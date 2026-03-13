@@ -1,6 +1,7 @@
 import AnkiReview from '../components/AnkiReview'
 import AudioRecordList from '../components/AudioRecordList'
 import AudioRecorder from '../components/AudioRecorder'
+import FolderManager from '../components/FolderManager'
 
 interface LandingProps {
   activeItem?: string
@@ -29,6 +30,14 @@ export function LearnerLanding({ activeItem, token, onUnauthorized }: LandingPro
     return (
       <section className="panel">
         <AudioRecordList token={token!} onUnauthorized={onUnauthorized!} />
+      </section>
+    )
+  }
+
+  if (activeItem === 'Folders') {
+    return (
+      <section className="panel">
+        <FolderManager token={token!} onUnauthorized={onUnauthorized!} />
       </section>
     )
   }

@@ -1,0 +1,209 @@
+import { useCallback, useEffect, useState } from 'react'
+import { API_URL } from '../config'
+
+interface KnowledgeItem {
+  id: string
+  folder_id: string
+  title?: string
+  content: string
+  created_by?: string
+  updated_by?: string
+  created_time?: string
+  updated_time?: string
+}
+
+interface KnowledgeManagerProps {
+  folderId: string
+  token: string
+  onUnauthorized?: () => void
+}
+
+interface FormState {
+  title: string
+  content: string
+}
+
+const DEFAULT_FORM: FormState = { title: '', content: '' }
+
+async function parseError(response: Response): Promise<string> {
+  try {
+    const payload = await response.json()
+    if (payload?.detail) return payload.detail
+  } catch (_) {}
+  return response.statusText || 'Request failed'
+}
+
+function formatDate(dateTime: string | undefined): string {
+  if (!dateTime) return '-'
+  const parsed = new Date(dateTime)
+  if (Number.isNaN(parsed.getTime())) return dateTime
+  return parsed.toLocaleString()
+}
+
+export default function KnowledgeManager({ folderId, token, onUnauthorized }: KnowledgeManagerProps) {
+  const [knowledges, setKnowledges] = useState<KnowledgeItem[]>([])
+  const [editingItem, setEditingItem] = useState<KnowledgeItem | null>(null)
+  const [form, setForm] = useState<FormState>(DEFAULT_FORM)
+  const [showForm, setShowForm] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+
+  const headers = { Authorization: `Bearer ${token}` }
+
+  const fetchKnowledges = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch(`${API_URL}/folders/${folderId}/knowledges`, { headers })
+      if (res.status === 401) { onUnauthorized?.(); return }
+      if (!res.ok) throw new Error(await parseError(res))
+      const data = await res.json()
+      setKnowledges(Array.isArray(data) ? data : [])
+    } catch (err) {
+      setError((err as Error).message || 'Failed to load knowledges')
+    } finally {
+      setLoading(false)
+    }
+  }, [folderId, token, onUnauthorized])
+
+  useEffect(() => { fetchKnowledges() }, [fetchKnowledges])
+
+  const openCreateForm = () => {
+    setEditingItem(null)
+    setForm(DEFAULT_FORM)
+    setShowForm(true)
+    setNotice('')
+    setError('')
+  }
+
+  const openEditForm = (item: KnowledgeItem) => {
+    setEditingItem(item)
+    setForm({ title: item.title ?? '', content: item.content })
+    setShowForm(true)
+    setNotice('')
+    setError('')
+  }
+
+  const cancelForm = () => {
+    setShowForm(false)
+    setEditingItem(null)
+    setForm(DEFAULT_FORM)
+  }
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setError('')
+    setNotice('')
+    const content = form.content.trim()
+    if (!content) { setError('Content is required'); return }
+    setSaving(true)
+    try {
+      const url = editingItem
+        ? `${API_URL}/knowledges/${editingItem.id}`
+        : `${API_URL}/folders/${folderId}/knowledges`
+      const method = editingItem ? 'PUT' : 'POST'
+      const res = await fetch(url, {
+        method,
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: form.title.trim(), content }),
+      })
+      if (res.status === 401) { onUnauthorized?.(); return }
+      if (!res.ok) throw new Error(await parseError(res))
+      setNotice(editingItem ? 'Knowledge updated' : 'Knowledge created')
+      cancelForm()
+      await fetchKnowledges()
+    } catch (err) {
+      setError((err as Error).message || 'Failed to save knowledge')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async (item: KnowledgeItem) => {
+    const label = item.title || item.content.slice(0, 40)
+    if (!window.confirm(`Delete "${label}"?`)) return
+    setError('')
+    setNotice('')
+    try {
+      const res = await fetch(`${API_URL}/knowledges/${item.id}`, { method: 'DELETE', headers })
+      if (res.status === 401) { onUnauthorized?.(); return }
+      if (!res.ok) throw new Error(await parseError(res))
+      setNotice('Knowledge deleted')
+      await fetchKnowledges()
+    } catch (err) {
+      setError((err as Error).message || 'Failed to delete knowledge')
+    }
+  }
+
+  return (
+    <div className="knowledge-manager">
+      <div className="knowledge-header">
+        <h4>Knowledge</h4>
+        <div className="skill-actions compact">
+          <button type="button" className="secondary" onClick={fetchKnowledges} disabled={loading}>
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+          <button type="button" onClick={openCreateForm}>Add Knowledge</button>
+        </div>
+      </div>
+
+      {notice && <div className="notice">{notice}</div>}
+      {error && <div className="error">{error}</div>}
+
+      {showForm && (
+        <form className="skill-form" onSubmit={handleSubmit}>
+          <label>
+            Title (optional)
+            <input
+              value={form.title}
+              onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+              placeholder="e.g. Definition of velocity"
+            />
+          </label>
+          <label>
+            Content
+            <textarea
+              className="knowledge-textarea"
+              value={form.content}
+              onChange={(e) => setForm((prev) => ({ ...prev, content: e.target.value }))}
+              placeholder="Write the knowledge content here…"
+              required
+            />
+          </label>
+          <div className="skill-actions">
+            <button type="submit" disabled={saving}>
+              {saving ? 'Saving…' : editingItem ? 'Update' : 'Create'}
+            </button>
+            <button type="button" className="secondary" onClick={cancelForm}>Cancel</button>
+          </div>
+        </form>
+      )}
+
+      <div className="knowledge-list">
+        {knowledges.length === 0 && !loading ? (
+          <p className="knowledge-empty">No knowledge entries yet. Use "Add Knowledge" to create one.</p>
+        ) : (
+          knowledges.map((item) => (
+            <article className="knowledge-item" key={item.id}>
+              {item.title && <h5 className="knowledge-title">{item.title}</h5>}
+              <p className="knowledge-content">{item.content}</p>
+              <div className="knowledge-meta">
+                <span>By: {item.created_by || '-'}</span>
+                <span>Created: {formatDate(item.created_time)}</span>
+                {item.updated_time !== item.created_time && (
+                  <span>Updated: {formatDate(item.updated_time)}</span>
+                )}
+              </div>
+              <div className="skill-actions">
+                <button type="button" onClick={() => openEditForm(item)}>Edit</button>
+                <button type="button" className="secondary" onClick={() => handleDelete(item)}>Delete</button>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+    </div>
+  )
+}

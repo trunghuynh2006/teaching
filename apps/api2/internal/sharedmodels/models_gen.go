@@ -120,6 +120,17 @@ type Folder struct {
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
+type Knowledge struct {
+	Content     string  `json:"content"`
+	CreatedBy   *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	FolderId    string  `json:"folder_id"`
+	Id          string  `json:"id"`
+	Title       *string `json:"title,omitempty"`
+	UpdatedBy   *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
 type Lesson struct {
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`

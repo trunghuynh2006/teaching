@@ -420,6 +420,145 @@ button.danger {
   margin-top: 0;
 }
 
+/* ── Knowledge Manager ───────────────────────────────────── */
+
+.knowledge-section-divider {
+  height: 1px;
+  background: #e2ecef;
+  margin: 1.5rem 0;
+}
+
+.knowledge-manager {
+  display: grid;
+  gap: 1rem;
+}
+
+.knowledge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.knowledge-header h4 {
+  margin: 0;
+}
+
+.knowledge-textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  font: inherit;
+  border: 1px solid #c8d4db;
+  border-radius: 12px;
+  padding: 0.72rem 0.9rem;
+  background: #fff;
+  line-height: 1.55;
+}
+
+.knowledge-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.knowledge-empty {
+  color: #7a92a3;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.knowledge-item {
+  background: #fff;
+  border: 1px solid #e2ecef;
+  border-radius: 12px;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.knowledge-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.knowledge-content {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+.knowledge-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 0.8rem;
+  color: #5a7080;
+}
+
+/* ── Sidebar Folder Section ──────────────────────────────── */
+
+.sidebar-folder-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.sidebar-folder-divider {
+  width: 32px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0.25rem 0;
+}
+
+.sidebar-folder-add {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.folder-add-popup {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  width: 200px;
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  display: grid;
+  gap: 0.5rem;
+  animation: slide-in 160ms ease forwards;
+}
+
+.folder-add-popup-label {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.folder-add-popup input {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.88rem;
+  background: #111827;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #eef2f7;
+  border-radius: 8px;
+}
+
+.folder-add-popup button {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
 /* ── Audio Recorder ──────────────────────────────────────── */
 
 .audio-recorder {

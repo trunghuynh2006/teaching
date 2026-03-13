@@ -67,6 +67,15 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitSkillFoldersTable(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitKnowledgesTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitKnowledgesFolderIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitKnowledgesCreatedTimeIndex(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }
