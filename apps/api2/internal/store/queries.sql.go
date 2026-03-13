@@ -7,31 +7,96 @@ package store
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const initAudioRecordsTable = `-- name: InitAudioRecordsTable :exec
-CREATE TABLE IF NOT EXISTS audio_records (
-    id VARCHAR(64) PRIMARY KEY,
-    user_id VARCHAR(64) NOT NULL,
-    filename VARCHAR(255) NOT NULL,
-    file_size BIGINT NOT NULL DEFAULT 0,
-    transcript TEXT NOT NULL DEFAULT '',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-)
+const archiveSkillByID = `-- name: ArchiveSkillByID :one
+UPDATE skills
+SET status = 'archived',
+    updated_by = $2,
+    updated_time = NOW()
+WHERE id = $1
+RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 `
 
-func (q *Queries) InitAudioRecordsTable(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, initAudioRecordsTable)
-	return err
+type ArchiveSkillByIDParams struct {
+	ID        string `json:"id"`
+	UpdatedBy string `json:"updated_by"`
 }
 
-const initAudioRecordsUserIndex = `-- name: InitAudioRecordsUserIndex :exec
-CREATE INDEX IF NOT EXISTS idx_audio_records_user_id ON audio_records (user_id)
+func (q *Queries) ArchiveSkillByID(ctx context.Context, arg ArchiveSkillByIDParams) (Skill, error) {
+	row := q.db.QueryRow(ctx, archiveSkillByID, arg.ID, arg.UpdatedBy)
+	var i Skill
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Difficulty,
+		&i.Status,
+		&i.Tags,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+		&i.CreatedTime,
+		&i.UpdatedTime,
+	)
+	return i, err
+}
+
+const createAnkiCard = `-- name: CreateAnkiCard :one
+INSERT INTO anki_cards (id, user_id, front_text, back_text, bloom_level, tags, created_by, updated_by)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+          ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+          created_at, updated_at, created_by, updated_by
 `
 
-func (q *Queries) InitAudioRecordsUserIndex(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, initAudioRecordsUserIndex)
-	return err
+type CreateAnkiCardParams struct {
+	ID         string      `json:"id"`
+	UserID     string      `json:"user_id"`
+	FrontText  string      `json:"front_text"`
+	BackText   string      `json:"back_text"`
+	BloomLevel pgtype.Text `json:"bloom_level"`
+	Tags       []string    `json:"tags"`
+	CreatedBy  pgtype.Text `json:"created_by"`
+	UpdatedBy  pgtype.Text `json:"updated_by"`
+}
+
+func (q *Queries) CreateAnkiCard(ctx context.Context, arg CreateAnkiCardParams) (AnkiCard, error) {
+	row := q.db.QueryRow(ctx, createAnkiCard,
+		arg.ID,
+		arg.UserID,
+		arg.FrontText,
+		arg.BackText,
+		arg.BloomLevel,
+		arg.Tags,
+		arg.CreatedBy,
+		arg.UpdatedBy,
+	)
+	var i AnkiCard
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.FrontText,
+		&i.BackText,
+		&i.BloomLevel,
+		&i.Tags,
+		&i.Status,
+		&i.SourceLessonID,
+		&i.DeckID,
+		&i.EaseFactor,
+		&i.IntervalDays,
+		&i.Repetitions,
+		&i.Lapses,
+		&i.IsSuspended,
+		&i.DueAt,
+		&i.LastReviewedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+	)
+	return i, err
 }
 
 const createAudioRecord = `-- name: CreateAudioRecord :one
@@ -64,105 +129,6 @@ func (q *Queries) CreateAudioRecord(ctx context.Context, arg CreateAudioRecordPa
 		&i.FileSize,
 		&i.Transcript,
 		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const listAudioRecords = `-- name: ListAudioRecords :many
-SELECT id, user_id, filename, file_size, transcript, created_at
-FROM audio_records
-ORDER BY created_at DESC
-`
-
-func (q *Queries) ListAudioRecords(ctx context.Context) ([]AudioRecord, error) {
-	rows, err := q.db.Query(ctx, listAudioRecords)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []AudioRecord
-	for rows.Next() {
-		var i AudioRecord
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.Filename,
-			&i.FileSize,
-			&i.Transcript,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listAudioRecordsByUser = `-- name: ListAudioRecordsByUser :many
-SELECT id, user_id, filename, file_size, transcript, created_at
-FROM audio_records
-WHERE user_id = $1
-ORDER BY created_at DESC
-`
-
-func (q *Queries) ListAudioRecordsByUser(ctx context.Context, userID string) ([]AudioRecord, error) {
-	rows, err := q.db.Query(ctx, listAudioRecordsByUser, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []AudioRecord
-	for rows.Next() {
-		var i AudioRecord
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.Filename,
-			&i.FileSize,
-			&i.Transcript,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const archiveSkillByID = `-- name: ArchiveSkillByID :one
-UPDATE skills
-SET status = 'archived',
-    updated_by = $2,
-    updated_time = NOW()
-WHERE id = $1
-RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
-`
-
-type ArchiveSkillByIDParams struct {
-	ID        string `json:"id"`
-	UpdatedBy string `json:"updated_by"`
-}
-
-func (q *Queries) ArchiveSkillByID(ctx context.Context, arg ArchiveSkillByIDParams) (Skill, error) {
-	row := q.db.QueryRow(ctx, archiveSkillByID, arg.ID, arg.UpdatedBy)
-	var i Skill
-	err := row.Scan(
-		&i.ID,
-		&i.Title,
-		&i.Description,
-		&i.Difficulty,
-		&i.Status,
-		&i.Tags,
-		&i.CreatedBy,
-		&i.UpdatedBy,
-		&i.CreatedTime,
-		&i.UpdatedTime,
 	)
 	return i, err
 }
@@ -231,6 +197,48 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const getAnkiCardByID = `-- name: GetAnkiCardByID :one
+SELECT id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+       ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+       created_at, updated_at, created_by, updated_by
+FROM anki_cards
+WHERE id = $1 AND user_id = $2
+LIMIT 1
+`
+
+type GetAnkiCardByIDParams struct {
+	ID     string `json:"id"`
+	UserID string `json:"user_id"`
+}
+
+func (q *Queries) GetAnkiCardByID(ctx context.Context, arg GetAnkiCardByIDParams) (AnkiCard, error) {
+	row := q.db.QueryRow(ctx, getAnkiCardByID, arg.ID, arg.UserID)
+	var i AnkiCard
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.FrontText,
+		&i.BackText,
+		&i.BloomLevel,
+		&i.Tags,
+		&i.Status,
+		&i.SourceLessonID,
+		&i.DeckID,
+		&i.EaseFactor,
+		&i.IntervalDays,
+		&i.Repetitions,
+		&i.Lapses,
+		&i.IsSuspended,
+		&i.DueAt,
+		&i.LastReviewedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CreatedBy,
+		&i.UpdatedBy,
+	)
+	return i, err
+}
+
 const getSkillByID = `-- name: GetSkillByID :one
 SELECT id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 FROM skills
@@ -288,6 +296,70 @@ func (q *Queries) GetUserHashByUsername(ctx context.Context, username string) (s
 	var hashed_password string
 	err := row.Scan(&hashed_password)
 	return hashed_password, err
+}
+
+const initAnkiCardsTable = `-- name: InitAnkiCardsTable :exec
+CREATE TABLE IF NOT EXISTS anki_cards (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    front_text TEXT NOT NULL,
+    back_text TEXT NOT NULL,
+    bloom_level VARCHAR(20),
+    tags TEXT[] NOT NULL DEFAULT '{}',
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    source_lesson_id VARCHAR(64),
+    deck_id VARCHAR(64),
+    ease_factor NUMERIC(4,2) NOT NULL DEFAULT 2.5,
+    interval_days INT NOT NULL DEFAULT 0,
+    repetitions INT NOT NULL DEFAULT 0,
+    lapses INT NOT NULL DEFAULT 0,
+    is_suspended BOOLEAN NOT NULL DEFAULT FALSE,
+    due_at TIMESTAMPTZ,
+    last_reviewed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by VARCHAR(64),
+    updated_by VARCHAR(64)
+)
+`
+
+func (q *Queries) InitAnkiCardsTable(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initAnkiCardsTable)
+	return err
+}
+
+const initAnkiCardsUserIndex = `-- name: InitAnkiCardsUserIndex :exec
+CREATE INDEX IF NOT EXISTS idx_anki_cards_user_id ON anki_cards (user_id)
+`
+
+func (q *Queries) InitAnkiCardsUserIndex(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initAnkiCardsUserIndex)
+	return err
+}
+
+const initAudioRecordsTable = `-- name: InitAudioRecordsTable :exec
+CREATE TABLE IF NOT EXISTS audio_records (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL DEFAULT 0,
+    transcript TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+)
+`
+
+func (q *Queries) InitAudioRecordsTable(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initAudioRecordsTable)
+	return err
+}
+
+const initAudioRecordsUserIndex = `-- name: InitAudioRecordsUserIndex :exec
+CREATE INDEX IF NOT EXISTS idx_audio_records_user_id ON audio_records (user_id)
+`
+
+func (q *Queries) InitAudioRecordsUserIndex(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initAudioRecordsUserIndex)
+	return err
 }
 
 const initSkillsCreatedTimeIndex = `-- name: InitSkillsCreatedTimeIndex :exec
@@ -391,6 +463,126 @@ func (q *Queries) InitUsersUsernameIndex(ctx context.Context) error {
 	return err
 }
 
+const listAnkiCardsDue = `-- name: ListAnkiCardsDue :many
+SELECT id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+       ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+       created_at, updated_at, created_by, updated_by
+FROM anki_cards
+WHERE user_id = $1
+  AND is_suspended = FALSE
+  AND (due_at IS NULL OR due_at <= NOW())
+ORDER BY due_at ASC NULLS FIRST
+LIMIT 50
+`
+
+func (q *Queries) ListAnkiCardsDue(ctx context.Context, userID string) ([]AnkiCard, error) {
+	rows, err := q.db.Query(ctx, listAnkiCardsDue, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AnkiCard
+	for rows.Next() {
+		var i AnkiCard
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.FrontText,
+			&i.BackText,
+			&i.BloomLevel,
+			&i.Tags,
+			&i.Status,
+			&i.SourceLessonID,
+			&i.DeckID,
+			&i.EaseFactor,
+			&i.IntervalDays,
+			&i.Repetitions,
+			&i.Lapses,
+			&i.IsSuspended,
+			&i.DueAt,
+			&i.LastReviewedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CreatedBy,
+			&i.UpdatedBy,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAudioRecords = `-- name: ListAudioRecords :many
+SELECT id, user_id, filename, file_size, transcript, created_at
+FROM audio_records
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListAudioRecords(ctx context.Context) ([]AudioRecord, error) {
+	rows, err := q.db.Query(ctx, listAudioRecords)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AudioRecord
+	for rows.Next() {
+		var i AudioRecord
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Filename,
+			&i.FileSize,
+			&i.Transcript,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAudioRecordsByUser = `-- name: ListAudioRecordsByUser :many
+SELECT id, user_id, filename, file_size, transcript, created_at
+FROM audio_records
+WHERE user_id = $1
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListAudioRecordsByUser(ctx context.Context, userID string) ([]AudioRecord, error) {
+	rows, err := q.db.Query(ctx, listAudioRecordsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AudioRecord
+	for rows.Next() {
+		var i AudioRecord
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Filename,
+			&i.FileSize,
+			&i.Transcript,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listSkills = `-- name: ListSkills :many
 SELECT id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time
 FROM skills
@@ -488,6 +680,67 @@ func (q *Queries) PublishSkillByID(ctx context.Context, arg PublishSkillByIDPara
 		&i.UpdatedBy,
 		&i.CreatedTime,
 		&i.UpdatedTime,
+	)
+	return i, err
+}
+
+const reviewAnkiCard = `-- name: ReviewAnkiCard :one
+UPDATE anki_cards
+SET ease_factor      = $3,
+    interval_days    = $4,
+    repetitions      = $5,
+    lapses           = $6,
+    due_at           = $7,
+    last_reviewed_at = NOW(),
+    updated_at       = NOW()
+WHERE id = $1 AND user_id = $2
+RETURNING id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+          ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+          created_at, updated_at, created_by, updated_by
+`
+
+type ReviewAnkiCardParams struct {
+	ID           string             `json:"id"`
+	UserID       string             `json:"user_id"`
+	EaseFactor   pgtype.Numeric     `json:"ease_factor"`
+	IntervalDays int32              `json:"interval_days"`
+	Repetitions  int32              `json:"repetitions"`
+	Lapses       int32              `json:"lapses"`
+	DueAt        pgtype.Timestamptz `json:"due_at"`
+}
+
+func (q *Queries) ReviewAnkiCard(ctx context.Context, arg ReviewAnkiCardParams) (AnkiCard, error) {
+	row := q.db.QueryRow(ctx, reviewAnkiCard,
+		arg.ID,
+		arg.UserID,
+		arg.EaseFactor,
+		arg.IntervalDays,
+		arg.Repetitions,
+		arg.Lapses,
+		arg.DueAt,
+	)
+	var i AnkiCard
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.FrontText,
+		&i.BackText,
+		&i.BloomLevel,
+		&i.Tags,
+		&i.Status,
+		&i.SourceLessonID,
+		&i.DeckID,
+		&i.EaseFactor,
+		&i.IntervalDays,
+		&i.Repetitions,
+		&i.Lapses,
+		&i.IsSuspended,
+		&i.DueAt,
+		&i.LastReviewedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CreatedBy,
+		&i.UpdatedBy,
 	)
 	return i, err
 }

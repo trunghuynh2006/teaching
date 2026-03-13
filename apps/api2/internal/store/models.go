@@ -8,6 +8,38 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AnkiCard struct {
+	ID             string             `json:"id"`
+	UserID         string             `json:"user_id"`
+	FrontText      string             `json:"front_text"`
+	BackText       string             `json:"back_text"`
+	BloomLevel     pgtype.Text        `json:"bloom_level"`
+	Tags           []string           `json:"tags"`
+	Status         string             `json:"status"`
+	SourceLessonID pgtype.Text        `json:"source_lesson_id"`
+	DeckID         pgtype.Text        `json:"deck_id"`
+	EaseFactor     pgtype.Numeric     `json:"ease_factor"`
+	IntervalDays   int32              `json:"interval_days"`
+	Repetitions    int32              `json:"repetitions"`
+	Lapses         int32              `json:"lapses"`
+	IsSuspended    bool               `json:"is_suspended"`
+	DueAt          pgtype.Timestamptz `json:"due_at"`
+	LastReviewedAt pgtype.Timestamptz `json:"last_reviewed_at"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy      pgtype.Text        `json:"created_by"`
+	UpdatedBy      pgtype.Text        `json:"updated_by"`
+}
+
+type AudioRecord struct {
+	ID         string             `json:"id"`
+	UserID     string             `json:"user_id"`
+	Filename   string             `json:"filename"`
+	FileSize   int64              `json:"file_size"`
+	Transcript string             `json:"transcript"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+}
+
 type Skill struct {
 	ID          string             `json:"id"`
 	Title       string             `json:"title"`
@@ -19,15 +51,6 @@ type Skill struct {
 	UpdatedBy   string             `json:"updated_by"`
 	CreatedTime pgtype.Timestamptz `json:"created_time"`
 	UpdatedTime pgtype.Timestamptz `json:"updated_time"`
-}
-
-type AudioRecord struct {
-	ID         string             `json:"id"`
-	UserID     string             `json:"user_id"`
-	Filename   string             `json:"filename"`
-	FileSize   int64              `json:"file_size"`
-	Transcript string             `json:"transcript"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
 type User struct {

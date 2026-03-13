@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Folder",
+  "description": "A named collection that groups skills.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique folder identifier."
+    },
+    "name": {
+      "type": "string",
+      "description": "Folder name."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short folder description."
+    },
+    "created_by": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "User identifier that created this record."
+    },
+    "updated_by": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "User identifier that last updated this record."
+    },
+    "created_time": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "Record creation timestamp (ISO 8601)."
+    },
+    "updated_time": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "Record update timestamp (ISO 8601)."
+    }
+  },
+  "required": ["id", "name"]
+}

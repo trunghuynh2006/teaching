@@ -1,4 +1,6 @@
-import TeacherContentStudio from '../components/TeacherContentStudio'
+import AnkiReview from '../components/AnkiReview'
+import AudioRecordList from '../components/AudioRecordList'
+import AudioRecorder from '../components/AudioRecorder'
 
 interface LandingProps {
   activeItem?: string
@@ -6,7 +8,31 @@ interface LandingProps {
   onUnauthorized?: () => void
 }
 
-export function LearnerLanding({ activeItem }: LandingProps) {
+export function LearnerLanding({ activeItem, token, onUnauthorized }: LandingProps) {
+  if (activeItem === 'Anki Review') {
+    return (
+      <section className="panel">
+        <AnkiReview token={token!} onUnauthorized={onUnauthorized!} />
+      </section>
+    )
+  }
+
+  if (activeItem === 'Voice Recorder') {
+    return (
+      <section className="panel">
+        <AudioRecorder token={token!} onUnauthorized={onUnauthorized!} />
+      </section>
+    )
+  }
+
+  if (activeItem === 'Audio Records') {
+    return (
+      <section className="panel">
+        <AudioRecordList token={token!} onUnauthorized={onUnauthorized!} />
+      </section>
+    )
+  }
+
   return (
     <section className="panel">
       <h2>Learner Home</h2>
@@ -16,29 +42,10 @@ export function LearnerLanding({ activeItem }: LandingProps) {
         <article className="card">Upcoming Quiz: Friday</article>
         <article className="card">Completion Rate: 78%</article>
       </div>
-      <small>Selected menu: {activeItem}</small>
     </section>
   )
 }
 
-export function TeacherLanding({ activeItem, token, onUnauthorized }: LandingProps) {
-  return (
-    <section className="panel">
-      <h2>Teacher Workspace</h2>
-      <p>Manage classes, review submissions, and publish engaging lesson plans.</p>
-      {activeItem === 'Content Studio' ? (
-        <TeacherContentStudio token={token!} onUnauthorized={onUnauthorized!} />
-      ) : (
-        <div className="cards-grid">
-          <article className="card glow">Pending Grading: 14 submissions</article>
-          <article className="card">Live Class: Room 2B at 10:00</article>
-          <article className="card">Content Drafts: 3</article>
-        </div>
-      )}
-      <small>Selected menu: {activeItem}</small>
-    </section>
-  )
-}
 
 export function AdminLanding({ activeItem }: LandingProps) {
   return (

@@ -36,3 +36,48 @@ CREATE TABLE IF NOT EXISTS audio_records (
 );
 
 CREATE INDEX IF NOT EXISTS idx_audio_records_user_id ON audio_records (user_id);
+
+CREATE TABLE IF NOT EXISTS anki_cards (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    front_text TEXT NOT NULL,
+    back_text TEXT NOT NULL,
+    bloom_level VARCHAR(20),
+    tags TEXT[] NOT NULL DEFAULT '{}',
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    source_lesson_id VARCHAR(64),
+    deck_id VARCHAR(64),
+    ease_factor NUMERIC(4,2) NOT NULL DEFAULT 2.5,
+    interval_days INT NOT NULL DEFAULT 0,
+    repetitions INT NOT NULL DEFAULT 0,
+    lapses INT NOT NULL DEFAULT 0,
+    is_suspended BOOLEAN NOT NULL DEFAULT FALSE,
+    due_at TIMESTAMPTZ,
+    last_reviewed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by VARCHAR(64),
+    updated_by VARCHAR(64)
+);
+
+CREATE INDEX IF NOT EXISTS idx_anki_cards_user_id ON anki_cards (user_id);
+
+CREATE TABLE IF NOT EXISTS folders (
+    id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_folders_created_time ON folders (created_time DESC);
+
+CREATE TABLE IF NOT EXISTS skill_folders (
+    folder_id VARCHAR(64) NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+    skill_id VARCHAR(64) NOT NULL REFERENCES skills(id) ON DELETE CASCADE,
+    added_by VARCHAR(64) NOT NULL,
+    added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (folder_id, skill_id)
+);

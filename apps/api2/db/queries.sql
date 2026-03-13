@@ -163,3 +163,137 @@ SET status = 'draft',
     updated_time = NOW()
 WHERE id = $1
 RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time;
+
+-- name: InitAnkiCardsTable :exec
+CREATE TABLE IF NOT EXISTS anki_cards (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    front_text TEXT NOT NULL,
+    back_text TEXT NOT NULL,
+    bloom_level VARCHAR(20),
+    tags TEXT[] NOT NULL DEFAULT '{}',
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    source_lesson_id VARCHAR(64),
+    deck_id VARCHAR(64),
+    ease_factor NUMERIC(4,2) NOT NULL DEFAULT 2.5,
+    interval_days INT NOT NULL DEFAULT 0,
+    repetitions INT NOT NULL DEFAULT 0,
+    lapses INT NOT NULL DEFAULT 0,
+    is_suspended BOOLEAN NOT NULL DEFAULT FALSE,
+    due_at TIMESTAMPTZ,
+    last_reviewed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by VARCHAR(64),
+    updated_by VARCHAR(64)
+);
+
+-- name: InitAnkiCardsUserIndex :exec
+CREATE INDEX IF NOT EXISTS idx_anki_cards_user_id ON anki_cards (user_id);
+
+-- name: CreateAnkiCard :one
+INSERT INTO anki_cards (id, user_id, front_text, back_text, bloom_level, tags, created_by, updated_by)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+          ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+          created_at, updated_at, created_by, updated_by;
+
+-- name: ListAnkiCardsDue :many
+SELECT id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+       ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+       created_at, updated_at, created_by, updated_by
+FROM anki_cards
+WHERE user_id = $1
+  AND is_suspended = FALSE
+  AND (due_at IS NULL OR due_at <= NOW())
+ORDER BY due_at ASC NULLS FIRST
+LIMIT 50;
+
+-- name: GetAnkiCardByID :one
+SELECT id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+       ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+       created_at, updated_at, created_by, updated_by
+FROM anki_cards
+WHERE id = $1 AND user_id = $2
+LIMIT 1;
+
+-- name: InitFoldersTable :exec
+CREATE TABLE IF NOT EXISTS folders (
+    id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- name: InitFoldersCreatedTimeIndex :exec
+CREATE INDEX IF NOT EXISTS idx_folders_created_time ON folders (created_time DESC);
+
+-- name: InitSkillFoldersTable :exec
+CREATE TABLE IF NOT EXISTS skill_folders (
+    folder_id VARCHAR(64) NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+    skill_id VARCHAR(64) NOT NULL REFERENCES skills(id) ON DELETE CASCADE,
+    added_by VARCHAR(64) NOT NULL,
+    added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (folder_id, skill_id)
+);
+
+-- name: CreateFolder :one
+INSERT INTO folders (id, name, description, created_by, updated_by)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, name, description, created_by, updated_by, created_time, updated_time;
+
+-- name: ListFolders :many
+SELECT id, name, description, created_by, updated_by, created_time, updated_time
+FROM folders
+ORDER BY created_time DESC;
+
+-- name: GetFolderByID :one
+SELECT id, name, description, created_by, updated_by, created_time, updated_time
+FROM folders
+WHERE id = $1
+LIMIT 1;
+
+-- name: UpdateFolderByID :one
+UPDATE folders
+SET name = $2,
+    description = $3,
+    updated_by = $4,
+    updated_time = NOW()
+WHERE id = $1
+RETURNING id, name, description, created_by, updated_by, created_time, updated_time;
+
+-- name: DeleteFolderByID :exec
+DELETE FROM folders WHERE id = $1;
+
+-- name: AddSkillToFolder :exec
+INSERT INTO skill_folders (folder_id, skill_id, added_by)
+VALUES ($1, $2, $3)
+ON CONFLICT (folder_id, skill_id) DO NOTHING;
+
+-- name: RemoveSkillFromFolder :exec
+DELETE FROM skill_folders WHERE folder_id = $1 AND skill_id = $2;
+
+-- name: ListSkillsInFolder :many
+SELECT s.id, s.title, s.description, s.difficulty, s.status, s.tags,
+       s.created_by, s.updated_by, s.created_time, s.updated_time
+FROM skills s
+JOIN skill_folders sf ON sf.skill_id = s.id
+WHERE sf.folder_id = $1
+ORDER BY sf.added_at ASC;
+
+-- name: ReviewAnkiCard :one
+UPDATE anki_cards
+SET ease_factor      = $3,
+    interval_days    = $4,
+    repetitions      = $5,
+    lapses           = $6,
+    due_at           = $7,
+    last_reviewed_at = NOW(),
+    updated_at       = NOW()
+WHERE id = $1 AND user_id = $2
+RETURNING id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
+          ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
+          created_at, updated_at, created_by, updated_by;

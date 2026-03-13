@@ -10,25 +10,31 @@ import (
 
 type Querier interface {
 	ArchiveSkillByID(ctx context.Context, arg ArchiveSkillByIDParams) (Skill, error)
+	CreateAnkiCard(ctx context.Context, arg CreateAnkiCardParams) (AnkiCard, error)
 	CreateAudioRecord(ctx context.Context, arg CreateAudioRecordParams) (AudioRecord, error)
-	InitAudioRecordsTable(ctx context.Context) error
-	InitAudioRecordsUserIndex(ctx context.Context) error
-	ListAudioRecords(ctx context.Context) ([]AudioRecord, error)
-	ListAudioRecordsByUser(ctx context.Context, userID string) ([]AudioRecord, error)
 	CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	GetAnkiCardByID(ctx context.Context, arg GetAnkiCardByIDParams) (AnkiCard, error)
 	GetSkillByID(ctx context.Context, id string) (Skill, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUserHashByUsername(ctx context.Context, username string) (string, error)
+	InitAnkiCardsTable(ctx context.Context) error
+	InitAnkiCardsUserIndex(ctx context.Context) error
+	InitAudioRecordsTable(ctx context.Context) error
+	InitAudioRecordsUserIndex(ctx context.Context) error
 	InitSkillsCreatedTimeIndex(ctx context.Context) error
 	InitSkillsStatusState(ctx context.Context) error
 	InitSkillsTable(ctx context.Context) error
 	InitUsersRoleIndex(ctx context.Context) error
 	InitUsersTable(ctx context.Context) error
 	InitUsersUsernameIndex(ctx context.Context) error
+	ListAnkiCardsDue(ctx context.Context, userID string) ([]AnkiCard, error)
+	ListAudioRecords(ctx context.Context) ([]AudioRecord, error)
+	ListAudioRecordsByUser(ctx context.Context, userID string) ([]AudioRecord, error)
 	ListSkills(ctx context.Context) ([]Skill, error)
 	MoveSkillToDraftByID(ctx context.Context, arg MoveSkillToDraftByIDParams) (Skill, error)
 	PublishSkillByID(ctx context.Context, arg PublishSkillByIDParams) (Skill, error)
+	ReviewAnkiCard(ctx context.Context, arg ReviewAnkiCardParams) (AnkiCard, error)
 	UpdateSkillByID(ctx context.Context, arg UpdateSkillByIDParams) (Skill, error)
 	UpdateUserByUsername(ctx context.Context, arg UpdateUserByUsernameParams) error
 }

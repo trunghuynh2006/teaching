@@ -52,6 +52,21 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitAudioRecordsUserIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitAnkiCardsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitAnkiCardsUserIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitFoldersTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitFoldersCreatedTimeIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitSkillFoldersTable(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

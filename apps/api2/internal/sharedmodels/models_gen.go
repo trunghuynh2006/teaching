@@ -4,6 +4,7 @@ package sharedmodels
 
 type AnkiCard struct {
 	BackText string `json:"back_text"`
+	BloomLevel *string `json:"bloom_level,omitempty"`
 	CreatedAt string `json:"created_at"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
@@ -105,6 +106,16 @@ type Assignment struct {
 	Status *string `json:"status,omitempty"`
 	SubmittedAt *string `json:"submitted_at,omitempty"`
 	Title string `json:"title"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type Folder struct {
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Id string `json:"id"`
+	Name string `json:"name"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }

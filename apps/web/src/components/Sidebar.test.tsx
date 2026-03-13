@@ -5,65 +5,64 @@ import Sidebar from './Sidebar'
 import { MenuItem } from '../config/menu'
 
 const menuItems: MenuItem[] = [
-  { label: 'My Classes', path: '/teacher/classes' },
-  {
-    label: 'Content Studio',
-    path: '/teacher/content-studio',
-    nested: true,
-    children: [{ label: 'Skill Library', path: '/teacher/content-studio/skills' }]
-  }
+  { label: 'Skill Library', path: '/teacher/content-studio/skills', icon: '📚' },
+  { label: 'Folders',       path: '/teacher/content-studio/folders', icon: '📁' },
 ]
 
+const defaultProps = {
+  menuItems,
+  activePath: '/teacher/content-studio/skills',
+  userName: 'John Carter',
+  onNavigate: vi.fn(),
+  onLogout: vi.fn(),
+}
+
 describe('Sidebar', () => {
-  it('renders the brand name', () => {
-    render(<Sidebar role="teacher" menuItems={menuItems} activePath="/teacher/classes" onNavigate={vi.fn()} />)
-    expect(screen.getByText('Study Platform')).toBeInTheDocument()
+  it('renders the brand abbreviation', () => {
+    render(<Sidebar {...defaultProps} />)
+    expect(screen.getByText('SP')).toBeInTheDocument()
   })
 
-  it('renders role badge in uppercase', () => {
-    render(<Sidebar role="teacher" menuItems={menuItems} activePath="/teacher/classes" onNavigate={vi.fn()} />)
-    expect(screen.getByText('TEACHER')).toBeInTheDocument()
-  })
-
-  it('renders all top-level nav items', () => {
-    render(<Sidebar role="teacher" menuItems={menuItems} activePath="/teacher/classes" onNavigate={vi.fn()} />)
-    expect(screen.getByText('My Classes')).toBeInTheDocument()
-    expect(screen.getByText('Content Studio')).toBeInTheDocument()
+  it('renders a button for each menu item', () => {
+    render(<Sidebar {...defaultProps} />)
+    expect(screen.getByTitle('Skill Library')).toBeInTheDocument()
+    expect(screen.getByTitle('Folders')).toBeInTheDocument()
   })
 
   it('marks the active item with active class', () => {
-    render(<Sidebar role="teacher" menuItems={menuItems} activePath="/teacher/classes" onNavigate={vi.fn()} />)
-    const btn = screen.getByText('My Classes').closest('button')
-    expect(btn).toHaveClass('active')
+    render(<Sidebar {...defaultProps} />)
+    expect(screen.getByTitle('Skill Library')).toHaveClass('active')
   })
 
   it('does not mark inactive items as active', () => {
-    render(<Sidebar role="teacher" menuItems={menuItems} activePath="/teacher/classes" onNavigate={vi.fn()} />)
-    const btn = screen.getByText('Content Studio').closest('button')
-    expect(btn).not.toHaveClass('active')
-  })
-
-  it('shows child nav items when parent is active', () => {
-    render(
-      <Sidebar
-        role="teacher"
-        menuItems={menuItems}
-        activePath="/teacher/content-studio/skills"
-        onNavigate={vi.fn()}
-      />
-    )
-    expect(screen.getByText('Skill Library')).toBeInTheDocument()
-  })
-
-  it('hides child nav items when parent is not active', () => {
-    render(<Sidebar role="teacher" menuItems={menuItems} activePath="/teacher/classes" onNavigate={vi.fn()} />)
-    expect(screen.queryByText('Skill Library')).not.toBeInTheDocument()
+    render(<Sidebar {...defaultProps} />)
+    expect(screen.getByTitle('Folders')).not.toHaveClass('active')
   })
 
   it('calls onNavigate with the item path on click', async () => {
     const onNavigate = vi.fn()
-    render(<Sidebar role="teacher" menuItems={menuItems} activePath="/teacher/classes" onNavigate={onNavigate} />)
-    await userEvent.click(screen.getByText('Content Studio'))
-    expect(onNavigate).toHaveBeenCalledWith('/teacher/content-studio')
+    render(<Sidebar {...defaultProps} onNavigate={onNavigate} />)
+    await userEvent.click(screen.getByTitle('Folders'))
+    expect(onNavigate).toHaveBeenCalledWith('/teacher/content-studio/folders')
+  })
+
+  it('renders user initials in the avatar button', () => {
+    render(<Sidebar {...defaultProps} />)
+    expect(screen.getByTitle('John Carter')).toHaveTextContent('JC')
+  })
+
+  it('shows popup with sign-out on avatar click', async () => {
+    render(<Sidebar {...defaultProps} />)
+    await userEvent.click(screen.getByTitle('John Carter'))
+    expect(screen.getByText('Sign out')).toBeInTheDocument()
+    expect(screen.getByText('John Carter')).toBeInTheDocument()
+  })
+
+  it('calls onLogout when sign-out is clicked', async () => {
+    const onLogout = vi.fn()
+    render(<Sidebar {...defaultProps} onLogout={onLogout} />)
+    await userEvent.click(screen.getByTitle('John Carter'))
+    await userEvent.click(screen.getByText('Sign out'))
+    expect(onLogout).toHaveBeenCalled()
   })
 })

@@ -1,9 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
-import { MENU_BY_ROLE, MenuItem, Role } from './config/menu'
+import TeacherContentStudio from './components/TeacherContentStudio'
+import {
+  MENU_BY_ROLE,
+  MenuItem,
+  Role,
+  SIDEBAR_BY_SECTION,
+  TEACHER_SECTIONS,
+} from './config/menu'
 import LoginPage from './pages/LoginPage'
-import { AdminLanding, LearnerLanding, ParentLanding, TeacherLanding } from './pages/LandingPages'
+import { AdminLanding, LearnerLanding, ParentLanding } from './pages/LandingPages'
 
 interface User {
   role?: string
@@ -22,9 +29,26 @@ type LandingComponent = (props: LandingProps) => React.ReactElement
 
 const LANDING_BY_ROLE: Record<string, LandingComponent> = {
   learner: (props) => <LearnerLanding {...props} />,
-  teacher: (props) => <TeacherLanding {...props} />,
   admin: (props) => <AdminLanding {...props} />,
-  parent: (props) => <ParentLanding {...props} />
+  parent: (props) => <ParentLanding {...props} />,
+}
+
+function TeacherClasses() {
+  return (
+    <section className="panel">
+      <h2>My Classes</h2>
+      <p>Coming soon.</p>
+    </section>
+  )
+}
+
+function TeacherGradebook() {
+  return (
+    <section className="panel">
+      <h2>Gradebook</h2>
+      <p>Coming soon.</p>
+    </section>
+  )
 }
 
 export default function App() {
@@ -41,16 +65,30 @@ export default function App() {
   })
 
   const role = user?.role ?? user?.Role ?? ''
-  const menuItems: MenuItem[] = useMemo(() => MENU_BY_ROLE[role as Role] || [], [role])
-  const defaultPath = menuItems[0]?.path || '/'
 
+  // Context-based sidebar: teacher uses section map, others use role map
+  const sidebarItems: MenuItem[] = useMemo(() => {
+    if (role === 'teacher') {
+      const section = TEACHER_SECTIONS.find((s) => location.pathname.startsWith(s.path))
+      return section ? (SIDEBAR_BY_SECTION[section.path] ?? []) : []
+    }
+    return MENU_BY_ROLE[role as Role] ?? []
+  }, [role, location.pathname])
+
+  const menuItems = MENU_BY_ROLE[role as Role] ?? []
+  const defaultPath =
+    role === 'teacher'
+      ? '/teacher/content-studio/skills'
+      : menuItems[0]?.path ?? '/'
+
+  // Redirect unknown paths for non-teacher roles
   useEffect(() => {
-    if (!token || !user || menuItems.length === 0) return
+    if (role === 'teacher' || !token || !user || menuItems.length === 0) return
     const isKnownPath = menuItems.some(
       (item) => location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)
     )
     if (!isKnownPath) navigate(defaultPath, { replace: true })
-  }, [defaultPath, location.pathname, menuItems, navigate, token, user])
+  }, [defaultPath, location.pathname, menuItems, navigate, token, user, role])
 
   const handleLogin = ({ token, user, defaultPath }: { token: string; user: User; defaultPath: string }) => {
     localStorage.setItem('token', token)
@@ -72,33 +110,63 @@ export default function App() {
     return <LoginPage onLogin={handleLogin} />
   }
 
+  const activeSection = TEACHER_SECTIONS.find((s) => location.pathname.startsWith(s.path))
   const Landing = LANDING_BY_ROLE[role]
 
   return (
     <main className="app-shell">
       <Sidebar
-        role={role}
-        menuItems={menuItems}
+        menuItems={sidebarItems}
         activePath={location.pathname}
+        userName={user.full_name ?? user.FullName ?? role}
         onNavigate={navigate}
+        onLogout={handleLogout}
       />
       <section className="content-area">
         <header className="topbar">
-          <div>
-            <h1>Welcome, {user.full_name ?? user.FullName}</h1>
-            <p>{role} dashboard</p>
-          </div>
-          <button onClick={handleLogout}>Logout</button>
+          {role === 'teacher' ? (
+            <nav className="section-tabs">
+              {TEACHER_SECTIONS.map((s) => (
+                <button
+                  key={s.path}
+                  className={`section-tab${activeSection?.path === s.path ? ' active' : ''}`}
+                  onClick={() => navigate(s.defaultPath)}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </nav>
+          ) : (
+            <span className="topbar-brand">Study Platform</span>
+          )}
         </header>
         <Routes>
-          {menuItems.map((item) => (
-            <Route
-              key={item.path}
-              path={item.nested ? `${item.path}/*` : item.path}
-              element={<Landing activeItem={item.label} token={token} onUnauthorized={handleLogout} />}
-            />
-          ))}
-          <Route path="*" element={<Navigate to={defaultPath} replace />} />
+          {role === 'teacher' ? (
+            <>
+              <Route path="/teacher/classes" element={<TeacherClasses />} />
+              <Route path="/teacher/gradebook" element={<TeacherGradebook />} />
+              <Route
+                path="/teacher/content-studio/*"
+                element={<TeacherContentStudio token={token} onUnauthorized={handleLogout} />}
+              />
+              <Route path="*" element={<Navigate to="/teacher/content-studio/skills" replace />} />
+            </>
+          ) : (
+            <>
+              {menuItems.map((item) => (
+                <Route
+                  key={item.path}
+                  path={item.path}
+                  element={
+                    Landing ? (
+                      <Landing activeItem={item.label} token={token} onUnauthorized={handleLogout} />
+                    ) : null
+                  }
+                />
+              ))}
+              <Route path="*" element={<Navigate to={defaultPath} replace />} />
+            </>
+          )}
         </Routes>
       </section>
     </main>

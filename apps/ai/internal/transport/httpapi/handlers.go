@@ -3,6 +3,7 @@ package httpapi
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 
 	appcontent "ai/internal/app/content"
@@ -148,7 +149,8 @@ func (h *Handler) GenerateAnkiCards(w http.ResponseWriter, r *http.Request, clai
 		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
 			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
 		default:
-			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: "failed to generate anki cards"})
+			log.Printf("generate anki cards error: %v", err)
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
 		}
 		return
 	}
