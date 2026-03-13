@@ -95,3 +95,32 @@ CREATE TABLE IF NOT EXISTS knowledges (
 
 CREATE INDEX IF NOT EXISTS idx_knowledges_folder_id ON knowledges (folder_id);
 CREATE INDEX IF NOT EXISTS idx_knowledges_created_time ON knowledges (created_time DESC);
+
+CREATE TABLE IF NOT EXISTS spaces (
+    id VARCHAR(64) PRIMARY KEY,
+    folder_id VARCHAR(64) NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+    name VARCHAR(200) NOT NULL,
+    space_type VARCHAR(50) NOT NULL DEFAULT '',
+    description TEXT NOT NULL DEFAULT '',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_spaces_folder_id ON spaces (folder_id);
+CREATE INDEX IF NOT EXISTS idx_spaces_created_time ON spaces (created_time DESC);
+
+CREATE TABLE IF NOT EXISTS space_items (
+    id VARCHAR(64) PRIMARY KEY,
+    space_id VARCHAR(64) NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
+    title VARCHAR(200) NOT NULL DEFAULT '',
+    content TEXT NOT NULL DEFAULT '',
+    position INT NOT NULL DEFAULT 0,
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_space_items_space_id ON space_items (space_id);

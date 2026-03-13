@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { API_URL } from '../config'
 import KnowledgeManager from './KnowledgeManager'
+import SpaceManager from './SpaceManager'
+import SpaceItemsSidebar from './SpaceItemsSidebar'
 
 interface FolderItem {
   id: string
@@ -11,15 +13,6 @@ interface FolderItem {
   updated_by?: string
   created_time?: string
   updated_time?: string
-}
-
-interface SkillItem {
-  id: string
-  title: string
-  description?: string
-  difficulty?: string
-  status?: string
-  tags?: string[]
 }
 
 interface FolderManagerProps {
@@ -49,12 +42,25 @@ function formatDate(dateTime: string | undefined): string {
   return parsed.toLocaleString()
 }
 
+type FolderSection = 'knowledge' | 'spaces'
+
+interface SidebarSpace {
+  id: string
+  name: string
+  space_type?: string
+}
+
 export default function FolderManager({ token, onUnauthorized }: FolderManagerProps) {
   const [searchParams] = useSearchParams()
   const [folders, setFolders] = useState<FolderItem[]>([])
-  const [allSkills, setAllSkills] = useState<SkillItem[]>([])
-  const [folderSkills, setFolderSkills] = useState<SkillItem[]>([])
   const [selectedFolder, setSelectedFolder] = useState<FolderItem | null>(null)
+  const [activeSection, setActiveSection] = useState<FolderSection>('knowledge')
+  const [knowledgeCount, setKnowledgeCount] = useState(0)
+  const [knowledgeAddTrigger, setKnowledgeAddTrigger] = useState(0)
+  const [spacesCount, setSpacesCount] = useState(0)
+  const [spacesAddTrigger, setSpacesAddTrigger] = useState(0)
+  const [sidebarSpaces, setSidebarSpaces] = useState<SidebarSpace[]>([])
+  const [selectedSpace, setSelectedSpace] = useState<SidebarSpace | null>(null)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -81,30 +87,17 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     }
   }, [token, onUnauthorized])
 
-  const fetchAllSkills = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_URL}/skills`, { headers })
-      if (res.status === 401) { onUnauthorized?.(); return }
-      if (!res.ok) return
-      const data = await res.json()
-      setAllSkills(Array.isArray(data) ? data : [])
-    } catch (_) {}
-  }, [token, onUnauthorized])
+  useEffect(() => { fetchFolders() }, [fetchFolders])
 
-  const fetchFolderSkills = useCallback(async (folderId: string) => {
+  const fetchSidebarSpaces = useCallback(async (folderId: string) => {
     try {
-      const res = await fetch(`${API_URL}/folders/${folderId}/skills`, { headers })
-      if (res.status === 401) { onUnauthorized?.(); return }
-      if (!res.ok) return
-      const data = await res.json()
-      setFolderSkills(Array.isArray(data) ? data : [])
+      const res = await fetch(`${API_URL}/folders/${folderId}/spaces`, { headers })
+      if (res.ok) {
+        const data = await res.json()
+        setSidebarSpaces(Array.isArray(data) ? data : [])
+      }
     } catch (_) {}
-  }, [token, onUnauthorized])
-
-  useEffect(() => {
-    fetchFolders()
-    fetchAllSkills()
-  }, [fetchFolders, fetchAllSkills])
+  }, [token])
 
   const openCreateForm = () => {
     setEditingId('')
@@ -141,7 +134,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
       const res = await fetch(url, {
         method,
         headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description: form.description.trim() })
+        body: JSON.stringify({ name, description: form.description.trim() }),
       })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
@@ -156,137 +149,92 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   }
 
   const handleDelete = async (folder: FolderItem) => {
-    if (!window.confirm(`Delete folder "${folder.name}"? This will not delete the skills inside.`)) return
+    if (!window.confirm(`Delete folder "${folder.name}"?`)) return
     setError('')
     setNotice('')
     try {
-      const res = await fetch(`${API_URL}/folders/${folder.id}`, {
-        method: 'DELETE',
-        headers
-      })
+      const res = await fetch(`${API_URL}/folders/${folder.id}`, { method: 'DELETE', headers })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
       setNotice('Folder deleted')
-      if (selectedFolder?.id === folder.id) {
-        setSelectedFolder(null)
-        setFolderSkills([])
-      }
+      if (selectedFolder?.id === folder.id) setSelectedFolder(null)
       await fetchFolders()
     } catch (err) {
       setError((err as Error).message || 'Failed to delete folder')
     }
   }
 
-  const openFolder = async (folder: FolderItem) => {
+  const openFolder = (folder: FolderItem) => {
     setSelectedFolder(folder)
+    setActiveSection('knowledge')
+    setKnowledgeCount(0)
+    setSpacesCount(0)
+    setSidebarSpaces([])
+    setSelectedSpace(null)
     setError('')
     setNotice('')
-    await fetchFolderSkills(folder.id)
+    fetchSidebarSpaces(folder.id)
   }
+
+  // Keep sidebar spaces in sync when spaces are added/removed
+  useEffect(() => {
+    if (selectedFolder) fetchSidebarSpaces(selectedFolder.id)
+  }, [spacesCount])
 
   // Auto-open folder from ?folder= URL param
   const targetFolderId = searchParams.get('folder')
   useEffect(() => {
     if (!targetFolderId || folders.length === 0) return
     const match = folders.find((f) => f.id === targetFolderId)
-    if (match && selectedFolder?.id !== targetFolderId) {
-      openFolder(match)
-    }
+    if (match && selectedFolder?.id !== targetFolderId) openFolder(match)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetFolderId, folders])
 
-  const closeFolder = () => {
-    setSelectedFolder(null)
-    setFolderSkills([])
-  }
-
-  const handleAddSkill = async (skillId: string) => {
-    if (!selectedFolder) return
-    setError('')
-    try {
-      const res = await fetch(`${API_URL}/folders/${selectedFolder.id}/skills/${skillId}`, {
-        method: 'POST',
-        headers
-      })
-      if (res.status === 401) { onUnauthorized?.(); return }
-      if (!res.ok) throw new Error(await parseError(res))
-      await fetchFolderSkills(selectedFolder.id)
-    } catch (err) {
-      setError((err as Error).message || 'Failed to add skill')
-    }
-  }
-
-  const handleRemoveSkill = async (skillId: string) => {
-    if (!selectedFolder) return
-    setError('')
-    try {
-      const res = await fetch(`${API_URL}/folders/${selectedFolder.id}/skills/${skillId}`, {
-        method: 'DELETE',
-        headers
-      })
-      if (res.status === 401) { onUnauthorized?.(); return }
-      if (!res.ok) throw new Error(await parseError(res))
-      await fetchFolderSkills(selectedFolder.id)
-    } catch (err) {
-      setError((err as Error).message || 'Failed to remove skill')
-    }
-  }
-
-  const folderSkillIds = new Set(folderSkills.map((s) => s.id))
-  const availableSkills = allSkills.filter((s) => !folderSkillIds.has(s.id))
-
-  return (
-    <section className="skill-studio">
-      <div className="skill-studio-header">
-        <h3>{selectedFolder ? `Folder: ${selectedFolder.name}` : 'Folders'}</h3>
-        <div className="skill-actions compact">
-          {selectedFolder ? (
-            <button type="button" className="secondary" onClick={closeFolder}>
-              Back to Folders
+  // ── Folder list view ────────────────────────────────────────
+  if (!selectedFolder) {
+    return (
+      <section className="skill-studio">
+        <div className="skill-studio-header">
+          <h3>Folders</h3>
+          <div className="skill-actions compact">
+            <button type="button" className="secondary" onClick={fetchFolders} disabled={loading}>
+              {loading ? 'Refreshing...' : 'Refresh'}
             </button>
-          ) : (
-            <>
-              <button type="button" className="secondary" onClick={fetchFolders} disabled={loading}>
-                {loading ? 'Refreshing...' : 'Refresh'}
-              </button>
-              <button type="button" onClick={openCreateForm}>New Folder</button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {notice && <div className="notice">{notice}</div>}
-      {error && <div className="error">{error}</div>}
-
-      {showForm && !selectedFolder && (
-        <form className="skill-form" onSubmit={handleSubmit}>
-          <label>
-            Name
-            <input
-              value={form.name}
-              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g. Algebra Unit 1"
-              required
-            />
-          </label>
-          <label>
-            Description
-            <input
-              value={form.description}
-              onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-              placeholder="Optional description"
-            />
-          </label>
-          <div className="skill-actions">
-            <button type="submit" disabled={saving}>
-              {saving ? 'Saving...' : editingId ? 'Update Folder' : 'Create Folder'}
-            </button>
-            <button type="button" className="secondary" onClick={cancelForm}>Cancel</button>
+            <button type="button" onClick={openCreateForm}>New Folder</button>
           </div>
-        </form>
-      )}
+        </div>
 
-      {!selectedFolder && (
+        {notice && <div className="notice">{notice}</div>}
+        {error && <div className="error">{error}</div>}
+
+        {showForm && (
+          <form className="skill-form" onSubmit={handleSubmit}>
+            <label>
+              Name
+              <input
+                value={form.name}
+                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g. Algebra Unit 1"
+                required
+              />
+            </label>
+            <label>
+              Description
+              <input
+                value={form.description}
+                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="Optional description"
+              />
+            </label>
+            <div className="skill-actions">
+              <button type="submit" disabled={saving}>
+                {saving ? 'Saving...' : editingId ? 'Update Folder' : 'Create Folder'}
+              </button>
+              <button type="button" className="secondary" onClick={cancelForm}>Cancel</button>
+            </div>
+          </form>
+        )}
+
         <div className="skill-list">
           {folders.length === 0 && !loading ? (
             <p>No folders yet. Use "New Folder" to create one.</p>
@@ -303,70 +251,105 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
                   <span>Updated: {formatDate(folder.updated_time)}</span>
                 </div>
                 <div className="skill-actions">
-                  <button type="button" className="secondary" onClick={() => openFolder(folder)}>
-                    View Skills
-                  </button>
-                  <button type="button" onClick={() => openEditForm(folder)}>Edit</button>
-                  <button type="button" className="secondary" onClick={() => handleDelete(folder)}>
-                    Delete
-                  </button>
+                  <button type="button" onClick={() => openFolder(folder)}>Open</button>
+                  <button type="button" className="secondary" onClick={() => openEditForm(folder)}>Edit</button>
+                  <button type="button" className="secondary" onClick={() => handleDelete(folder)}>Delete</button>
                 </div>
               </article>
             ))
           )}
         </div>
-      )}
+      </section>
+    )
+  }
 
-      {selectedFolder && (
-        <div>
-          {selectedFolder.description && <p>{selectedFolder.description}</p>}
-          <h4>Skills in this folder</h4>
-          <div className="skill-list">
-            {folderSkills.length === 0 ? (
-              <p>No skills in this folder yet.</p>
-            ) : (
-              folderSkills.map((skill) => (
-                <article className="skill-item" key={skill.id}>
-                  <header>
-                    <h4>{skill.title}</h4>
-                    {skill.status && <span className={`pill status-${skill.status}`}>{skill.status}</span>}
-                  </header>
-                  {skill.description && <p>{skill.description}</p>}
-                  <div className="skill-actions">
-                    <button type="button" className="secondary" onClick={() => handleRemoveSkill(skill.id)}>
-                      Remove from folder
-                    </button>
-                  </div>
-                </article>
-              ))
-            )}
+  // ── Folder detail view ──────────────────────────────────────
+  return (
+    <section className="skill-studio folder-view">
+      <nav className="folder-sidebar-panel">
+        <div className="folder-sidebar-name">{selectedFolder.name}</div>
+
+        {/* Knowledge nav item */}
+        <button
+          className={`folder-sidebar-item${activeSection === 'knowledge' ? ' active' : ''}`}
+          onClick={() => { setActiveSection('knowledge'); setSelectedSpace(null) }}
+        >
+          <span>Knowledge</span>
+          <div className="folder-sidebar-item-end">
+            <span className="folder-sidebar-count">{knowledgeCount}</span>
+            <button
+              className="folder-sidebar-add-btn"
+              title="Add knowledge"
+              onClick={(e) => { e.stopPropagation(); setKnowledgeAddTrigger((n) => n + 1) }}
+            >
+              +
+            </button>
           </div>
+        </button>
 
-          {availableSkills.length > 0 && (
-            <div style={{ marginTop: '1.5rem' }}>
-              <h4>Add skill to folder</h4>
-              <div className="skill-list">
-                {availableSkills.map((skill) => (
-                  <article className="skill-item" key={skill.id}>
-                    <header>
-                      <h4>{skill.title}</h4>
-                      {skill.status && <span className={`pill status-${skill.status}`}>{skill.status}</span>}
-                    </header>
-                    <div className="skill-actions">
-                      <button type="button" onClick={() => handleAddSkill(skill.id)}>
-                        Add to folder
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="knowledge-section-divider" />
-          <KnowledgeManager folderId={selectedFolder.id} token={token} onUnauthorized={onUnauthorized} />
+        {/* Spaces section title */}
+        <div className="folder-sidebar-section-title">
+          <span>Spaces</span>
+          <button
+            className="folder-sidebar-add-btn always-visible"
+            title="Add space"
+            onClick={() => { setSpacesAddTrigger((n) => n + 1); setActiveSection('spaces') }}
+          >
+            +
+          </button>
         </div>
+
+        {/* List of spaces */}
+        {sidebarSpaces.map((space) => (
+          <button
+            key={space.id}
+            className={`folder-sidebar-space-item${selectedSpace?.id === space.id ? ' active' : ''}`}
+            onClick={() => { setSelectedSpace(space); setActiveSection('spaces') }}
+          >
+            <span className="folder-sidebar-space-name">{space.name}</span>
+            {space.space_type && <span className="space-type-pill">{space.space_type}</span>}
+          </button>
+        ))}
+        {sidebarSpaces.length === 0 && (
+          <span className="folder-sidebar-empty">No spaces</span>
+        )}
+      </nav>
+
+      <div className="folder-sidebar-divider" />
+
+      {/* Space items sidebar — only when a space is selected */}
+      {selectedSpace && (
+        <>
+          <SpaceItemsSidebar
+            space={selectedSpace}
+            token={token}
+            onUnauthorized={onUnauthorized}
+            onClose={() => setSelectedSpace(null)}
+          />
+          <div className="folder-sidebar-divider" />
+        </>
       )}
+
+      <div className="folder-content">
+        {activeSection === 'knowledge' && (
+          <KnowledgeManager
+            folderId={selectedFolder.id}
+            token={token}
+            onUnauthorized={onUnauthorized}
+            onCountChange={setKnowledgeCount}
+            addTrigger={knowledgeAddTrigger}
+          />
+        )}
+        {activeSection === 'spaces' && (
+          <SpaceManager
+            folderId={selectedFolder.id}
+            token={token}
+            onUnauthorized={onUnauthorized}
+            onCountChange={setSpacesCount}
+            addTrigger={spacesAddTrigger}
+          />
+        )}
+      </div>
     </section>
   )
 }

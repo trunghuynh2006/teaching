@@ -131,6 +131,30 @@ type Knowledge struct {
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
+type Space struct {
+	CreatedBy   *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Description *string `json:"description,omitempty"`
+	FolderId    string  `json:"folder_id"`
+	Id          string  `json:"id"`
+	Name        string  `json:"name"`
+	SpaceType   *string `json:"space_type,omitempty"`
+	UpdatedBy   *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type SpaceItem struct {
+	Content     string  `json:"content"`
+	CreatedBy   *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Id          string  `json:"id"`
+	Position    *int    `json:"position,omitempty"`
+	SpaceId     string  `json:"space_id"`
+	Title       *string `json:"title,omitempty"`
+	UpdatedBy   *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
 type Lesson struct {
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`

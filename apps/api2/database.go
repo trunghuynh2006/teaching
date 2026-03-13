@@ -76,6 +76,21 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitKnowledgesCreatedTimeIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitSpacesTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitSpacesFolderIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitSpacesCreatedTimeIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitSpaceItemsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitSpaceItemsSpaceIndex(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

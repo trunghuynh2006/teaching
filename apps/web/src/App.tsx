@@ -127,23 +127,6 @@ export default function App() {
         folderSection={role === 'learner' ? { token, activePath: location.pathname + location.search, onNavigate: navigate } : undefined}
       />
       <section className="content-area">
-        <header className="topbar">
-          {role === 'teacher' ? (
-            <nav className="section-tabs">
-              {TEACHER_SECTIONS.map((s) => (
-                <button
-                  key={s.path}
-                  className={`section-tab${activeSection?.path === s.path ? ' active' : ''}`}
-                  onClick={() => navigate(s.defaultPath)}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </nav>
-          ) : (
-            <span className="topbar-brand">Study Platform</span>
-          )}
-        </header>
         <Routes>
           {role === 'teacher' ? (
             <>

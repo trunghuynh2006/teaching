@@ -16,6 +16,8 @@ interface KnowledgeManagerProps {
   folderId: string
   token: string
   onUnauthorized?: () => void
+  onCountChange?: (count: number) => void
+  addTrigger?: number
 }
 
 interface FormState {
@@ -40,7 +42,7 @@ function formatDate(dateTime: string | undefined): string {
   return parsed.toLocaleString()
 }
 
-export default function KnowledgeManager({ folderId, token, onUnauthorized }: KnowledgeManagerProps) {
+export default function KnowledgeManager({ folderId, token, onUnauthorized, onCountChange, addTrigger }: KnowledgeManagerProps) {
   const [knowledges, setKnowledges] = useState<KnowledgeItem[]>([])
   const [editingItem, setEditingItem] = useState<KnowledgeItem | null>(null)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
@@ -60,7 +62,9 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
       const data = await res.json()
-      setKnowledges(Array.isArray(data) ? data : [])
+      const items: KnowledgeItem[] = Array.isArray(data) ? data : []
+      setKnowledges(items)
+      onCountChange?.(items.length)
     } catch (err) {
       setError((err as Error).message || 'Failed to load knowledges')
     } finally {
@@ -70,13 +74,16 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
 
   useEffect(() => { fetchKnowledges() }, [fetchKnowledges])
 
-  const openCreateForm = () => {
-    setEditingItem(null)
-    setForm(DEFAULT_FORM)
-    setShowForm(true)
-    setNotice('')
-    setError('')
-  }
+  // Open create form when parent triggers it
+  useEffect(() => {
+    if (addTrigger) {
+      setEditingItem(null)
+      setForm(DEFAULT_FORM)
+      setShowForm(true)
+      setNotice('')
+      setError('')
+    }
+  }, [addTrigger])
 
   const openEditForm = (item: KnowledgeItem) => {
     setEditingItem(item)
@@ -111,7 +118,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
       })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
-      setNotice(editingItem ? 'Knowledge updated' : 'Knowledge created')
+      setNotice(editingItem ? 'Updated' : 'Created')
       cancelForm()
       await fetchKnowledges()
     } catch (err) {
@@ -130,7 +137,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
       const res = await fetch(`${API_URL}/knowledges/${item.id}`, { method: 'DELETE', headers })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
-      setNotice('Knowledge deleted')
+      setNotice('Deleted')
       await fetchKnowledges()
     } catch (err) {
       setError((err as Error).message || 'Failed to delete knowledge')
@@ -139,16 +146,6 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
 
   return (
     <div className="knowledge-manager">
-      <div className="knowledge-header">
-        <h4>Knowledge</h4>
-        <div className="skill-actions compact">
-          <button type="button" className="secondary" onClick={fetchKnowledges} disabled={loading}>
-            {loading ? 'Loading…' : 'Refresh'}
-          </button>
-          <button type="button" onClick={openCreateForm}>Add Knowledge</button>
-        </div>
-      </div>
-
       {notice && <div className="notice">{notice}</div>}
       {error && <div className="error">{error}</div>}
 
@@ -157,6 +154,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
           <label>
             Title (optional)
             <input
+              autoFocus
               value={form.title}
               onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
               placeholder="e.g. Definition of velocity"
@@ -182,8 +180,8 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
       )}
 
       <div className="knowledge-list">
-        {knowledges.length === 0 && !loading ? (
-          <p className="knowledge-empty">No knowledge entries yet. Use "Add Knowledge" to create one.</p>
+        {knowledges.length === 0 && !loading && !showForm ? (
+          <p className="knowledge-empty">No entries yet.</p>
         ) : (
           knowledges.map((item) => (
             <article className="knowledge-item" key={item.id}>
@@ -197,7 +195,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized }: Kn
                 )}
               </div>
               <div className="skill-actions">
-                <button type="button" onClick={() => openEditForm(item)}>Edit</button>
+                <button type="button" className="secondary" onClick={() => openEditForm(item)}>Edit</button>
                 <button type="button" className="secondary" onClick={() => handleDelete(item)}>Delete</button>
               </div>
             </article>
