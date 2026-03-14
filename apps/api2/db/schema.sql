@@ -124,3 +124,56 @@ CREATE TABLE IF NOT EXISTS space_items (
 );
 
 CREATE INDEX IF NOT EXISTS idx_space_items_space_id ON space_items (space_id);
+
+CREATE TABLE IF NOT EXISTS questions (
+    id VARCHAR(64) PRIMARY KEY,
+    space_item_id VARCHAR(64) NOT NULL REFERENCES space_items(id) ON DELETE CASCADE,
+    question_type VARCHAR(50) NOT NULL DEFAULT '',
+    body TEXT NOT NULL DEFAULT '',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_questions_space_item_id ON questions (space_item_id);
+
+CREATE TABLE IF NOT EXISTS answers (
+    id VARCHAR(64) PRIMARY KEY,
+    question_id VARCHAR(64) NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+    text TEXT NOT NULL DEFAULT '',
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE,
+    position INT NOT NULL DEFAULT 0,
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_answers_question_id ON answers (question_id);
+
+CREATE TABLE IF NOT EXISTS problems (
+    id VARCHAR(64) PRIMARY KEY,
+    space_item_id VARCHAR(64) NOT NULL REFERENCES space_items(id) ON DELETE CASCADE,
+    question TEXT NOT NULL DEFAULT '',
+    solution TEXT NOT NULL DEFAULT '',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_problems_space_item_id ON problems (space_item_id);
+
+CREATE TABLE IF NOT EXISTS problem_steps (
+    id VARCHAR(64) PRIMARY KEY,
+    problem_id VARCHAR(64) NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
+    body TEXT NOT NULL DEFAULT '',
+    position INT NOT NULL DEFAULT 0,
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_problem_steps_problem_id ON problem_steps (problem_id);

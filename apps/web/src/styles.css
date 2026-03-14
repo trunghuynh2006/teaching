@@ -620,34 +620,6 @@ button.danger {
   flex-wrap: wrap;
 }
 
-.space-items-sidebar-name {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #375368;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.space-items-sidebar-close {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 0.7rem;
-  padding: 0.1rem 0.3rem;
-  border-radius: 4px;
-  cursor: pointer;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.space-items-sidebar-close:hover {
-  background: #f0f4f6;
-  color: #5a7080;
-  transform: none;
-  filter: none;
-}
 
 .space-items-sidebar-list {
   display: flex;
@@ -700,6 +672,36 @@ button.danger {
   color: #b0bec8;
   font-style: italic;
   margin: 0;
+}
+
+.space-items-sidebar-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #e8eef3;
+}
+
+.space-items-sidebar-add-form input,
+.space-items-sidebar-add-form textarea {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid #d0dbe3;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--text);
+  resize: vertical;
+  font-family: inherit;
+}
+
+.space-items-sidebar-add-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.space-items-sidebar-add-actions button {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
 }
 
 .space-item-detail {

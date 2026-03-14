@@ -91,6 +91,30 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitSpaceItemsSpaceIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitQuestionsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitQuestionsSpaceItemIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitAnswersTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitAnswersQuestionIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitProblemsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitProblemsSpaceItemIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitProblemStepsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitProblemStepsProblemIndex(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

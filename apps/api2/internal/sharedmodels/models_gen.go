@@ -155,6 +155,53 @@ type SpaceItem struct {
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
+type Problem struct {
+	CreatedBy   *string       `json:"created_by,omitempty"`
+	CreatedTime *string       `json:"created_time,omitempty"`
+	Id          string        `json:"id"`
+	Question    string        `json:"question"`
+	Solution    string        `json:"solution"`
+	SpaceItemId string        `json:"space_item_id"`
+	Steps       []ProblemStep `json:"steps,omitempty"`
+	UpdatedBy   *string       `json:"updated_by,omitempty"`
+	UpdatedTime *string       `json:"updated_time,omitempty"`
+}
+
+type ProblemStep struct {
+	Body        string  `json:"body"`
+	CreatedBy   *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Id          string  `json:"id"`
+	Position    *int    `json:"position,omitempty"`
+	ProblemId   string  `json:"problem_id"`
+	UpdatedBy   *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type Question struct {
+	Answers      []Answer `json:"answers,omitempty"`
+	Body         string   `json:"body"`
+	CreatedBy    *string  `json:"created_by,omitempty"`
+	CreatedTime  *string  `json:"created_time,omitempty"`
+	Id           string   `json:"id"`
+	QuestionType string   `json:"question_type"`
+	SpaceItemId  string   `json:"space_item_id"`
+	UpdatedBy    *string  `json:"updated_by,omitempty"`
+	UpdatedTime  *string  `json:"updated_time,omitempty"`
+}
+
+type Answer struct {
+	CreatedBy   *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Id          string  `json:"id"`
+	IsCorrect   bool    `json:"is_correct"`
+	Position    *int    `json:"position,omitempty"`
+	QuestionId  string  `json:"question_id"`
+	Text        string  `json:"text"`
+	UpdatedBy   *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
 type Lesson struct {
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`

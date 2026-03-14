@@ -329,7 +329,6 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             space={selectedSpace}
             token={token}
             onUnauthorized={onUnauthorized}
-            onClose={() => { setSelectedSpace(null); setSelectedSpaceItem(null) }}
             selectedItemId={selectedSpaceItem?.id}
             onSelectItem={setSelectedSpaceItem}
           />
