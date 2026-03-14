@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
+import ProblemModal from './ProblemModal'
+import QuestionModal from './QuestionModal'
 
 interface SpaceInfo {
   id: string
@@ -34,12 +36,16 @@ async function parseError(res: Response): Promise<string> {
 export default function SpaceItemsSidebar({ space, token, onUnauthorized, selectedItemId, onSelectItem }: SpaceItemsSidebarProps) {
   const [items, setItems] = useState<SpaceItemData[]>([])
   const [showAddForm, setShowAddForm] = useState(false)
+  const [showProblemModal, setShowProblemModal] = useState(false)
+  const [showQuestionModal, setShowQuestionModal] = useState(false)
   const [addTitle, setAddTitle] = useState('')
   const [addContent, setAddContent] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const onSelectItemRef = useRef(onSelectItem)
   onSelectItemRef.current = onSelectItem
+  const selectedItemIdRef = useRef(selectedItemId)
+  selectedItemIdRef.current = selectedItemId
 
   const fetchItems = useCallback(async () => {
     try {
@@ -51,7 +57,8 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, select
       const data = await res.json()
       const list: SpaceItemData[] = Array.isArray(data) ? data : []
       setItems(list)
-      if (list.length > 0) {
+      // Auto-select first item only if nothing is currently selected
+      if (list.length > 0 && !selectedItemIdRef.current) {
         onSelectItemRef.current?.(list[0])
       }
     } catch (_) {}
@@ -84,14 +91,24 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, select
     }
   }
 
+  const handleAddClick = () => {
+    if (space.space_type === 'Problem') {
+      setShowProblemModal(true)
+    } else if (space.space_type === 'Question') {
+      setShowQuestionModal(true)
+    } else {
+      setShowAddForm((v) => !v)
+    }
+  }
+
   return (
     <nav className="space-items-sidebar">
       <div className="space-items-sidebar-header">
-        {space.space_type && <span className="space-type-pill">{space.space_type}</span>}
+        <span className="space-items-sidebar-name">{space.name}</span>
         <button
           className="folder-sidebar-add-btn always-visible"
           title="Add item"
-          onClick={() => setShowAddForm((v) => !v)}
+          onClick={handleAddClick}
         >+</button>
       </div>
 
@@ -135,6 +152,34 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, select
           ))
         )}
       </div>
+
+      {showProblemModal && (
+        <ProblemModal
+          space={space}
+          token={token}
+          onUnauthorized={onUnauthorized}
+          onSaved={async (item) => {
+            setShowProblemModal(false)
+            await fetchItems()
+            onSelectItemRef.current?.(item)
+          }}
+          onClose={() => setShowProblemModal(false)}
+        />
+      )}
+
+      {showQuestionModal && (
+        <QuestionModal
+          space={space}
+          token={token}
+          onUnauthorized={onUnauthorized}
+          onSaved={async (item) => {
+            setShowQuestionModal(false)
+            await fetchItems()
+            onSelectItemRef.current?.(item)
+          }}
+          onClose={() => setShowQuestionModal(false)}
+        />
+      )}
     </nav>
   )
 }

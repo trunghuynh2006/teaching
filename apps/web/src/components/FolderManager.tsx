@@ -4,6 +4,8 @@ import { API_URL } from '../config'
 import KnowledgeManager from './KnowledgeManager'
 import SpaceManager from './SpaceManager'
 import SpaceItemsSidebar, { type SpaceItemData } from './SpaceItemsSidebar'
+import ProblemDetail from './ProblemDetail'
+import QuestionDetail from './QuestionDetail'
 
 interface FolderItem {
   id: string
@@ -42,6 +44,16 @@ function formatDate(dateTime: string | undefined): string {
   return parsed.toLocaleString()
 }
 
+const SPACE_TYPE_ICONS: Record<string, string> = {
+  Problem: 'Σ',
+  Exercise: '✎',
+  Question: '?',
+  Note: '≡',
+  Quiz: '★',
+  Other: '•',
+}
+const spaceTypeIcon = (t?: string) => (t ? (SPACE_TYPE_ICONS[t] ?? '•') : '')
+
 type FolderSection = 'knowledge' | 'spaces'
 
 interface SidebarSpace {
@@ -73,7 +85,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const headers = { Authorization: `Bearer ${token}` }
 
   const isDetailSpace = (s: SidebarSpace) =>
-    s.space_type === 'Problem' || s.space_type === 'Exercise'
+    s.space_type === 'Problem' || s.space_type === 'Exercise' || s.space_type === 'Question'
 
   const fetchFolders = useCallback(async () => {
     setLoading(true)
@@ -311,8 +323,10 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             className={`folder-sidebar-space-item${selectedSpace?.id === space.id ? ' active' : ''}`}
             onClick={() => { setSelectedSpace(space); setSelectedSpaceItem(null); setActiveSection('spaces') }}
           >
+            {space.space_type && (
+              <span className="space-type-icon" title={space.space_type}>{spaceTypeIcon(space.space_type)}</span>
+            )}
             <span className="folder-sidebar-space-name">{space.name}</span>
-            {space.space_type && <span className="space-type-pill">{space.space_type}</span>}
           </button>
         ))}
         {sidebarSpaces.length === 0 && (
@@ -347,16 +361,32 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
           />
         )}
         {activeSection === 'spaces' && selectedSpace && isDetailSpace(selectedSpace) && (
-          <div className="space-item-detail">
-            {selectedSpaceItem ? (
-              <>
+          selectedSpaceItem ? (
+            selectedSpace.space_type === 'Problem' ? (
+              <ProblemDetail
+                key={selectedSpaceItem.id}
+                spaceItemId={selectedSpaceItem.id}
+                token={token}
+                onUnauthorized={onUnauthorized}
+              />
+            ) : selectedSpace.space_type === 'Question' ? (
+              <QuestionDetail
+                key={selectedSpaceItem.id}
+                spaceItemId={selectedSpaceItem.id}
+                token={token}
+                onUnauthorized={onUnauthorized}
+              />
+            ) : (
+              <div className="space-item-detail">
                 {selectedSpaceItem.title && <h3 className="space-item-detail-title">{selectedSpaceItem.title}</h3>}
                 <p className="space-item-detail-content">{selectedSpaceItem.content}</p>
-              </>
-            ) : (
+              </div>
+            )
+          ) : (
+            <div className="space-item-detail">
               <p className="space-item-detail-empty">No items in this space.</p>
-            )}
-          </div>
+            </div>
+          )
         )}
         {activeSection === 'spaces' && (!selectedSpace || !isDetailSpace(selectedSpace)) && (
           <SpaceManager
