@@ -138,6 +138,11 @@ func main() {
 	mux.HandleFunc("POST /problems/{id}/steps", handler.Auth(handler.CreateProblemStep))
 	mux.HandleFunc("PUT /problem-steps/{id}", handler.Auth(handler.UpdateProblemStep))
 	mux.HandleFunc("DELETE /problem-steps/{id}", handler.Auth(handler.DeleteProblemStep))
+	mux.HandleFunc("GET /space-items/{id}/flash-cards", handler.Auth(handler.ListSpaceItemFlashCards))
+	mux.HandleFunc("POST /space-items/{id}/flash-cards", handler.Auth(handler.CreateFlashCard))
+	mux.HandleFunc("GET /flash-cards/{id}", handler.Auth(handler.GetFlashCard))
+	mux.HandleFunc("PUT /flash-cards/{id}", handler.Auth(handler.UpdateFlashCard))
+	mux.HandleFunc("DELETE /flash-cards/{id}", handler.Auth(handler.DeleteFlashCard))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)

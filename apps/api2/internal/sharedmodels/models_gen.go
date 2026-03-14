@@ -111,12 +111,14 @@ type Assignment struct {
 }
 
 type Folder struct {
-	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedBy   *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
 	Description *string `json:"description,omitempty"`
-	Id string `json:"id"`
-	Name string `json:"name"`
-	UpdatedBy *string `json:"updated_by,omitempty"`
+	Icon        *string `json:"icon,omitempty"`
+	Id          string  `json:"id"`
+	Name        string  `json:"name"`
+	Theme       *string `json:"theme,omitempty"`
+	UpdatedBy   *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
@@ -198,6 +200,17 @@ type Answer struct {
 	Position    *int    `json:"position,omitempty"`
 	QuestionId  string  `json:"question_id"`
 	Text        string  `json:"text"`
+	UpdatedBy   *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type FlashCard struct {
+	Back        string  `json:"back"`
+	CreatedBy   *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Front       string  `json:"front"`
+	Id          string  `json:"id"`
+	SpaceItemId string  `json:"space_item_id"`
 	UpdatedBy   *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }

@@ -11,6 +11,8 @@ type Folder struct {
 	ID          string             `json:"id"`
 	Name        string             `json:"name"`
 	Description string             `json:"description"`
+	Theme       string             `json:"theme"`
+	Icon        string             `json:"icon"`
 	CreatedBy   string             `json:"created_by"`
 	UpdatedBy   string             `json:"updated_by"`
 	CreatedTime pgtype.Timestamptz `json:"created_time"`
@@ -21,6 +23,8 @@ type CreateFolderParams struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Theme       string `json:"theme"`
+	Icon        string `json:"icon"`
 	CreatedBy   string `json:"created_by"`
 	UpdatedBy   string `json:"updated_by"`
 }
@@ -29,6 +33,8 @@ type UpdateFolderByIDParams struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Theme       string `json:"theme"`
+	Icon        string `json:"icon"`
 	UpdatedBy   string `json:"updated_by"`
 }
 
@@ -44,20 +50,20 @@ type RemoveSkillFromFolderParams struct {
 }
 
 const createFolder = `
-INSERT INTO folders (id, name, description, created_by, updated_by)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, name, description, created_by, updated_by, created_time, updated_time
+INSERT INTO folders (id, name, description, theme, icon, created_by, updated_by)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, name, description, theme, icon, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) CreateFolder(ctx context.Context, arg CreateFolderParams) (Folder, error) {
-	row := q.db.QueryRow(ctx, createFolder, arg.ID, arg.Name, arg.Description, arg.CreatedBy, arg.UpdatedBy)
+	row := q.db.QueryRow(ctx, createFolder, arg.ID, arg.Name, arg.Description, arg.Theme, arg.Icon, arg.CreatedBy, arg.UpdatedBy)
 	var f Folder
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Theme, &f.Icon, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime)
 	return f, err
 }
 
 const listFolders = `
-SELECT id, name, description, created_by, updated_by, created_time, updated_time
+SELECT id, name, description, theme, icon, created_by, updated_by, created_time, updated_time
 FROM folders
 ORDER BY created_time DESC
 `
@@ -72,7 +78,7 @@ func (q *Queries) ListFolders(ctx context.Context) ([]Folder, error) {
 	var folders []Folder
 	for rows.Next() {
 		var f Folder
-		if err := rows.Scan(&f.ID, &f.Name, &f.Description, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime); err != nil {
+		if err := rows.Scan(&f.ID, &f.Name, &f.Description, &f.Theme, &f.Icon, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime); err != nil {
 			return nil, err
 		}
 		folders = append(folders, f)
@@ -81,28 +87,28 @@ func (q *Queries) ListFolders(ctx context.Context) ([]Folder, error) {
 }
 
 const getFolderByID = `
-SELECT id, name, description, created_by, updated_by, created_time, updated_time
+SELECT id, name, description, theme, icon, created_by, updated_by, created_time, updated_time
 FROM folders WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetFolderByID(ctx context.Context, id string) (Folder, error) {
 	row := q.db.QueryRow(ctx, getFolderByID, id)
 	var f Folder
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Theme, &f.Icon, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime)
 	return f, err
 }
 
 const updateFolderByID = `
 UPDATE folders
-SET name = $2, description = $3, updated_by = $4, updated_time = NOW()
+SET name = $2, description = $3, theme = $4, icon = $5, updated_by = $6, updated_time = NOW()
 WHERE id = $1
-RETURNING id, name, description, created_by, updated_by, created_time, updated_time
+RETURNING id, name, description, theme, icon, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) UpdateFolderByID(ctx context.Context, arg UpdateFolderByIDParams) (Folder, error) {
-	row := q.db.QueryRow(ctx, updateFolderByID, arg.ID, arg.Name, arg.Description, arg.UpdatedBy)
+	row := q.db.QueryRow(ctx, updateFolderByID, arg.ID, arg.Name, arg.Description, arg.Theme, arg.Icon, arg.UpdatedBy)
 	var f Folder
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Theme, &f.Icon, &f.CreatedBy, &f.UpdatedBy, &f.CreatedTime, &f.UpdatedTime)
 	return f, err
 }
 
@@ -164,6 +170,8 @@ CREATE TABLE IF NOT EXISTS folders (
     id VARCHAR(64) PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description TEXT NOT NULL DEFAULT '',
+    theme VARCHAR(50) NOT NULL DEFAULT '',
+    icon VARCHAR(50) NOT NULL DEFAULT '',
     created_by VARCHAR(64) NOT NULL,
     updated_by VARCHAR(64) NOT NULL,
     created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -173,6 +181,17 @@ CREATE TABLE IF NOT EXISTS folders (
 
 func (q *Queries) InitFoldersTable(ctx context.Context) error {
 	_, err := q.db.Exec(ctx, initFoldersTable)
+	return err
+}
+
+const migrateFoldersAddTheme = `ALTER TABLE folders ADD COLUMN IF NOT EXISTS theme VARCHAR(50) NOT NULL DEFAULT ''`
+const migrateFoldersAddIcon = `ALTER TABLE folders ADD COLUMN IF NOT EXISTS icon VARCHAR(50) NOT NULL DEFAULT ''`
+
+func (q *Queries) MigrateFoldersAddThemeIcon(ctx context.Context) error {
+	if _, err := q.db.Exec(ctx, migrateFoldersAddTheme); err != nil {
+		return err
+	}
+	_, err := q.db.Exec(ctx, migrateFoldersAddIcon)
 	return err
 }
 

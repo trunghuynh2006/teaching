@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { API_URL } from '../config'
+import { FolderIconDisplay } from '../config/folderIcons'
+import IconPicker from './IconPicker'
 import KnowledgeManager from './KnowledgeManager'
 import SpaceManager from './SpaceManager'
 import SpaceItemsSidebar, { type SpaceItemData } from './SpaceItemsSidebar'
 import ProblemDetail from './ProblemDetail'
 import QuestionDetail from './QuestionDetail'
+import AnkiDetail from './AnkiDetail'
 
 interface FolderItem {
   id: string
   name: string
   description?: string
+  theme?: string
+  icon?: string
   created_by?: string
   updated_by?: string
   created_time?: string
@@ -25,9 +30,13 @@ interface FolderManagerProps {
 interface FormState {
   name: string
   description: string
+  theme: string
+  icon: string
 }
 
-const DEFAULT_FORM: FormState = { name: '', description: '' }
+const DEFAULT_FORM: FormState = { name: '', description: '', theme: '', icon: '' }
+
+const FOLDER_THEMES = ['', 'blue', 'green', 'purple', 'orange', 'red', 'teal', 'gray']
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -48,6 +57,7 @@ const SPACE_TYPE_ICONS: Record<string, string> = {
   Problem: 'Σ',
   Exercise: '✎',
   Question: '?',
+  Anki: '⟳',
   Note: '≡',
   Quiz: '★',
   Other: '•',
@@ -85,7 +95,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const headers = { Authorization: `Bearer ${token}` }
 
   const isDetailSpace = (s: SidebarSpace) =>
-    s.space_type === 'Problem' || s.space_type === 'Exercise' || s.space_type === 'Question'
+    s.space_type === 'Problem' || s.space_type === 'Exercise' || s.space_type === 'Question' || s.space_type === 'Anki'
 
   const fetchFolders = useCallback(async () => {
     setLoading(true)
@@ -125,7 +135,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
 
   const openEditForm = (folder: FolderItem) => {
     setEditingId(folder.id)
-    setForm({ name: folder.name, description: folder.description ?? '' })
+    setForm({ name: folder.name, description: folder.description ?? '', theme: folder.theme ?? '', icon: folder.icon ?? '' })
     setShowForm(true)
     setNotice('')
     setError('')
@@ -150,7 +160,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
       const res = await fetch(url, {
         method,
         headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description: form.description.trim() }),
+        body: JSON.stringify({ name, description: form.description.trim(), theme: form.theme, icon: form.icon.trim() }),
       })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
@@ -243,6 +253,17 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
                 placeholder="Optional description"
               />
             </label>
+            <label>
+              Theme
+              <select value={form.theme} onChange={(e) => setForm((prev) => ({ ...prev, theme: e.target.value }))}>
+                <option value="">— none —</option>
+                {FOLDER_THEMES.filter(Boolean).map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </label>
+            <label>
+              Icon
+              <IconPicker value={form.icon} onChange={(v) => setForm((prev) => ({ ...prev, icon: v }))} />
+            </label>
             <div className="skill-actions">
               <button type="submit" disabled={saving}>
                 {saving ? 'Saving...' : editingId ? 'Update Folder' : 'Create Folder'}
@@ -257,12 +278,14 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             <p>No folders yet. Use "New Folder" to create one.</p>
           ) : (
             folders.map((folder) => (
-              <article className="skill-item" key={folder.id}>
+              <article className={`skill-item${folder.theme ? ` folder-theme-${folder.theme}` : ''}`} key={folder.id}>
                 <header>
+                  {folder.icon && <span className="folder-icon"><FolderIconDisplay value={folder.icon} size={18} /></span>}
                   <h4>{folder.name}</h4>
                 </header>
                 {folder.description && <p>{folder.description}</p>}
                 <div className="skill-meta">
+                  {folder.theme && <span>Theme: {folder.theme}</span>}
                   <span>Created by: {folder.created_by || '-'}</span>
                   <span>Created: {formatDate(folder.created_time)}</span>
                   <span>Updated: {formatDate(folder.updated_time)}</span>
@@ -371,6 +394,13 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
               />
             ) : selectedSpace.space_type === 'Question' ? (
               <QuestionDetail
+                key={selectedSpaceItem.id}
+                spaceItemId={selectedSpaceItem.id}
+                token={token}
+                onUnauthorized={onUnauthorized}
+              />
+            ) : selectedSpace.space_type === 'Anki' ? (
+              <AnkiDetail
                 key={selectedSpaceItem.id}
                 spaceItemId={selectedSpaceItem.id}
                 token={token}

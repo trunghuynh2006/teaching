@@ -47,7 +47,7 @@ interface SpaceFormProps {
   onCancel: () => void
 }
 
-const SPACE_TYPES = ['Problem', 'Exercise', 'Question', 'Note', 'Quiz', 'Other']
+const SPACE_TYPES = ['Problem', 'Exercise', 'Question', 'Anki', 'Note', 'Quiz', 'Other']
 
 function SpaceForm({ initial, onSave, onCancel }: SpaceFormProps) {
   const [name, setName] = useState(initial?.name ?? '')

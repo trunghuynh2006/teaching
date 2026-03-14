@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
 import { MenuItem } from '../config/menu'
+import { FolderIconDisplay } from '../config/folderIcons'
+import IconPicker from './IconPicker'
 
 interface FolderSectionProps {
   token: string
@@ -11,14 +13,20 @@ interface FolderSectionProps {
 interface SidebarFolder {
   id: string
   name: string
+  icon?: string
+  theme?: string
 }
+
+const FOLDER_THEMES = ['', 'blue', 'green', 'purple', 'orange', 'red', 'teal', 'gray']
 
 function FolderSection({ token, activePath, onNavigate }: FolderSectionProps) {
   const [folders, setFolders] = useState<SidebarFolder[]>([])
   const [showAdd, setShowAdd] = useState(false)
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [theme, setTheme] = useState('')
+  const [icon, setIcon] = useState('')
   const [saving, setSaving] = useState(false)
-  const addRef = useRef<HTMLDivElement>(null)
 
   const headers = { Authorization: `Bearer ${token}` }
 
@@ -27,26 +35,19 @@ function FolderSection({ token, activePath, onNavigate }: FolderSectionProps) {
       const res = await fetch(`${API_URL}/folders`, { headers })
       if (res.ok) {
         const data = await res.json()
-        setFolders(Array.isArray(data) ? data.map((f: SidebarFolder) => ({ id: f.id, name: f.name })) : [])
+        setFolders(Array.isArray(data) ? data.map((f: SidebarFolder) => ({ id: f.id, name: f.name, icon: f.icon, theme: f.theme })) : [])
       }
     } catch (_) {}
   }, [token])
 
   useEffect(() => { fetchFolders() }, [fetchFolders])
 
-  useEffect(() => {
-    if (!showAdd) return
-    const handler = (e: MouseEvent) => {
-      if (addRef.current && !addRef.current.contains(e.target as Node)) {
-        setShowAdd(false)
-        setName('')
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [showAdd])
+  const resetForm = () => { setName(''); setDescription(''); setTheme(''); setIcon('') }
 
-  const handleCreate = async () => {
+  const handleClose = () => { setShowAdd(false); resetForm() }
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
     setSaving(true)
@@ -54,11 +55,10 @@ function FolderSection({ token, activePath, onNavigate }: FolderSectionProps) {
       const res = await fetch(`${API_URL}/folders`, {
         method: 'POST',
         headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmed, description: '' }),
+        body: JSON.stringify({ name: trimmed, description: description.trim(), theme, icon: icon.trim() }),
       })
       if (res.ok) {
-        setName('')
-        setShowAdd(false)
+        handleClose()
         await fetchFolders()
       }
     } finally {
@@ -73,30 +73,14 @@ function FolderSection({ token, activePath, onNavigate }: FolderSectionProps) {
     <div className="sidebar-folder-section">
       <div className="sidebar-folder-divider" />
 
-      <div className="sidebar-folder-add" ref={addRef}>
+      <div className="sidebar-folder-add">
         <button
           className="nav-item"
           title="New folder"
-          onClick={() => setShowAdd((p) => !p)}
+          onClick={() => setShowAdd(true)}
         >
           <span className="nav-icon">＋</span>
         </button>
-
-        {showAdd && (
-          <div className="folder-add-popup">
-            <p className="folder-add-popup-label">New folder</p>
-            <input
-              autoFocus
-              placeholder="Folder name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleCreate() }}
-            />
-            <button onClick={handleCreate} disabled={saving || !name.trim()}>
-              {saving ? '…' : 'Create'}
-            </button>
-          </div>
-        )}
       </div>
 
       {folders.map((f) => (
@@ -106,9 +90,57 @@ function FolderSection({ token, activePath, onNavigate }: FolderSectionProps) {
           title={f.name}
           onClick={() => onNavigate(`/learner/folders?folder=${f.id}`)}
         >
-          <span className="nav-icon">📁</span>
+          <span className="nav-icon"><FolderIconDisplay value={f.icon} size={18} /></span>
         </button>
       ))}
+
+      {showAdd && (
+        <div className="folder-create-modal-overlay" onClick={handleClose}>
+          <div className="folder-create-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="folder-create-modal-header">
+              <span>New Folder</span>
+              <button className="modal-close" onClick={handleClose}>✕</button>
+            </div>
+            <form className="folder-create-modal-body" onSubmit={handleCreate}>
+              <label>
+                Name
+                <input
+                  autoFocus
+                  required
+                  placeholder="e.g. Algebra Unit 1"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+              <label>
+                Description
+                <input
+                  placeholder="Optional description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </label>
+              <label>
+                Theme
+                <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+                  <option value="">— none —</option>
+                  {FOLDER_THEMES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </label>
+              <label>
+                Icon
+                <IconPicker value={icon} onChange={setIcon} />
+              </label>
+              <div className="folder-create-modal-actions">
+                <button type="submit" disabled={saving || !name.trim()}>
+                  {saving ? 'Creating…' : 'Create Folder'}
+                </button>
+                <button type="button" className="secondary" onClick={handleClose}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

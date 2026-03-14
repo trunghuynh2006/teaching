@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
 import ProblemModal from './ProblemModal'
 import QuestionModal from './QuestionModal'
+import AnkiModal from './AnkiModal'
 
 interface SpaceInfo {
   id: string
@@ -38,6 +39,7 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, select
   const [showAddForm, setShowAddForm] = useState(false)
   const [showProblemModal, setShowProblemModal] = useState(false)
   const [showQuestionModal, setShowQuestionModal] = useState(false)
+  const [showAnkiModal, setShowAnkiModal] = useState(false)
   const [addTitle, setAddTitle] = useState('')
   const [addContent, setAddContent] = useState('')
   const [saving, setSaving] = useState(false)
@@ -96,6 +98,8 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, select
       setShowProblemModal(true)
     } else if (space.space_type === 'Question') {
       setShowQuestionModal(true)
+    } else if (space.space_type === 'Anki') {
+      setShowAnkiModal(true)
     } else {
       setShowAddForm((v) => !v)
     }
@@ -178,6 +182,20 @@ export default function SpaceItemsSidebar({ space, token, onUnauthorized, select
             onSelectItemRef.current?.(item)
           }}
           onClose={() => setShowQuestionModal(false)}
+        />
+      )}
+
+      {showAnkiModal && (
+        <AnkiModal
+          space={space}
+          token={token}
+          onUnauthorized={onUnauthorized}
+          onSaved={async (item) => {
+            setShowAnkiModal(false)
+            await fetchItems()
+            onSelectItemRef.current?.(item)
+          }}
+          onClose={() => setShowAnkiModal(false)}
         />
       )}
     </nav>

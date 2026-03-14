@@ -70,6 +70,8 @@ func (h *Handler) CreateFolder(w http.ResponseWriter, r *http.Request, currentUs
 		ID:          newFolderID(),
 		Name:        input.Name,
 		Description: input.Description,
+		Theme:       input.Theme,
+		Icon:        input.Icon,
 		CreatedBy:   currentUser.Username,
 		UpdatedBy:   currentUser.Username,
 	})
@@ -103,6 +105,8 @@ func (h *Handler) UpdateFolder(w http.ResponseWriter, r *http.Request, currentUs
 		ID:          id,
 		Name:        input.Name,
 		Description: input.Description,
+		Theme:       input.Theme,
+		Icon:        input.Icon,
 		UpdatedBy:   currentUser.Username,
 	})
 	if err != nil {
@@ -220,6 +224,8 @@ func decodeFolderInput(r *http.Request) (folderInput, error) {
 	var payload struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
+		Theme       string `json:"theme"`
+		Icon        string `json:"icon"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		return folderInput{}, errors.New("Invalid request body")
@@ -233,6 +239,8 @@ func decodeFolderInput(r *http.Request) (folderInput, error) {
 	return folderInput{
 		Name:        name,
 		Description: strings.TrimSpace(payload.Description),
+		Theme:       strings.TrimSpace(payload.Theme),
+		Icon:        strings.TrimSpace(payload.Icon),
 	}, nil
 }
 
@@ -249,6 +257,8 @@ func toSharedFolder(f store.Folder) sharedmodels.Folder {
 		Id:          f.ID,
 		Name:        f.Name,
 		Description: &f.Description,
+		Theme:       &f.Theme,
+		Icon:        &f.Icon,
 		CreatedBy:   &f.CreatedBy,
 		UpdatedBy:   &f.UpdatedBy,
 	}
@@ -266,4 +276,6 @@ func toSharedFolder(f store.Folder) sharedmodels.Folder {
 type folderInput struct {
 	Name        string
 	Description string
+	Theme       string
+	Icon        string
 }

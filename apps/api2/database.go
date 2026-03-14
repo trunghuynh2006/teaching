@@ -61,6 +61,9 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitFoldersTable(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.MigrateFoldersAddThemeIcon(ctx); err != nil {
+		return err
+	}
 	if err := a.queries.InitFoldersCreatedTimeIndex(ctx); err != nil {
 		return err
 	}
@@ -113,6 +116,12 @@ func (a *app) initDB(ctx context.Context) error {
 		return err
 	}
 	if err := a.queries.InitProblemStepsProblemIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitFlashCardsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitFlashCardsSpaceItemIndex(ctx); err != nil {
 		return err
 	}
 
