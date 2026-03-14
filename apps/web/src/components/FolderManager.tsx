@@ -80,7 +80,12 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [knowledgeCount, setKnowledgeCount] = useState(0)
   const [knowledgeAddTrigger, setKnowledgeAddTrigger] = useState(0)
   const [spacesCount, setSpacesCount] = useState(0)
-  const [spacesAddTrigger, setSpacesAddTrigger] = useState(0)
+  const [showSpaceModal, setShowSpaceModal] = useState(false)
+  const [spaceModalName, setSpaceModalName] = useState('')
+  const [spaceModalType, setSpaceModalType] = useState('')
+  const [spaceModalDesc, setSpaceModalDesc] = useState('')
+  const [spaceModalSaving, setSpaceModalSaving] = useState(false)
+  const [spaceModalError, setSpaceModalError] = useState('')
   const [sidebarSpaces, setSidebarSpaces] = useState<SidebarSpace[]>([])
   const [selectedSpace, setSelectedSpace] = useState<SidebarSpace | null>(null)
   const [selectedSpaceItem, setSelectedSpaceItem] = useState<SpaceItemData | null>(null)
@@ -208,6 +213,51 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     if (selectedFolder) fetchSidebarSpaces(selectedFolder.id)
   }, [spacesCount])
 
+  const SPACE_TYPES = ['Problem', 'Exercise', 'Question', 'Anki', 'Note', 'Quiz', 'Other']
+
+  const openSpaceModal = () => {
+    setSpaceModalName('')
+    setSpaceModalType('')
+    setSpaceModalDesc('')
+    setSpaceModalError('')
+    setShowSpaceModal(true)
+    setActiveSection('spaces')
+  }
+
+  const closeSpaceModal = () => {
+    setShowSpaceModal(false)
+  }
+
+  const handleSpaceModalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedFolder) return
+    const name = spaceModalName.trim()
+    if (!name) { setSpaceModalError('Name is required'); return }
+    setSpaceModalSaving(true)
+    setSpaceModalError('')
+    try {
+      const res = await fetch(`${API_URL}/folders/${selectedFolder.id}/spaces`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, space_type: spaceModalType, description: spaceModalDesc.trim() }),
+      })
+      if (res.status === 401) { onUnauthorized?.(); return }
+      if (!res.ok) {
+        const p = await res.json().catch(() => ({}))
+        throw new Error(p?.detail || 'Failed to create space')
+      }
+      const newSpace: SidebarSpace = await res.json()
+      closeSpaceModal()
+      await fetchSidebarSpaces(selectedFolder.id)
+      setSelectedSpace(newSpace)
+      setSelectedSpaceItem(null)
+    } catch (err) {
+      setSpaceModalError((err as Error).message)
+    } finally {
+      setSpaceModalSaving(false)
+    }
+  }
+
   // Auto-open folder from ?folder= URL param
   const targetFolderId = searchParams.get('folder')
   useEffect(() => {
@@ -333,7 +383,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
           <button
             className="folder-sidebar-add-btn always-visible"
             title="Add space"
-            onClick={() => { setSpacesAddTrigger((n) => n + 1); setActiveSection('spaces'); setSelectedSpace(null); setSelectedSpaceItem(null) }}
+            onClick={openSpaceModal}
           >
             +
           </button>
@@ -424,11 +474,55 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             token={token}
             onUnauthorized={onUnauthorized}
             onCountChange={setSpacesCount}
-            addTrigger={spacesAddTrigger}
             filterSpaceId={selectedSpace?.id}
           />
         )}
       </div>
+
+      {showSpaceModal && (
+        <div className="folder-create-modal-overlay" onClick={closeSpaceModal}>
+          <div className="folder-create-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="folder-create-modal-header">
+              <span>New Space</span>
+              <button className="modal-close" onClick={closeSpaceModal}>✕</button>
+            </div>
+            <form className="folder-create-modal-body" onSubmit={handleSpaceModalSubmit}>
+              {spaceModalError && <div className="error">{spaceModalError}</div>}
+              <label>
+                Name
+                <input
+                  autoFocus
+                  required
+                  placeholder="e.g. Problem Set 1"
+                  value={spaceModalName}
+                  onChange={(e) => setSpaceModalName(e.target.value)}
+                />
+              </label>
+              <label>
+                Type
+                <select value={spaceModalType} onChange={(e) => setSpaceModalType(e.target.value)}>
+                  <option value="">— select type —</option>
+                  {SPACE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </label>
+              <label>
+                Description (optional)
+                <input
+                  placeholder="Short description"
+                  value={spaceModalDesc}
+                  onChange={(e) => setSpaceModalDesc(e.target.value)}
+                />
+              </label>
+              <div className="folder-create-modal-actions">
+                <button type="submit" disabled={spaceModalSaving}>
+                  {spaceModalSaving ? 'Creating…' : 'Create Space'}
+                </button>
+                <button type="button" className="secondary" onClick={closeSpaceModal}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
