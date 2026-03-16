@@ -6,10 +6,10 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// Problem is a worked problem attached to a SpaceItem, with a question, solution summary, and steps.
+// Problem is a worked problem attached to a Space, with a question, solution summary, and steps.
 type Problem struct {
 	ID          string             `json:"id"`
-	SpaceItemID string             `json:"space_item_id"`
+	SpaceID     string             `json:"space_id"`
 	Question    string             `json:"question"`
 	Solution    string             `json:"solution"`
 	CreatedBy   string             `json:"created_by"`
@@ -33,12 +33,12 @@ type ProblemStep struct {
 // ── Problem param types ──────────────────────────────────────
 
 type CreateProblemParams struct {
-	ID          string `json:"id"`
-	SpaceItemID string `json:"space_item_id"`
-	Question    string `json:"question"`
-	Solution    string `json:"solution"`
-	CreatedBy   string `json:"created_by"`
-	UpdatedBy   string `json:"updated_by"`
+	ID        string `json:"id"`
+	SpaceID   string `json:"space_id"`
+	Question  string `json:"question"`
+	Solution  string `json:"solution"`
+	CreatedBy string `json:"created_by"`
+	UpdatedBy string `json:"updated_by"`
 }
 
 type UpdateProblemParams struct {
@@ -69,27 +69,27 @@ type UpdateProblemStepParams struct {
 // ── Problem queries ──────────────────────────────────────────
 
 const createProblem = `
-INSERT INTO problems (id, space_item_id, question, solution, created_by, updated_by)
+INSERT INTO problems (id, space_id, question, solution, created_by, updated_by)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, space_item_id, question, solution, created_by, updated_by, created_time, updated_time
+RETURNING id, space_id, question, solution, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) CreateProblem(ctx context.Context, arg CreateProblemParams) (Problem, error) {
 	row := q.db.QueryRow(ctx, createProblem,
-		arg.ID, arg.SpaceItemID, arg.Question, arg.Solution, arg.CreatedBy, arg.UpdatedBy)
+		arg.ID, arg.SpaceID, arg.Question, arg.Solution, arg.CreatedBy, arg.UpdatedBy)
 	var p Problem
-	err := row.Scan(&p.ID, &p.SpaceItemID, &p.Question, &p.Solution,
+	err := row.Scan(&p.ID, &p.SpaceID, &p.Question, &p.Solution,
 		&p.CreatedBy, &p.UpdatedBy, &p.CreatedTime, &p.UpdatedTime)
 	return p, err
 }
 
-const listProblemsBySpaceItem = `
-SELECT id, space_item_id, question, solution, created_by, updated_by, created_time, updated_time
-FROM problems WHERE space_item_id = $1 ORDER BY created_time ASC
+const listProblemsBySpace = `
+SELECT id, space_id, question, solution, created_by, updated_by, created_time, updated_time
+FROM problems WHERE space_id = $1 ORDER BY created_time ASC
 `
 
-func (q *Queries) ListProblemsBySpaceItem(ctx context.Context, spaceItemID string) ([]Problem, error) {
-	rows, err := q.db.Query(ctx, listProblemsBySpaceItem, spaceItemID)
+func (q *Queries) ListProblemsBySpace(ctx context.Context, spaceID string) ([]Problem, error) {
+	rows, err := q.db.Query(ctx, listProblemsBySpace, spaceID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (q *Queries) ListProblemsBySpaceItem(ctx context.Context, spaceItemID strin
 	var problems []Problem
 	for rows.Next() {
 		var p Problem
-		if err := rows.Scan(&p.ID, &p.SpaceItemID, &p.Question, &p.Solution,
+		if err := rows.Scan(&p.ID, &p.SpaceID, &p.Question, &p.Solution,
 			&p.CreatedBy, &p.UpdatedBy, &p.CreatedTime, &p.UpdatedTime); err != nil {
 			return nil, err
 		}
@@ -107,14 +107,14 @@ func (q *Queries) ListProblemsBySpaceItem(ctx context.Context, spaceItemID strin
 }
 
 const getProblemByID = `
-SELECT id, space_item_id, question, solution, created_by, updated_by, created_time, updated_time
+SELECT id, space_id, question, solution, created_by, updated_by, created_time, updated_time
 FROM problems WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetProblemByID(ctx context.Context, id string) (Problem, error) {
 	row := q.db.QueryRow(ctx, getProblemByID, id)
 	var p Problem
-	err := row.Scan(&p.ID, &p.SpaceItemID, &p.Question, &p.Solution,
+	err := row.Scan(&p.ID, &p.SpaceID, &p.Question, &p.Solution,
 		&p.CreatedBy, &p.UpdatedBy, &p.CreatedTime, &p.UpdatedTime)
 	return p, err
 }
@@ -123,13 +123,13 @@ const updateProblem = `
 UPDATE problems
 SET question = $2, solution = $3, updated_by = $4, updated_time = NOW()
 WHERE id = $1
-RETURNING id, space_item_id, question, solution, created_by, updated_by, created_time, updated_time
+RETURNING id, space_id, question, solution, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) UpdateProblem(ctx context.Context, arg UpdateProblemParams) (Problem, error) {
 	row := q.db.QueryRow(ctx, updateProblem, arg.ID, arg.Question, arg.Solution, arg.UpdatedBy)
 	var p Problem
-	err := row.Scan(&p.ID, &p.SpaceItemID, &p.Question, &p.Solution,
+	err := row.Scan(&p.ID, &p.SpaceID, &p.Question, &p.Solution,
 		&p.CreatedBy, &p.UpdatedBy, &p.CreatedTime, &p.UpdatedTime)
 	return p, err
 }
@@ -229,7 +229,7 @@ func (q *Queries) CountProblemSteps(ctx context.Context, problemID string) (int6
 const initProblemsTable = `
 CREATE TABLE IF NOT EXISTS problems (
     id VARCHAR(64) PRIMARY KEY,
-    space_item_id VARCHAR(64) NOT NULL REFERENCES space_items(id) ON DELETE CASCADE,
+    space_id VARCHAR(64) NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
     question TEXT NOT NULL DEFAULT '',
     solution TEXT NOT NULL DEFAULT '',
     created_by VARCHAR(64) NOT NULL,
@@ -244,10 +244,10 @@ func (q *Queries) InitProblemsTable(ctx context.Context) error {
 	return err
 }
 
-const initProblemsSpaceItemIndex = `CREATE INDEX IF NOT EXISTS idx_problems_space_item_id ON problems (space_item_id)`
+const initProblemsSpaceIndex = `CREATE INDEX IF NOT EXISTS idx_problems_space_id ON problems (space_id)`
 
-func (q *Queries) InitProblemsSpaceItemIndex(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, initProblemsSpaceItemIndex)
+func (q *Queries) InitProblemsSpaceIndex(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initProblemsSpaceIndex)
 	return err
 }
 

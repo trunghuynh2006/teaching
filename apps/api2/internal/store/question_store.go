@@ -6,10 +6,10 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// Question belongs to a SpaceItem and has a type, a body, and a list of Answers.
+// Question belongs to a Space and has a type, a body, and a list of Answers.
 type Question struct {
 	ID           string             `json:"id"`
-	SpaceItemID  string             `json:"space_item_id"`
+	SpaceID      string             `json:"space_id"`
 	QuestionType string             `json:"question_type"`
 	Body         string             `json:"body"`
 	CreatedBy    string             `json:"created_by"`
@@ -35,7 +35,7 @@ type Answer struct {
 
 type CreateQuestionParams struct {
 	ID           string `json:"id"`
-	SpaceItemID  string `json:"space_item_id"`
+	SpaceID      string `json:"space_id"`
 	QuestionType string `json:"question_type"`
 	Body         string `json:"body"`
 	CreatedBy    string `json:"created_by"`
@@ -72,27 +72,27 @@ type UpdateAnswerParams struct {
 // ── Question queries ─────────────────────────────────────────
 
 const createQuestion = `
-INSERT INTO questions (id, space_item_id, question_type, body, created_by, updated_by)
+INSERT INTO questions (id, space_id, question_type, body, created_by, updated_by)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, space_item_id, question_type, body, created_by, updated_by, created_time, updated_time
+RETURNING id, space_id, question_type, body, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) CreateQuestion(ctx context.Context, arg CreateQuestionParams) (Question, error) {
 	row := q.db.QueryRow(ctx, createQuestion,
-		arg.ID, arg.SpaceItemID, arg.QuestionType, arg.Body, arg.CreatedBy, arg.UpdatedBy)
+		arg.ID, arg.SpaceID, arg.QuestionType, arg.Body, arg.CreatedBy, arg.UpdatedBy)
 	var qu Question
-	err := row.Scan(&qu.ID, &qu.SpaceItemID, &qu.QuestionType, &qu.Body,
+	err := row.Scan(&qu.ID, &qu.SpaceID, &qu.QuestionType, &qu.Body,
 		&qu.CreatedBy, &qu.UpdatedBy, &qu.CreatedTime, &qu.UpdatedTime)
 	return qu, err
 }
 
-const listQuestionsBySpaceItem = `
-SELECT id, space_item_id, question_type, body, created_by, updated_by, created_time, updated_time
-FROM questions WHERE space_item_id = $1 ORDER BY created_time ASC
+const listQuestionsBySpace = `
+SELECT id, space_id, question_type, body, created_by, updated_by, created_time, updated_time
+FROM questions WHERE space_id = $1 ORDER BY created_time ASC
 `
 
-func (q *Queries) ListQuestionsBySpaceItem(ctx context.Context, spaceItemID string) ([]Question, error) {
-	rows, err := q.db.Query(ctx, listQuestionsBySpaceItem, spaceItemID)
+func (q *Queries) ListQuestionsBySpace(ctx context.Context, spaceID string) ([]Question, error) {
+	rows, err := q.db.Query(ctx, listQuestionsBySpace, spaceID)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (q *Queries) ListQuestionsBySpaceItem(ctx context.Context, spaceItemID stri
 	var questions []Question
 	for rows.Next() {
 		var qu Question
-		if err := rows.Scan(&qu.ID, &qu.SpaceItemID, &qu.QuestionType, &qu.Body,
+		if err := rows.Scan(&qu.ID, &qu.SpaceID, &qu.QuestionType, &qu.Body,
 			&qu.CreatedBy, &qu.UpdatedBy, &qu.CreatedTime, &qu.UpdatedTime); err != nil {
 			return nil, err
 		}
@@ -110,14 +110,14 @@ func (q *Queries) ListQuestionsBySpaceItem(ctx context.Context, spaceItemID stri
 }
 
 const getQuestionByID = `
-SELECT id, space_item_id, question_type, body, created_by, updated_by, created_time, updated_time
+SELECT id, space_id, question_type, body, created_by, updated_by, created_time, updated_time
 FROM questions WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetQuestionByID(ctx context.Context, id string) (Question, error) {
 	row := q.db.QueryRow(ctx, getQuestionByID, id)
 	var qu Question
-	err := row.Scan(&qu.ID, &qu.SpaceItemID, &qu.QuestionType, &qu.Body,
+	err := row.Scan(&qu.ID, &qu.SpaceID, &qu.QuestionType, &qu.Body,
 		&qu.CreatedBy, &qu.UpdatedBy, &qu.CreatedTime, &qu.UpdatedTime)
 	return qu, err
 }
@@ -126,13 +126,13 @@ const updateQuestion = `
 UPDATE questions
 SET question_type = $2, body = $3, updated_by = $4, updated_time = NOW()
 WHERE id = $1
-RETURNING id, space_item_id, question_type, body, created_by, updated_by, created_time, updated_time
+RETURNING id, space_id, question_type, body, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) UpdateQuestion(ctx context.Context, arg UpdateQuestionParams) (Question, error) {
 	row := q.db.QueryRow(ctx, updateQuestion, arg.ID, arg.QuestionType, arg.Body, arg.UpdatedBy)
 	var qu Question
-	err := row.Scan(&qu.ID, &qu.SpaceItemID, &qu.QuestionType, &qu.Body,
+	err := row.Scan(&qu.ID, &qu.SpaceID, &qu.QuestionType, &qu.Body,
 		&qu.CreatedBy, &qu.UpdatedBy, &qu.CreatedTime, &qu.UpdatedTime)
 	return qu, err
 }
@@ -142,14 +142,6 @@ const deleteQuestion = `DELETE FROM questions WHERE id = $1`
 func (q *Queries) DeleteQuestion(ctx context.Context, id string) error {
 	_, err := q.db.Exec(ctx, deleteQuestion, id)
 	return err
-}
-
-const countQuestionsBySpaceItem = `SELECT COUNT(*) FROM questions WHERE space_item_id = $1`
-
-func (q *Queries) CountQuestionsBySpaceItem(ctx context.Context, spaceItemID string) (int64, error) {
-	var n int64
-	err := q.db.QueryRow(ctx, countQuestionsBySpaceItem, spaceItemID).Scan(&n)
-	return n, err
 }
 
 // ── Answer queries ───────────────────────────────────────────
@@ -240,7 +232,7 @@ func (q *Queries) CountAnswersByQuestion(ctx context.Context, questionID string)
 const initQuestionsTable = `
 CREATE TABLE IF NOT EXISTS questions (
     id VARCHAR(64) PRIMARY KEY,
-    space_item_id VARCHAR(64) NOT NULL REFERENCES space_items(id) ON DELETE CASCADE,
+    space_id VARCHAR(64) NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
     question_type VARCHAR(50) NOT NULL DEFAULT '',
     body TEXT NOT NULL DEFAULT '',
     created_by VARCHAR(64) NOT NULL,
@@ -255,10 +247,10 @@ func (q *Queries) InitQuestionsTable(ctx context.Context) error {
 	return err
 }
 
-const initQuestionsSpaceItemIndex = `CREATE INDEX IF NOT EXISTS idx_questions_space_item_id ON questions (space_item_id)`
+const initQuestionsSpaceIndex = `CREATE INDEX IF NOT EXISTS idx_questions_space_id ON questions (space_id)`
 
-func (q *Queries) InitQuestionsSpaceItemIndex(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, initQuestionsSpaceItemIndex)
+func (q *Queries) InitQuestionsSpaceIndex(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initQuestionsSpaceIndex)
 	return err
 }
 

@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { API_URL } from '../config'
-import type { SpaceItemData } from './SpaceItemsSidebar'
 
 interface ProblemModalProps {
   space: { id: string; name: string }
   token: string
   onUnauthorized?: () => void
-  onSaved: (item: SpaceItemData) => void
+  onSaved: () => void
   onClose: () => void
 }
 
@@ -39,18 +38,8 @@ export default function ProblemModal({ space, token, onUnauthorized, onSaved, on
     setSaving(true)
     setError('')
     try {
-      // 1. Create SpaceItem
-      const siRes = await fetch(`${API_URL}/spaces/${space.id}/items`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ title: q.slice(0, 100), content: '' }),
-      })
-      if (siRes.status === 401) { onUnauthorized?.(); return }
-      if (!siRes.ok) throw new Error(await parseError(siRes))
-      const spaceItem: SpaceItemData = await siRes.json()
-
-      // 2. Create Problem
-      const probRes = await fetch(`${API_URL}/space-items/${spaceItem.id}/problems`, {
+      // Create Problem directly on the space
+      const probRes = await fetch(`${API_URL}/spaces/${space.id}/problems`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ question: q, solution: solution.trim() }),
@@ -59,7 +48,7 @@ export default function ProblemModal({ space, token, onUnauthorized, onSaved, on
       if (!probRes.ok) throw new Error(await parseError(probRes))
       const problem = await probRes.json()
 
-      // 3. Create Steps (best-effort)
+      // Create Steps (best-effort)
       const nonEmptySteps = steps.map((s) => s.trim()).filter(Boolean)
       for (const body of nonEmptySteps) {
         const stepRes = await fetch(`${API_URL}/problems/${problem.id}/steps`, {
@@ -70,7 +59,7 @@ export default function ProblemModal({ space, token, onUnauthorized, onSaved, on
         if (stepRes.status === 401) { onUnauthorized?.(); return }
       }
 
-      onSaved(spaceItem)
+      onSaved()
     } catch (err) {
       setError((err as Error).message)
     } finally {

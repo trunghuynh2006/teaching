@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { API_URL } from '../config'
-import type { SpaceItemData } from './SpaceItemsSidebar'
 
 interface Props {
   space: { id: string; name: string }
   token: string
   onUnauthorized?: () => void
-  onSaved: (item: SpaceItemData) => void
+  onSaved: () => void
   onClose: () => void
 }
 
@@ -23,18 +22,8 @@ export default function AnkiModal({ space, token, onUnauthorized, onSaved, onClo
     setSaving(true)
     setError('')
     try {
-      // 1. Create space item (title = front text truncated)
-      const itemRes = await fetch(`${API_URL}/spaces/${space.id}/items`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ title: front.slice(0, 80), content: front }),
-      })
-      if (itemRes.status === 401) { onUnauthorized?.(); return }
-      if (!itemRes.ok) throw new Error('Failed to create item')
-      const item: SpaceItemData = await itemRes.json()
-
-      // 2. Create flash card linked to space item
-      const cardRes = await fetch(`${API_URL}/space-items/${item.id}/flash-cards`, {
+      // Create flash card directly on the space
+      const cardRes = await fetch(`${API_URL}/spaces/${space.id}/flash-cards`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ front: front.trim(), back: back.trim() }),
@@ -42,7 +31,7 @@ export default function AnkiModal({ space, token, onUnauthorized, onSaved, onClo
       if (cardRes.status === 401) { onUnauthorized?.(); return }
       if (!cardRes.ok) throw new Error('Failed to create flash card')
 
-      onSaved(item)
+      onSaved()
     } catch (err) {
       setError((err as Error).message)
     } finally {

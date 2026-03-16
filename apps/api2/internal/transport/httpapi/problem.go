@@ -18,21 +18,21 @@ import (
 
 // ── Problem handlers ──────────────────────────────────────────
 
-func (h *Handler) ListSpaceItemProblems(w http.ResponseWriter, r *http.Request, _ user.User) {
-	spaceItemID := strings.TrimSpace(r.PathValue("id"))
-	if spaceItemID == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space item id is required"})
+func (h *Handler) ListSpaceProblems(w http.ResponseWriter, r *http.Request, _ user.User) {
+	spaceID := strings.TrimSpace(r.PathValue("id"))
+	if spaceID == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space id is required"})
 		return
 	}
-	if _, err := h.Queries.GetSpaceItemByID(r.Context(), spaceItemID); err != nil {
+	if _, err := h.Queries.GetSpaceByID(r.Context(), spaceID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space item not found"})
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space not found"})
 			return
 		}
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
-	rows, err := h.Queries.ListProblemsBySpaceItem(r.Context(), spaceItemID)
+	rows, err := h.Queries.ListProblemsBySpace(r.Context(), spaceID)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
@@ -65,14 +65,14 @@ func (h *Handler) GetProblem(w http.ResponseWriter, r *http.Request, _ user.User
 }
 
 func (h *Handler) CreateProblem(w http.ResponseWriter, r *http.Request, currentUser user.User) {
-	spaceItemID := strings.TrimSpace(r.PathValue("id"))
-	if spaceItemID == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space item id is required"})
+	spaceID := strings.TrimSpace(r.PathValue("id"))
+	if spaceID == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space id is required"})
 		return
 	}
-	if _, err := h.Queries.GetSpaceItemByID(r.Context(), spaceItemID); err != nil {
+	if _, err := h.Queries.GetSpaceByID(r.Context(), spaceID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space item not found"})
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space not found"})
 			return
 		}
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
@@ -84,12 +84,12 @@ func (h *Handler) CreateProblem(w http.ResponseWriter, r *http.Request, currentU
 		return
 	}
 	row, err := h.Queries.CreateProblem(r.Context(), store.CreateProblemParams{
-		ID:          newProblemID(),
-		SpaceItemID: spaceItemID,
-		Question:    input.Question,
-		Solution:    input.Solution,
-		CreatedBy:   currentUser.Username,
-		UpdatedBy:   currentUser.Username,
+		ID:        newProblemID(),
+		SpaceID:   spaceID,
+		Question:  input.Question,
+		Solution:  input.Solution,
+		CreatedBy: currentUser.Username,
+		UpdatedBy: currentUser.Username,
 	})
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
@@ -284,12 +284,12 @@ func newProblemStepID() string {
 
 func toSharedProblem(p store.Problem, steps []store.ProblemStep) sharedmodels.Problem {
 	out := sharedmodels.Problem{
-		Id:          p.ID,
-		SpaceItemId: p.SpaceItemID,
-		Question:    p.Question,
-		Solution:    p.Solution,
-		CreatedBy:   &p.CreatedBy,
-		UpdatedBy:   &p.UpdatedBy,
+		Id:        p.ID,
+		SpaceId:   p.SpaceID,
+		Question:  p.Question,
+		Solution:  p.Solution,
+		CreatedBy: &p.CreatedBy,
+		UpdatedBy: &p.UpdatedBy,
 	}
 	if p.CreatedTime.Valid {
 		ts := p.CreatedTime.Time.UTC().Format(time.RFC3339Nano)

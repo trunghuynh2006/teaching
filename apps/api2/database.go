@@ -88,16 +88,10 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitSpacesCreatedTimeIndex(ctx); err != nil {
 		return err
 	}
-	if err := a.queries.InitSpaceItemsTable(ctx); err != nil {
-		return err
-	}
-	if err := a.queries.InitSpaceItemsSpaceIndex(ctx); err != nil {
-		return err
-	}
 	if err := a.queries.InitQuestionsTable(ctx); err != nil {
 		return err
 	}
-	if err := a.queries.InitQuestionsSpaceItemIndex(ctx); err != nil {
+	if err := a.queries.InitQuestionsSpaceIndex(ctx); err != nil {
 		return err
 	}
 	if err := a.queries.InitAnswersTable(ctx); err != nil {
@@ -109,7 +103,7 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitProblemsTable(ctx); err != nil {
 		return err
 	}
-	if err := a.queries.InitProblemsSpaceItemIndex(ctx); err != nil {
+	if err := a.queries.InitProblemsSpaceIndex(ctx); err != nil {
 		return err
 	}
 	if err := a.queries.InitProblemStepsTable(ctx); err != nil {
@@ -121,7 +115,7 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitFlashCardsTable(ctx); err != nil {
 		return err
 	}
-	if err := a.queries.InitFlashCardsSpaceItemIndex(ctx); err != nil {
+	if err := a.queries.InitFlashCardsSpaceIndex(ctx); err != nil {
 		return err
 	}
 

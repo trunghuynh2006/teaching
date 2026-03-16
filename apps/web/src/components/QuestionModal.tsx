@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { API_URL } from '../config'
-import type { SpaceItemData } from './SpaceItemsSidebar'
 
 const QUESTION_TYPES = ['multiple_choice', 'true_false', 'short_answer', 'fill_blank']
 
@@ -13,7 +12,7 @@ interface QuestionModalProps {
   space: { id: string; name: string }
   token: string
   onUnauthorized?: () => void
-  onSaved: (item: SpaceItemData) => void
+  onSaved: () => void
   onClose: () => void
 }
 
@@ -51,18 +50,8 @@ export default function QuestionModal({ space, token, onUnauthorized, onSaved, o
     setSaving(true)
     setError('')
     try {
-      // 1. Create SpaceItem
-      const siRes = await fetch(`${API_URL}/spaces/${space.id}/items`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ title: b.slice(0, 100), content: '' }),
-      })
-      if (siRes.status === 401) { onUnauthorized?.(); return }
-      if (!siRes.ok) throw new Error(await parseError(siRes))
-      const spaceItem: SpaceItemData = await siRes.json()
-
-      // 2. Create Question
-      const qRes = await fetch(`${API_URL}/space-items/${spaceItem.id}/questions`, {
+      // Create Question directly on the space
+      const qRes = await fetch(`${API_URL}/spaces/${space.id}/questions`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ question_type: questionType, body: b }),
@@ -71,7 +60,7 @@ export default function QuestionModal({ space, token, onUnauthorized, onSaved, o
       if (!qRes.ok) throw new Error(await parseError(qRes))
       const question = await qRes.json()
 
-      // 3. Create Answers (best-effort)
+      // Create Answers (best-effort)
       for (const ans of answers.filter((a) => a.text.trim())) {
         const aRes = await fetch(`${API_URL}/questions/${question.id}/answers`, {
           method: 'POST',
@@ -81,7 +70,7 @@ export default function QuestionModal({ space, token, onUnauthorized, onSaved, o
         if (aRes.status === 401) { onUnauthorized?.(); return }
       }
 
-      onSaved(spaceItem)
+      onSaved()
     } catch (err) {
       setError((err as Error).message)
     } finally {

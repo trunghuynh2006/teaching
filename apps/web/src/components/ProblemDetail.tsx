@@ -15,28 +15,34 @@ interface ProblemData {
 }
 
 interface ProblemDetailProps {
-  spaceItemId: string
+  spaceId: string
   token: string
   onUnauthorized?: () => void
+  problemId?: string | null
 }
 
-export default function ProblemDetail({ spaceItemId, token, onUnauthorized }: ProblemDetailProps) {
+export default function ProblemDetail({ spaceId, token, onUnauthorized, problemId }: ProblemDetailProps) {
   const [problem, setProblem] = useState<ProblemData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const fetchProblem = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_URL}/space-items/${spaceItemId}/problems`, {
+      const res = await fetch(`${API_URL}/spaces/${spaceId}/problems`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) return
       const data = await res.json()
-      setProblem(Array.isArray(data) && data.length > 0 ? data[0] : null)
+      if (!Array.isArray(data)) return
+      if (problemId) {
+        setProblem(data.find((p: ProblemData) => p.id === problemId) ?? null)
+      } else {
+        setProblem(data.length > 0 ? data[0] : null)
+      }
     } catch (_) {}
     finally { setLoading(false) }
-  }, [spaceItemId, token])
+  }, [spaceId, token, problemId])
 
   useEffect(() => { fetchProblem() }, [fetchProblem])
 

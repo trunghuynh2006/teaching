@@ -705,6 +705,42 @@ button.danger {
   margin: 0;
 }
 
+.space-items-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.5rem;
+}
+
+.space-items-list-item {
+  display: block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 4px;
+}
+
+.space-items-list-item:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.space-items-list-item.active {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.space-items-empty {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.78rem;
+  color: #b0bec8;
+  font-style: italic;
+}
+
 .space-items-sidebar-add-form {
   display: flex;
   flex-direction: column;

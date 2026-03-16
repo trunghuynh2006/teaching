@@ -18,21 +18,21 @@ import (
 
 // ── FlashCard handlers ────────────────────────────────────────
 
-func (h *Handler) ListSpaceItemFlashCards(w http.ResponseWriter, r *http.Request, _ user.User) {
-	spaceItemID := strings.TrimSpace(r.PathValue("id"))
-	if spaceItemID == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space item id is required"})
+func (h *Handler) ListSpaceFlashCards(w http.ResponseWriter, r *http.Request, _ user.User) {
+	spaceID := strings.TrimSpace(r.PathValue("id"))
+	if spaceID == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space id is required"})
 		return
 	}
-	if _, err := h.Queries.GetSpaceItemByID(r.Context(), spaceItemID); err != nil {
+	if _, err := h.Queries.GetSpaceByID(r.Context(), spaceID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space item not found"})
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space not found"})
 			return
 		}
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
-	rows, err := h.Queries.ListFlashCardsBySpaceItem(r.Context(), spaceItemID)
+	rows, err := h.Queries.ListFlashCardsBySpace(r.Context(), spaceID)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
@@ -63,14 +63,14 @@ func (h *Handler) GetFlashCard(w http.ResponseWriter, r *http.Request, _ user.Us
 }
 
 func (h *Handler) CreateFlashCard(w http.ResponseWriter, r *http.Request, currentUser user.User) {
-	spaceItemID := strings.TrimSpace(r.PathValue("id"))
-	if spaceItemID == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space item id is required"})
+	spaceID := strings.TrimSpace(r.PathValue("id"))
+	if spaceID == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space id is required"})
 		return
 	}
-	if _, err := h.Queries.GetSpaceItemByID(r.Context(), spaceItemID); err != nil {
+	if _, err := h.Queries.GetSpaceByID(r.Context(), spaceID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space item not found"})
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space not found"})
 			return
 		}
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
@@ -82,12 +82,12 @@ func (h *Handler) CreateFlashCard(w http.ResponseWriter, r *http.Request, curren
 		return
 	}
 	row, err := h.Queries.CreateFlashCard(r.Context(), store.CreateFlashCardParams{
-		ID:          newFlashCardID(),
-		SpaceItemID: spaceItemID,
-		Front:       input.Front,
-		Back:        input.Back,
-		CreatedBy:   currentUser.Username,
-		UpdatedBy:   currentUser.Username,
+		ID:        newFlashCardID(),
+		SpaceID:   spaceID,
+		Front:     input.Front,
+		Back:      input.Back,
+		CreatedBy: currentUser.Username,
+		UpdatedBy: currentUser.Username,
 	})
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
@@ -169,12 +169,12 @@ func newFlashCardID() string {
 
 func toSharedFlashCard(c store.FlashCard) sharedmodels.FlashCard {
 	out := sharedmodels.FlashCard{
-		Id:          c.ID,
-		SpaceItemId: c.SpaceItemID,
-		Front:       c.Front,
-		Back:        c.Back,
-		CreatedBy:   &c.CreatedBy,
-		UpdatedBy:   &c.UpdatedBy,
+		Id:        c.ID,
+		SpaceId:   c.SpaceID,
+		Front:     c.Front,
+		Back:      c.Back,
+		CreatedBy: &c.CreatedBy,
+		UpdatedBy: &c.UpdatedBy,
 	}
 	if c.CreatedTime.Valid {
 		ts := c.CreatedTime.Time.UTC().Format(time.RFC3339Nano)

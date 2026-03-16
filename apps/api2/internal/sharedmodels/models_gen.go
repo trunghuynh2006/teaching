@@ -110,108 +110,50 @@ type Assignment struct {
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
-type Folder struct {
-	CreatedBy   *string `json:"created_by,omitempty"`
+type Book struct {
+	Author *string `json:"author,omitempty"`
+	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Icon        *string `json:"icon,omitempty"`
-	Id          string  `json:"id"`
-	Name        string  `json:"name"`
-	Theme       *string `json:"theme,omitempty"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
+	Id string `json:"id"`
+	Isbn *string `json:"isbn,omitempty"`
+	KnowledgeId string `json:"knowledge_id"`
+	PublishedAt *string `json:"published_at,omitempty"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
+
+type Chapter struct {
+	BookId string `json:"book_id"`
+	Content string `json:"content"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Id string `json:"id"`
+	Position *int `json:"position,omitempty"`
+	Title string `json:"title"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type Concept struct {
+	CanonicalName string `json:"canonical_name"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Id string `json:"id"`
+	TopicId string `json:"topic_id"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
 
 type Knowledge struct {
-	Content     string  `json:"content"`
-	CreatedBy   *string `json:"created_by,omitempty"`
+	Content string `json:"content"`
+	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
-	FolderId    string  `json:"folder_id"`
-	Id          string  `json:"id"`
-	Title       *string `json:"title,omitempty"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-}
-
-type Space struct {
-	CreatedBy   *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Description *string `json:"description,omitempty"`
-	FolderId    string  `json:"folder_id"`
-	Id          string  `json:"id"`
-	Name        string  `json:"name"`
-	SpaceType   *string `json:"space_type,omitempty"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-}
-
-type SpaceItem struct {
-	Content     string  `json:"content"`
-	CreatedBy   *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Id          string  `json:"id"`
-	Position    *int    `json:"position,omitempty"`
-	SpaceId     string  `json:"space_id"`
-	Title       *string `json:"title,omitempty"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-}
-
-type Problem struct {
-	CreatedBy   *string       `json:"created_by,omitempty"`
-	CreatedTime *string       `json:"created_time,omitempty"`
-	Id          string        `json:"id"`
-	Question    string        `json:"question"`
-	Solution    string        `json:"solution"`
-	SpaceItemId string        `json:"space_item_id"`
-	Steps       []ProblemStep `json:"steps,omitempty"`
-	UpdatedBy   *string       `json:"updated_by,omitempty"`
-	UpdatedTime *string       `json:"updated_time,omitempty"`
-}
-
-type ProblemStep struct {
-	Body        string  `json:"body"`
-	CreatedBy   *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Id          string  `json:"id"`
-	Position    *int    `json:"position,omitempty"`
-	ProblemId   string  `json:"problem_id"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-}
-
-type Question struct {
-	Answers      []Answer `json:"answers,omitempty"`
-	Body         string   `json:"body"`
-	CreatedBy    *string  `json:"created_by,omitempty"`
-	CreatedTime  *string  `json:"created_time,omitempty"`
-	Id           string   `json:"id"`
-	QuestionType string   `json:"question_type"`
-	SpaceItemId  string   `json:"space_item_id"`
-	UpdatedBy    *string  `json:"updated_by,omitempty"`
-	UpdatedTime  *string  `json:"updated_time,omitempty"`
-}
-
-type Answer struct {
-	CreatedBy   *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Id          string  `json:"id"`
-	IsCorrect   bool    `json:"is_correct"`
-	Position    *int    `json:"position,omitempty"`
-	QuestionId  string  `json:"question_id"`
-	Text        string  `json:"text"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-}
-
-type FlashCard struct {
-	Back        string  `json:"back"`
-	CreatedBy   *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Front       string  `json:"front"`
-	Id          string  `json:"id"`
-	SpaceItemId string  `json:"space_item_id"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
+	FolderId string `json:"folder_id"`
+	Id string `json:"id"`
+	Title *string `json:"title,omitempty"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
@@ -302,6 +244,17 @@ type StudentPerformanceTimeline struct {
 	SkillId *string `json:"skill_id,omitempty"`
 	Snapshots []map[string]any `json:"snapshots"`
 	ToTime *string `json:"to_time,omitempty"`
+}
+
+type Topic struct {
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Description *string `json:"description,omitempty"`
+	FolderId string `json:"folder_id"`
+	Id string `json:"id"`
+	Name string `json:"name"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
 type StudentProfile struct {

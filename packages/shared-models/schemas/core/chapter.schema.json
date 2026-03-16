@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Chapter",
+  "description": "A chapter belonging to a Book.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique chapter identifier."
+    },
+    "book_id": {
+      "type": "string",
+      "description": "The book this chapter belongs to."
+    },
+    "title": {
+      "type": "string",
+      "description": "Chapter title."
+    },
+    "content": {
+      "type": "string",
+      "description": "Chapter text content."
+    },
+    "position": {
+      "type": ["integer", "null"],
+      "default": null,
+      "description": "Ordering index within the book."
+    },
+    "created_by": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "User identifier that created this record."
+    },
+    "updated_by": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "User identifier that last updated this record."
+    },
+    "created_time": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "Record creation timestamp (ISO 8601)."
+    },
+    "updated_time": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "Record update timestamp (ISO 8601)."
+    }
+  },
+  "required": ["id", "book_id", "title", "content"]
+}

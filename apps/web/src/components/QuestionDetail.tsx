@@ -16,19 +16,19 @@ interface QuestionData {
 }
 
 interface QuestionDetailProps {
-  spaceItemId: string
+  spaceId: string
   token: string
   onUnauthorized?: () => void
 }
 
-export default function QuestionDetail({ spaceItemId, token, onUnauthorized }: QuestionDetailProps) {
+export default function QuestionDetail({ spaceId, token, onUnauthorized }: QuestionDetailProps) {
   const [question, setQuestion] = useState<QuestionData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const fetchQuestion = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_URL}/space-items/${spaceItemId}/questions`, {
+      const res = await fetch(`${API_URL}/spaces/${spaceId}/questions`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.status === 401) { onUnauthorized?.(); return }
@@ -37,7 +37,7 @@ export default function QuestionDetail({ spaceItemId, token, onUnauthorized }: Q
       setQuestion(Array.isArray(data) && data.length > 0 ? data[0] : null)
     } catch (_) {}
     finally { setLoading(false) }
-  }, [spaceItemId, token])
+  }, [spaceId, token])
 
   useEffect(() => { fetchQuestion() }, [fetchQuestion])
 

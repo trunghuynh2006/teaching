@@ -111,23 +111,9 @@ CREATE TABLE IF NOT EXISTS spaces (
 CREATE INDEX IF NOT EXISTS idx_spaces_folder_id ON spaces (folder_id);
 CREATE INDEX IF NOT EXISTS idx_spaces_created_time ON spaces (created_time DESC);
 
-CREATE TABLE IF NOT EXISTS space_items (
-    id VARCHAR(64) PRIMARY KEY,
-    space_id VARCHAR(64) NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
-    title VARCHAR(200) NOT NULL DEFAULT '',
-    content TEXT NOT NULL DEFAULT '',
-    position INT NOT NULL DEFAULT 0,
-    created_by VARCHAR(64) NOT NULL,
-    updated_by VARCHAR(64) NOT NULL,
-    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_space_items_space_id ON space_items (space_id);
-
 CREATE TABLE IF NOT EXISTS questions (
     id VARCHAR(64) PRIMARY KEY,
-    space_item_id VARCHAR(64) NOT NULL REFERENCES space_items(id) ON DELETE CASCADE,
+    space_id VARCHAR(64) NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
     question_type VARCHAR(50) NOT NULL DEFAULT '',
     body TEXT NOT NULL DEFAULT '',
     created_by VARCHAR(64) NOT NULL,
@@ -136,7 +122,7 @@ CREATE TABLE IF NOT EXISTS questions (
     updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_questions_space_item_id ON questions (space_item_id);
+CREATE INDEX IF NOT EXISTS idx_questions_space_id ON questions (space_id);
 
 CREATE TABLE IF NOT EXISTS answers (
     id VARCHAR(64) PRIMARY KEY,
@@ -154,7 +140,7 @@ CREATE INDEX IF NOT EXISTS idx_answers_question_id ON answers (question_id);
 
 CREATE TABLE IF NOT EXISTS problems (
     id VARCHAR(64) PRIMARY KEY,
-    space_item_id VARCHAR(64) NOT NULL REFERENCES space_items(id) ON DELETE CASCADE,
+    space_id VARCHAR(64) NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
     question TEXT NOT NULL DEFAULT '',
     solution TEXT NOT NULL DEFAULT '',
     created_by VARCHAR(64) NOT NULL,
@@ -163,7 +149,7 @@ CREATE TABLE IF NOT EXISTS problems (
     updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_problems_space_item_id ON problems (space_item_id);
+CREATE INDEX IF NOT EXISTS idx_problems_space_id ON problems (space_id);
 
 CREATE TABLE IF NOT EXISTS problem_steps (
     id VARCHAR(64) PRIMARY KEY,
@@ -177,3 +163,16 @@ CREATE TABLE IF NOT EXISTS problem_steps (
 );
 
 CREATE INDEX IF NOT EXISTS idx_problem_steps_problem_id ON problem_steps (problem_id);
+
+CREATE TABLE IF NOT EXISTS flash_cards (
+    id VARCHAR(64) PRIMARY KEY,
+    space_id VARCHAR(64) NOT NULL REFERENCES spaces(id) ON DELETE CASCADE,
+    front TEXT NOT NULL DEFAULT '',
+    back TEXT NOT NULL DEFAULT '',
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_flash_cards_space_id ON flash_cards (space_id);

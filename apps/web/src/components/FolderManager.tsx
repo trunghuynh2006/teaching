@@ -5,10 +5,12 @@ import { FolderIconDisplay } from '../config/folderIcons'
 import IconPicker from './IconPicker'
 import KnowledgeManager from './KnowledgeManager'
 import SpaceManager from './SpaceManager'
-import SpaceItemsSidebar, { type SpaceItemData } from './SpaceItemsSidebar'
+import SpaceItemsSidebar from './SpaceItemsSidebar'
 import ProblemDetail from './ProblemDetail'
 import QuestionDetail from './QuestionDetail'
 import AnkiDetail from './AnkiDetail'
+import QuestionModal from './QuestionModal'
+import AnkiModal from './AnkiModal'
 
 interface FolderItem {
   id: string
@@ -88,7 +90,11 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [spaceModalError, setSpaceModalError] = useState('')
   const [sidebarSpaces, setSidebarSpaces] = useState<SidebarSpace[]>([])
   const [selectedSpace, setSelectedSpace] = useState<SidebarSpace | null>(null)
-  const [selectedSpaceItem, setSelectedSpaceItem] = useState<SpaceItemData | null>(null)
+  // refreshKey is incremented when a new item is added, to re-trigger detail fetches
+  const [detailRefreshKey, setDetailRefreshKey] = useState(0)
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
+  const [showInlineQuestionModal, setShowInlineQuestionModal] = useState(false)
+  const [showInlineAnkiModal, setShowInlineAnkiModal] = useState(false)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -101,6 +107,9 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
 
   const isDetailSpace = (s: SidebarSpace) =>
     s.space_type === 'Problem' || s.space_type === 'Exercise' || s.space_type === 'Question' || s.space_type === 'Anki'
+
+  const isProblemOrExercise = (s: SidebarSpace) =>
+    s.space_type === 'Problem' || s.space_type === 'Exercise'
 
   const fetchFolders = useCallback(async () => {
     setLoading(true)
@@ -202,7 +211,6 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     setSpacesCount(0)
     setSidebarSpaces([])
     setSelectedSpace(null)
-    setSelectedSpaceItem(null)
     setError('')
     setNotice('')
     fetchSidebarSpaces(folder.id)
@@ -213,7 +221,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     if (selectedFolder) fetchSidebarSpaces(selectedFolder.id)
   }, [spacesCount])
 
-  const SPACE_TYPES = ['Problem', 'Exercise', 'Question', 'Anki', 'Note', 'Quiz', 'Other']
+  const SPACE_TYPES = ['Problem', 'Exercise', 'Question', 'Anki', 'Note', 'Quiz', 'Topic', 'Other']
 
   const openSpaceModal = () => {
     setSpaceModalName('')
@@ -250,7 +258,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
       closeSpaceModal()
       await fetchSidebarSpaces(selectedFolder.id)
       setSelectedSpace(newSpace)
-      setSelectedSpaceItem(null)
+      setActiveSection('spaces')
     } catch (err) {
       setSpaceModalError((err as Error).message)
     } finally {
@@ -394,7 +402,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
           <button
             key={space.id}
             className={`folder-sidebar-space-item${selectedSpace?.id === space.id ? ' active' : ''}`}
-            onClick={() => { setSelectedSpace(space); setSelectedSpaceItem(null); setActiveSection('spaces') }}
+            onClick={() => { setSelectedSpace(space); setActiveSection('spaces'); setSelectedItemId(null) }}
           >
             {space.space_type && (
               <span className="space-type-icon" title={space.space_type}>{spaceTypeIcon(space.space_type)}</span>
@@ -410,14 +418,16 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
       <div className="folder-sidebar-divider" />
 
       {/* Space items sidebar — only for Problem/Exercise spaces */}
-      {selectedSpace && isDetailSpace(selectedSpace) && (
+      {selectedSpace && isProblemOrExercise(selectedSpace) && (
         <>
           <SpaceItemsSidebar
             space={selectedSpace}
             token={token}
             onUnauthorized={onUnauthorized}
-            selectedItemId={selectedSpaceItem?.id}
-            onSelectItem={setSelectedSpaceItem}
+            onAdded={() => setDetailRefreshKey((k) => k + 1)}
+            selectedItemId={selectedItemId}
+            onSelectItem={setSelectedItemId}
+            refreshKey={detailRefreshKey}
           />
           <div className="folder-sidebar-divider" />
         </>
@@ -434,39 +444,57 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
           />
         )}
         {activeSection === 'spaces' && selectedSpace && isDetailSpace(selectedSpace) && (
-          selectedSpaceItem ? (
-            selectedSpace.space_type === 'Problem' ? (
-              <ProblemDetail
-                key={selectedSpaceItem.id}
-                spaceItemId={selectedSpaceItem.id}
-                token={token}
-                onUnauthorized={onUnauthorized}
-              />
-            ) : selectedSpace.space_type === 'Question' ? (
-              <QuestionDetail
-                key={selectedSpaceItem.id}
-                spaceItemId={selectedSpaceItem.id}
-                token={token}
-                onUnauthorized={onUnauthorized}
-              />
-            ) : selectedSpace.space_type === 'Anki' ? (
-              <AnkiDetail
-                key={selectedSpaceItem.id}
-                spaceItemId={selectedSpaceItem.id}
-                token={token}
-                onUnauthorized={onUnauthorized}
-              />
-            ) : (
-              <div className="space-item-detail">
-                {selectedSpaceItem.title && <h3 className="space-item-detail-title">{selectedSpaceItem.title}</h3>}
-                <p className="space-item-detail-content">{selectedSpaceItem.content}</p>
+          selectedSpace.space_type === 'Problem' ? (
+            <ProblemDetail
+              key={`${selectedSpace.id}-${selectedItemId}-${detailRefreshKey}`}
+              spaceId={selectedSpace.id}
+              token={token}
+              onUnauthorized={onUnauthorized}
+              problemId={selectedItemId}
+            />
+          ) : selectedSpace.space_type === 'Question' ? (
+            <>
+              <div className="folder-content-actions">
+                <button onClick={() => setShowInlineQuestionModal(true)}>+ New Question</button>
               </div>
-            )
-          ) : (
-            <div className="space-item-detail">
-              <p className="space-item-detail-empty">No items in this space.</p>
-            </div>
-          )
+              <QuestionDetail
+                key={`${selectedSpace.id}-${detailRefreshKey}`}
+                spaceId={selectedSpace.id}
+                token={token}
+                onUnauthorized={onUnauthorized}
+              />
+              {showInlineQuestionModal && (
+                <QuestionModal
+                  space={selectedSpace}
+                  token={token}
+                  onUnauthorized={onUnauthorized}
+                  onSaved={() => { setShowInlineQuestionModal(false); setDetailRefreshKey((k) => k + 1) }}
+                  onClose={() => setShowInlineQuestionModal(false)}
+                />
+              )}
+            </>
+          ) : selectedSpace.space_type === 'Anki' ? (
+            <>
+              <div className="folder-content-actions">
+                <button onClick={() => setShowInlineAnkiModal(true)}>+ New Card</button>
+              </div>
+              <AnkiDetail
+                key={`${selectedSpace.id}-${detailRefreshKey}`}
+                spaceId={selectedSpace.id}
+                token={token}
+                onUnauthorized={onUnauthorized}
+              />
+              {showInlineAnkiModal && (
+                <AnkiModal
+                  space={selectedSpace}
+                  token={token}
+                  onUnauthorized={onUnauthorized}
+                  onSaved={() => { setShowInlineAnkiModal(false); setDetailRefreshKey((k) => k + 1) }}
+                  onClose={() => setShowInlineAnkiModal(false)}
+                />
+              )}
+            </>
+          ) : null
         )}
         {activeSection === 'spaces' && (!selectedSpace || !isDetailSpace(selectedSpace)) && (
           <SpaceManager

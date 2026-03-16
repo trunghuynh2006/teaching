@@ -8,12 +8,12 @@ interface FlashCard {
 }
 
 interface Props {
-  spaceItemId: string
+  spaceId: string
   token: string
   onUnauthorized?: () => void
 }
 
-export default function AnkiDetail({ spaceItemId, token, onUnauthorized }: Props) {
+export default function AnkiDetail({ spaceId, token, onUnauthorized }: Props) {
   const [card, setCard] = useState<FlashCard | null>(null)
   const [flipped, setFlipped] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -23,7 +23,7 @@ export default function AnkiDetail({ spaceItemId, token, onUnauthorized }: Props
     setLoading(true)
     setError('')
     try {
-      const res = await fetch(`${API_URL}/space-items/${spaceItemId}/flash-cards`, {
+      const res = await fetch(`${API_URL}/spaces/${spaceId}/flash-cards`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.status === 401) { onUnauthorized?.(); return }
@@ -37,7 +37,7 @@ export default function AnkiDetail({ spaceItemId, token, onUnauthorized }: Props
     } finally {
       setLoading(false)
     }
-  }, [spaceItemId, token])
+  }, [spaceId, token])
 
   useEffect(() => { fetchCard() }, [fetchCard])
 
