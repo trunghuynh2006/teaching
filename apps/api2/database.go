@@ -70,13 +70,13 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitSkillFoldersTable(ctx); err != nil {
 		return err
 	}
-	if err := a.queries.InitKnowledgesTable(ctx); err != nil {
+	if err := a.queries.InitSourcesTable(ctx); err != nil {
 		return err
 	}
-	if err := a.queries.InitKnowledgesFolderIndex(ctx); err != nil {
+	if err := a.queries.InitSourcesFolderIndex(ctx); err != nil {
 		return err
 	}
-	if err := a.queries.InitKnowledgesCreatedTimeIndex(ctx); err != nil {
+	if err := a.queries.InitSourcesCreatedTimeIndex(ctx); err != nil {
 		return err
 	}
 	if err := a.queries.InitSpacesTable(ctx); err != nil {

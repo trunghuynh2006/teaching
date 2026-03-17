@@ -16,7 +16,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (h *Handler) ListFolderKnowledges(w http.ResponseWriter, r *http.Request, _ user.User) {
+func (h *Handler) ListFolderSources(w http.ResponseWriter, r *http.Request, _ user.User) {
 	folderID := strings.TrimSpace(r.PathValue("id"))
 	if folderID == "" {
 		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Folder id is required"})
@@ -32,40 +32,40 @@ func (h *Handler) ListFolderKnowledges(w http.ResponseWriter, r *http.Request, _
 		return
 	}
 
-	rows, err := h.Queries.ListKnowledgesByFolder(r.Context(), folderID)
+	rows, err := h.Queries.ListSourcesByFolder(r.Context(), folderID)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
 
-	out := make([]sharedmodels.Knowledge, 0, len(rows))
+	out := make([]sharedmodels.Source, 0, len(rows))
 	for _, row := range rows {
-		out = append(out, toSharedKnowledge(row))
+		out = append(out, toSharedSource(row))
 	}
 	writeJSON(w, http.StatusOK, out)
 }
 
-func (h *Handler) GetKnowledge(w http.ResponseWriter, r *http.Request, _ user.User) {
+func (h *Handler) GetSource(w http.ResponseWriter, r *http.Request, _ user.User) {
 	id := strings.TrimSpace(r.PathValue("id"))
 	if id == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Knowledge id is required"})
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Source id is required"})
 		return
 	}
 
-	row, err := h.Queries.GetKnowledgeByID(r.Context(), id)
+	row, err := h.Queries.GetSourceByID(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Knowledge not found"})
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Source not found"})
 			return
 		}
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
 
-	writeJSON(w, http.StatusOK, toSharedKnowledge(row))
+	writeJSON(w, http.StatusOK, toSharedSource(row))
 }
 
-func (h *Handler) CreateKnowledge(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+func (h *Handler) CreateSource(w http.ResponseWriter, r *http.Request, currentUser user.User) {
 	folderID := strings.TrimSpace(r.PathValue("id"))
 	if folderID == "" {
 		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Folder id is required"})
@@ -81,14 +81,14 @@ func (h *Handler) CreateKnowledge(w http.ResponseWriter, r *http.Request, curren
 		return
 	}
 
-	input, err := decodeKnowledgeInput(r)
+	input, err := decodeSourceInput(r)
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: err.Error()})
 		return
 	}
 
-	row, err := h.Queries.CreateKnowledge(r.Context(), store.CreateKnowledgeParams{
-		ID:        newKnowledgeID(),
+	row, err := h.Queries.CreateSource(r.Context(), store.CreateSourceParams{
+		ID:        newSourceID(),
 		FolderID:  folderID,
 		Title:     input.Title,
 		Content:   input.Content,
@@ -100,23 +100,23 @@ func (h *Handler) CreateKnowledge(w http.ResponseWriter, r *http.Request, curren
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, toSharedKnowledge(row))
+	writeJSON(w, http.StatusCreated, toSharedSource(row))
 }
 
-func (h *Handler) UpdateKnowledge(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+func (h *Handler) UpdateSource(w http.ResponseWriter, r *http.Request, currentUser user.User) {
 	id := strings.TrimSpace(r.PathValue("id"))
 	if id == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Knowledge id is required"})
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Source id is required"})
 		return
 	}
 
-	input, err := decodeKnowledgeInput(r)
+	input, err := decodeSourceInput(r)
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: err.Error()})
 		return
 	}
 
-	row, err := h.Queries.UpdateKnowledge(r.Context(), store.UpdateKnowledgeParams{
+	row, err := h.Queries.UpdateSource(r.Context(), store.UpdateSourceParams{
 		ID:        id,
 		Title:     input.Title,
 		Content:   input.Content,
@@ -124,24 +124,24 @@ func (h *Handler) UpdateKnowledge(w http.ResponseWriter, r *http.Request, curren
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Knowledge not found"})
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Source not found"})
 			return
 		}
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
 
-	writeJSON(w, http.StatusOK, toSharedKnowledge(row))
+	writeJSON(w, http.StatusOK, toSharedSource(row))
 }
 
-func (h *Handler) DeleteKnowledge(w http.ResponseWriter, r *http.Request, _ user.User) {
+func (h *Handler) DeleteSource(w http.ResponseWriter, r *http.Request, _ user.User) {
 	id := strings.TrimSpace(r.PathValue("id"))
 	if id == "" {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Knowledge id is required"})
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Source id is required"})
 		return
 	}
 
-	if err := h.Queries.DeleteKnowledge(r.Context(), id); err != nil {
+	if err := h.Queries.DeleteSource(r.Context(), id); err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
@@ -149,55 +149,55 @@ func (h *Handler) DeleteKnowledge(w http.ResponseWriter, r *http.Request, _ user
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func decodeKnowledgeInput(r *http.Request) (knowledgeInput, error) {
+func decodeSourceInput(r *http.Request) (sourceInput, error) {
 	var payload struct {
 		Title   string `json:"title"`
 		Content string `json:"content"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		return knowledgeInput{}, errors.New("Invalid request body")
+		return sourceInput{}, errors.New("Invalid request body")
 	}
 
 	content := strings.TrimSpace(payload.Content)
 	if content == "" {
-		return knowledgeInput{}, errors.New("Content is required")
+		return sourceInput{}, errors.New("Content is required")
 	}
 
-	return knowledgeInput{
+	return sourceInput{
 		Title:   strings.TrimSpace(payload.Title),
 		Content: content,
 	}, nil
 }
 
-func newKnowledgeID() string {
+func newSourceID() string {
 	var b [8]byte
 	if _, err := rand.Read(b[:]); err != nil {
-		return "know_" + time.Now().UTC().Format("20060102150405")
+		return "src_" + time.Now().UTC().Format("20060102150405")
 	}
-	return "know_" + hex.EncodeToString(b[:])
+	return "src_" + hex.EncodeToString(b[:])
 }
 
-func toSharedKnowledge(k store.Knowledge) sharedmodels.Knowledge {
-	out := sharedmodels.Knowledge{
-		Id:        k.ID,
-		FolderId:  k.FolderID,
-		Title:     &k.Title,
-		Content:   k.Content,
-		CreatedBy: &k.CreatedBy,
-		UpdatedBy: &k.UpdatedBy,
+func toSharedSource(s store.Source) sharedmodels.Source {
+	out := sharedmodels.Source{
+		Id:        s.ID,
+		FolderId:  s.FolderID,
+		Title:     &s.Title,
+		Content:   s.Content,
+		CreatedBy: &s.CreatedBy,
+		UpdatedBy: &s.UpdatedBy,
 	}
-	if k.CreatedTime.Valid {
-		ts := k.CreatedTime.Time.UTC().Format(time.RFC3339Nano)
+	if s.CreatedTime.Valid {
+		ts := s.CreatedTime.Time.UTC().Format(time.RFC3339Nano)
 		out.CreatedTime = &ts
 	}
-	if k.UpdatedTime.Valid {
-		ts := k.UpdatedTime.Time.UTC().Format(time.RFC3339Nano)
+	if s.UpdatedTime.Valid {
+		ts := s.UpdatedTime.Time.UTC().Format(time.RFC3339Nano)
 		out.UpdatedTime = &ts
 	}
 	return out
 }
 
-type knowledgeInput struct {
+type sourceInput struct {
 	Title   string
 	Content string
 }

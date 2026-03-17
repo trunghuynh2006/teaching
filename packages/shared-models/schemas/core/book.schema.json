@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Book",
-  "description": "A book linked 1-to-1 with a Knowledge entry.",
+  "description": "A book linked 1-to-1 with a Source entry.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -9,9 +9,9 @@
       "type": "string",
       "description": "Unique book identifier."
     },
-    "knowledge_id": {
+    "source_id": {
       "type": "string",
-      "description": "The Knowledge entry this book extends (unique)."
+      "description": "The Source entry this book extends (unique)."
     },
     "author": {
       "type": ["string", "null"],
@@ -51,5 +51,5 @@
       "description": "Record update timestamp (ISO 8601)."
     }
   },
-  "required": ["id", "knowledge_id"]
+  "required": ["id", "source_id"]
 }

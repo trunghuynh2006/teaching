@@ -286,7 +286,7 @@ export class Folder {
   }
 }
 
-export class Knowledge {
+export class Source {
   constructor(data = {}) {
     this.content = data.content;
     this.created_by = data.created_by;

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { API_URL } from '../config'
 
-interface KnowledgeItem {
+interface SourceItem {
   id: string
   folder_id: string
   title?: string
@@ -43,8 +43,8 @@ function formatDate(dateTime: string | undefined): string {
 }
 
 export default function KnowledgeManager({ folderId, token, onUnauthorized, onCountChange, addTrigger }: KnowledgeManagerProps) {
-  const [knowledges, setKnowledges] = useState<KnowledgeItem[]>([])
-  const [editingItem, setEditingItem] = useState<KnowledgeItem | null>(null)
+  const [sources, setSources] = useState<SourceItem[]>([])
+  const [editingItem, setEditingItem] = useState<SourceItem | null>(null)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -54,27 +54,26 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
 
   const headers = { Authorization: `Bearer ${token}` }
 
-  const fetchKnowledges = useCallback(async () => {
+  const fetchSources = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch(`${API_URL}/folders/${folderId}/knowledges`, { headers })
+      const res = await fetch(`${API_URL}/folders/${folderId}/sources`, { headers })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
       const data = await res.json()
-      const items: KnowledgeItem[] = Array.isArray(data) ? data : []
-      setKnowledges(items)
+      const items: SourceItem[] = Array.isArray(data) ? data : []
+      setSources(items)
       onCountChange?.(items.length)
     } catch (err) {
-      setError((err as Error).message || 'Failed to load knowledges')
+      setError((err as Error).message || 'Failed to load sources')
     } finally {
       setLoading(false)
     }
   }, [folderId, token, onUnauthorized])
 
-  useEffect(() => { fetchKnowledges() }, [fetchKnowledges])
+  useEffect(() => { fetchSources() }, [fetchSources])
 
-  // Open create form when parent triggers it
   useEffect(() => {
     if (addTrigger) {
       setEditingItem(null)
@@ -85,7 +84,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
     }
   }, [addTrigger])
 
-  const openEditForm = (item: KnowledgeItem) => {
+  const openEditForm = (item: SourceItem) => {
     setEditingItem(item)
     setForm({ title: item.title ?? '', content: item.content })
     setShowForm(true)
@@ -108,8 +107,8 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
     setSaving(true)
     try {
       const url = editingItem
-        ? `${API_URL}/knowledges/${editingItem.id}`
-        : `${API_URL}/folders/${folderId}/knowledges`
+        ? `${API_URL}/sources/${editingItem.id}`
+        : `${API_URL}/folders/${folderId}/sources`
       const method = editingItem ? 'PUT' : 'POST'
       const res = await fetch(url, {
         method,
@@ -120,27 +119,27 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
       if (!res.ok) throw new Error(await parseError(res))
       setNotice(editingItem ? 'Updated' : 'Created')
       cancelForm()
-      await fetchKnowledges()
+      await fetchSources()
     } catch (err) {
-      setError((err as Error).message || 'Failed to save knowledge')
+      setError((err as Error).message || 'Failed to save source')
     } finally {
       setSaving(false)
     }
   }
 
-  const handleDelete = async (item: KnowledgeItem) => {
+  const handleDelete = async (item: SourceItem) => {
     const label = item.title || item.content.slice(0, 40)
     if (!window.confirm(`Delete "${label}"?`)) return
     setError('')
     setNotice('')
     try {
-      const res = await fetch(`${API_URL}/knowledges/${item.id}`, { method: 'DELETE', headers })
+      const res = await fetch(`${API_URL}/sources/${item.id}`, { method: 'DELETE', headers })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
       setNotice('Deleted')
-      await fetchKnowledges()
+      await fetchSources()
     } catch (err) {
-      setError((err as Error).message || 'Failed to delete knowledge')
+      setError((err as Error).message || 'Failed to delete source')
     }
   }
 
@@ -166,7 +165,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
               className="knowledge-textarea"
               value={form.content}
               onChange={(e) => setForm((prev) => ({ ...prev, content: e.target.value }))}
-              placeholder="Write the knowledge content here…"
+              placeholder="Write the source content here…"
               required
             />
           </label>
@@ -180,10 +179,10 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
       )}
 
       <div className="knowledge-list">
-        {knowledges.length === 0 && !loading && !showForm ? (
+        {sources.length === 0 && !loading && !showForm ? (
           <p className="knowledge-empty">No entries yet.</p>
         ) : (
-          knowledges.map((item) => (
+          sources.map((item) => (
             <article className="knowledge-item" key={item.id}>
               {item.title && <h5 className="knowledge-title">{item.title}</h5>}
               <p className="knowledge-content">{item.content}</p>

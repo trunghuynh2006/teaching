@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Knowledge",
-  "description": "A text-based piece of content belonging to a folder.",
+  "title": "Source",
+  "description": "A piece of content — text, PDF, audio, video, or article — belonging to a folder.",
   "type": "object",
   "additionalProperties": false,
   "properties": {

@@ -146,7 +146,7 @@ type Concept struct {
 }
 
 
-type Knowledge struct {
+type Source struct {
 	Content string `json:"content"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
