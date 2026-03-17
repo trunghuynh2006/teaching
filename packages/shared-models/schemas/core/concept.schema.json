@@ -9,13 +9,14 @@
       "type": "string",
       "description": "Unique concept identifier."
     },
-    "topic_id": {
-      "type": "string",
-      "description": "The topic this concept belongs to."
-    },
     "canonical_name": {
       "type": "string",
       "description": "The canonical name of the concept."
+    },
+    "domain": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Subject domain or namespace (e.g. physics, linguistics). Prevents ambiguous deduplication across fields."
     },
     "description": {
       "type": ["string", "null"],
@@ -45,5 +46,5 @@
       "description": "Record update timestamp (ISO 8601)."
     }
   },
-  "required": ["id", "topic_id", "canonical_name"]
+  "required": ["id", "canonical_name"]
 }

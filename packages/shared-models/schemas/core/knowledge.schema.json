@@ -13,6 +13,23 @@
       "type": "string",
       "description": "The folder this knowledge belongs to."
     },
+    "type": {
+      "type": "string",
+      "enum": ["text", "pdf", "audio", "video", "article"],
+      "default": "text",
+      "description": "Content type of the source."
+    },
+    "file_url": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "URL to the uploaded file (non-text sources)."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "processing", "processed", "failed"],
+      "default": "draft",
+      "description": "Processing status of the source content."
+    },
     "title": {
       "type": ["string", "null"],
       "default": null,

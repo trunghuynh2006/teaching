@@ -9,6 +9,28 @@
       "type": "string",
       "description": "Unique lesson identifier."
     },
+    "concept_id": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "The concept this learning unit teaches."
+    },
+    "source_id": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "The source (Knowledge) this unit was generated from or linked to."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["lesson", "quiz", "flashcard", "video"],
+      "default": "lesson",
+      "description": "Learning unit type."
+    },
+    "difficulty": {
+      "type": ["string", "null"],
+      "enum": ["beginner", "intermediate", "advanced", null],
+      "default": null,
+      "description": "Difficulty level."
+    },
     "title": {
       "type": "string",
       "description": "Lesson title."

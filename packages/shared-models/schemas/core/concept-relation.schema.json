@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ConceptRelation",
+  "description": "A directed relationship between two concepts, forming a knowledge graph.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "concept_a_id": {
+      "type": "string",
+      "description": "Source concept identifier."
+    },
+    "concept_b_id": {
+      "type": "string",
+      "description": "Target concept identifier."
+    },
+    "relation_type": {
+      "type": "string",
+      "enum": ["prerequisite", "part_of", "related_to"],
+      "description": "Semantic type of the relationship. 'prerequisite': A must be known before B. 'part_of': A is a component of B. 'related_to': A and B are associated."
+    },
+    "created_by": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "User identifier that created this record."
+    },
+    "created_time": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "Record creation timestamp (ISO 8601)."
+    }
+  },
+  "required": ["concept_a_id", "concept_b_id", "relation_type"]
+}

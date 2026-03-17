@@ -17,6 +17,12 @@
       "type": "string",
       "description": "The folder this topic belongs to."
     },
+    "concept_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Ordered list of concept identifiers belonging to this topic."
+    },
     "description": {
       "type": ["string", "null"],
       "default": null,
