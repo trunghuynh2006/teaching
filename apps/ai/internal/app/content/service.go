@@ -51,6 +51,12 @@ type GenerateAnkiCardsInput struct {
 	Language   string
 }
 
+// ExtractConceptsInput is the application-layer input for extracting concepts from source text.
+type ExtractConceptsInput struct {
+	SourceText string
+	Language   string
+}
+
 // ListLessonTitles generates a list of candidate lesson titles for a skill.
 func (s Service) ListLessonTitles(ctx context.Context, input ListTitlesInput) ([]string, error) {
 	if strings.TrimSpace(input.SkillTitle) == "" {
@@ -178,6 +184,43 @@ func (s Service) GenerateAnkiCards(ctx context.Context, input GenerateAnkiCardsI
 		}
 	}
 	return cards, nil
+}
+
+// ExtractConcepts extracts concepts from a given source text.
+func (s Service) ExtractConcepts(ctx context.Context, input ExtractConceptsInput) ([]domaincontent.ExtractedConcept, error) {
+	if strings.TrimSpace(input.SourceText) == "" {
+		return nil, ErrInvalidSourceText
+	}
+	if s.Generator == nil {
+		return nil, ErrGeneratorUnavailable
+	}
+
+	normalized := domaincontent.ExtractConceptsInput{
+		SourceText: strings.TrimSpace(input.SourceText),
+		Language:   fallback(input.Language, "English"),
+	}
+
+	cacheKey := hashKey("extract-concepts", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var concepts []domaincontent.ExtractedConcept
+			if err := json.Unmarshal(raw, &concepts); err == nil {
+				return concepts, nil
+			}
+		}
+	}
+
+	concepts, err := s.Generator.ExtractConcepts(ctx, normalized)
+	if err != nil {
+		return nil, err
+	}
+
+	if s.Cache != nil {
+		if raw, err := json.Marshal(concepts); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return concepts, nil
 }
 
 func hashKey(prefix string, v any) string {

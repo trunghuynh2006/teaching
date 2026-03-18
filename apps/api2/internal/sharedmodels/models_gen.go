@@ -116,8 +116,8 @@ type Book struct {
 	CreatedTime *string `json:"created_time,omitempty"`
 	Id string `json:"id"`
 	Isbn *string `json:"isbn,omitempty"`
-	KnowledgeId string `json:"knowledge_id"`
 	PublishedAt *string `json:"published_at,omitempty"`
+	SourceId string `json:"source_id"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
@@ -139,33 +139,52 @@ type Concept struct {
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
 	Description *string `json:"description,omitempty"`
+	Domain *string `json:"domain,omitempty"`
 	Id string `json:"id"`
-	TopicId string `json:"topic_id"`
+	Tags []string `json:"tags,omitempty"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
-
-type Source struct {
-	Content string `json:"content"`
+type ConceptAlias struct {
+	Alias string `json:"alias"`
+	ConceptId string `json:"concept_id"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
-	FolderId string `json:"folder_id"`
 	Id string `json:"id"`
-	Title *string `json:"title,omitempty"`
+}
+
+type ConceptRelation struct {
+	ConceptAId string `json:"concept_a_id"`
+	ConceptBId string `json:"concept_b_id"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	RelationType string `json:"relation_type"`
+}
+
+type Folder struct {
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Id string `json:"id"`
+	Name string `json:"name"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
 type Lesson struct {
+	ConceptId *string `json:"concept_id,omitempty"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
 	Description *string `json:"description,omitempty"`
+	Difficulty *string `json:"difficulty,omitempty"`
 	DurationMinutes *int `json:"duration_minutes,omitempty"`
 	Id string `json:"id"`
 	IsPublished *bool `json:"is_published,omitempty"`
+	SourceId *string `json:"source_id,omitempty"`
 	Tags []string `json:"tags,omitempty"`
 	Title string `json:"title"`
+	Type *string `json:"type,omitempty"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
@@ -201,6 +220,34 @@ type SkillLesson struct {
 	SkillId string `json:"skill_id"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type Source struct {
+	Content string `json:"content"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	FileUrl *string `json:"file_url,omitempty"`
+	FolderId string `json:"folder_id"`
+	Id string `json:"id"`
+	Status *string `json:"status,omitempty"`
+	Title *string `json:"title,omitempty"`
+	Type *string `json:"type,omitempty"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type SourceConcept struct {
+	ConceptId string `json:"concept_id"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	SourceId string `json:"source_id"`
+}
+
+type SourceTopic struct {
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	SourceId string `json:"source_id"`
+	TopicId string `json:"topic_id"`
 }
 
 type StudentPerformance struct {
@@ -247,6 +294,7 @@ type StudentPerformanceTimeline struct {
 }
 
 type Topic struct {
+	ConceptIds []string `json:"concept_ids,omitempty"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
 	Description *string `json:"description,omitempty"`

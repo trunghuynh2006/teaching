@@ -127,8 +127,8 @@ export class Book {
     this.created_time = data.created_time;
     this.id = data.id;
     this.isbn = data.isbn;
-    this.knowledge_id = data.knowledge_id;
     this.published_at = data.published_at;
+    this.source_id = data.source_id;
     this.updated_by = data.updated_by;
     this.updated_time = data.updated_time;
   }
@@ -140,9 +140,9 @@ export class Book {
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
     if (data.isbn !== undefined && !((data.isbn === null || typeof data.isbn === "string"))) return false;
-    if (data.knowledge_id === undefined) return false;
-    if (data.knowledge_id !== undefined && !(typeof data.knowledge_id === "string")) return false;
     if (data.published_at !== undefined && !((data.published_at === null || typeof data.published_at === "string"))) return false;
+    if (data.source_id === undefined) return false;
+    if (data.source_id !== undefined && !(typeof data.source_id === "string")) return false;
     if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
     if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
@@ -155,8 +155,8 @@ export class Book {
       created_time: this.created_time,
       id: this.id,
       isbn: this.isbn,
-      knowledge_id: this.knowledge_id,
       published_at: this.published_at,
+      source_id: this.source_id,
       updated_by: this.updated_by,
       updated_time: this.updated_time,
     };
@@ -214,8 +214,9 @@ export class Concept {
     this.created_by = data.created_by;
     this.created_time = data.created_time;
     this.description = data.description;
+    this.domain = data.domain;
     this.id = data.id;
-    this.topic_id = data.topic_id;
+    this.tags = data.tags ?? [];
     this.updated_by = data.updated_by;
     this.updated_time = data.updated_time;
   }
@@ -226,10 +227,10 @@ export class Concept {
     if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
     if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
     if (data.description !== undefined && !((data.description === null || typeof data.description === "string"))) return false;
+    if (data.domain !== undefined && !((data.domain === null || typeof data.domain === "string"))) return false;
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
-    if (data.topic_id === undefined) return false;
-    if (data.topic_id !== undefined && !(typeof data.topic_id === "string")) return false;
+    if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
     if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
     if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
@@ -241,10 +242,75 @@ export class Concept {
       created_by: this.created_by,
       created_time: this.created_time,
       description: this.description,
+      domain: this.domain,
       id: this.id,
-      topic_id: this.topic_id,
+      tags: this.tags,
       updated_by: this.updated_by,
       updated_time: this.updated_time,
+    };
+  }
+}
+
+export class ConceptAlias {
+  constructor(data = {}) {
+    this.alias = data.alias;
+    this.concept_id = data.concept_id;
+    this.created_by = data.created_by;
+    this.created_time = data.created_time;
+    this.id = data.id;
+  }
+
+  static validate(data) {
+    if (data.alias === undefined) return false;
+    if (data.alias !== undefined && !(typeof data.alias === "string")) return false;
+    if (data.concept_id === undefined) return false;
+    if (data.concept_id !== undefined && !(typeof data.concept_id === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      alias: this.alias,
+      concept_id: this.concept_id,
+      created_by: this.created_by,
+      created_time: this.created_time,
+      id: this.id,
+    };
+  }
+}
+
+export class ConceptRelation {
+  constructor(data = {}) {
+    this.concept_a_id = data.concept_a_id;
+    this.concept_b_id = data.concept_b_id;
+    this.created_by = data.created_by;
+    this.created_time = data.created_time;
+    this.relation_type = data.relation_type;
+  }
+
+  static validate(data) {
+    if (data.concept_a_id === undefined) return false;
+    if (data.concept_a_id !== undefined && !(typeof data.concept_a_id === "string")) return false;
+    if (data.concept_b_id === undefined) return false;
+    if (data.concept_b_id !== undefined && !(typeof data.concept_b_id === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.relation_type === undefined) return false;
+    if (data.relation_type !== undefined && !(typeof data.relation_type === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      concept_a_id: this.concept_a_id,
+      concept_b_id: this.concept_b_id,
+      created_by: this.created_by,
+      created_time: this.created_time,
+      relation_type: this.relation_type,
     };
   }
 }
@@ -286,73 +352,40 @@ export class Folder {
   }
 }
 
-export class Source {
-  constructor(data = {}) {
-    this.content = data.content;
-    this.created_by = data.created_by;
-    this.created_time = data.created_time;
-    this.folder_id = data.folder_id;
-    this.id = data.id;
-    this.title = data.title;
-    this.updated_by = data.updated_by;
-    this.updated_time = data.updated_time;
-  }
-
-  static validate(data) {
-    if (data.content === undefined) return false;
-    if (data.content !== undefined && !(typeof data.content === "string")) return false;
-    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
-    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
-    if (data.folder_id === undefined) return false;
-    if (data.folder_id !== undefined && !(typeof data.folder_id === "string")) return false;
-    if (data.id === undefined) return false;
-    if (data.id !== undefined && !(typeof data.id === "string")) return false;
-    if (data.title !== undefined && !((data.title === null || typeof data.title === "string"))) return false;
-    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
-    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
-    return true;
-  }
-
-  toJSON() {
-    return {
-      content: this.content,
-      created_by: this.created_by,
-      created_time: this.created_time,
-      folder_id: this.folder_id,
-      id: this.id,
-      title: this.title,
-      updated_by: this.updated_by,
-      updated_time: this.updated_time,
-    };
-  }
-}
-
 export class Lesson {
   constructor(data = {}) {
+    this.concept_id = data.concept_id;
     this.created_by = data.created_by;
     this.created_time = data.created_time;
     this.description = data.description;
+    this.difficulty = data.difficulty;
     this.duration_minutes = data.duration_minutes;
     this.id = data.id;
     this.is_published = data.is_published ?? false;
+    this.source_id = data.source_id;
     this.tags = data.tags ?? [];
     this.title = data.title;
+    this.type = data.type ?? "lesson";
     this.updated_by = data.updated_by;
     this.updated_time = data.updated_time;
   }
 
   static validate(data) {
+    if (data.concept_id !== undefined && !((data.concept_id === null || typeof data.concept_id === "string"))) return false;
     if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
     if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
     if (data.description !== undefined && !(typeof data.description === "string")) return false;
+    if (data.difficulty !== undefined && !((data.difficulty === null || typeof data.difficulty === "string"))) return false;
     if (data.duration_minutes !== undefined && !(Number.isInteger(data.duration_minutes))) return false;
     if (data.duration_minutes !== undefined && data.duration_minutes < 1) return false;
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
     if (data.is_published !== undefined && !(typeof data.is_published === "boolean")) return false;
+    if (data.source_id !== undefined && !((data.source_id === null || typeof data.source_id === "string"))) return false;
     if (data.tags !== undefined && !((Array.isArray(data.tags) && data.tags.every((item) => typeof item === "string")))) return false;
     if (data.title === undefined) return false;
     if (data.title !== undefined && !(typeof data.title === "string")) return false;
+    if (data.type !== undefined && !(typeof data.type === "string")) return false;
     if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
     if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
@@ -360,14 +393,18 @@ export class Lesson {
 
   toJSON() {
     return {
+      concept_id: this.concept_id,
       created_by: this.created_by,
       created_time: this.created_time,
       description: this.description,
+      difficulty: this.difficulty,
       duration_minutes: this.duration_minutes,
       id: this.id,
       is_published: this.is_published,
+      source_id: this.source_id,
       tags: this.tags,
       title: this.title,
+      type: this.type,
       updated_by: this.updated_by,
       updated_time: this.updated_time,
     };
@@ -492,6 +529,112 @@ export class SkillLesson {
       skill_id: this.skill_id,
       updated_by: this.updated_by,
       updated_time: this.updated_time,
+    };
+  }
+}
+
+export class Source {
+  constructor(data = {}) {
+    this.content = data.content;
+    this.created_by = data.created_by;
+    this.created_time = data.created_time;
+    this.file_url = data.file_url;
+    this.folder_id = data.folder_id;
+    this.id = data.id;
+    this.status = data.status ?? "draft";
+    this.title = data.title;
+    this.type = data.type ?? "text";
+    this.updated_by = data.updated_by;
+    this.updated_time = data.updated_time;
+  }
+
+  static validate(data) {
+    if (data.content === undefined) return false;
+    if (data.content !== undefined && !(typeof data.content === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.file_url !== undefined && !((data.file_url === null || typeof data.file_url === "string"))) return false;
+    if (data.folder_id === undefined) return false;
+    if (data.folder_id !== undefined && !(typeof data.folder_id === "string")) return false;
+    if (data.id === undefined) return false;
+    if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.status !== undefined && !(typeof data.status === "string")) return false;
+    if (data.title !== undefined && !((data.title === null || typeof data.title === "string"))) return false;
+    if (data.type !== undefined && !(typeof data.type === "string")) return false;
+    if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
+    if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      content: this.content,
+      created_by: this.created_by,
+      created_time: this.created_time,
+      file_url: this.file_url,
+      folder_id: this.folder_id,
+      id: this.id,
+      status: this.status,
+      title: this.title,
+      type: this.type,
+      updated_by: this.updated_by,
+      updated_time: this.updated_time,
+    };
+  }
+}
+
+export class SourceConcept {
+  constructor(data = {}) {
+    this.concept_id = data.concept_id;
+    this.created_by = data.created_by;
+    this.created_time = data.created_time;
+    this.source_id = data.source_id;
+  }
+
+  static validate(data) {
+    if (data.concept_id === undefined) return false;
+    if (data.concept_id !== undefined && !(typeof data.concept_id === "string")) return false;
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.source_id === undefined) return false;
+    if (data.source_id !== undefined && !(typeof data.source_id === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      concept_id: this.concept_id,
+      created_by: this.created_by,
+      created_time: this.created_time,
+      source_id: this.source_id,
+    };
+  }
+}
+
+export class SourceTopic {
+  constructor(data = {}) {
+    this.created_by = data.created_by;
+    this.created_time = data.created_time;
+    this.source_id = data.source_id;
+    this.topic_id = data.topic_id;
+  }
+
+  static validate(data) {
+    if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
+    if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
+    if (data.source_id === undefined) return false;
+    if (data.source_id !== undefined && !(typeof data.source_id === "string")) return false;
+    if (data.topic_id === undefined) return false;
+    if (data.topic_id !== undefined && !(typeof data.topic_id === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      created_by: this.created_by,
+      created_time: this.created_time,
+      source_id: this.source_id,
+      topic_id: this.topic_id,
     };
   }
 }
@@ -661,6 +804,7 @@ export class StudentPerformanceTimeline {
 
 export class Topic {
   constructor(data = {}) {
+    this.concept_ids = data.concept_ids ?? [];
     this.created_by = data.created_by;
     this.created_time = data.created_time;
     this.description = data.description;
@@ -672,6 +816,7 @@ export class Topic {
   }
 
   static validate(data) {
+    if (data.concept_ids !== undefined && !((Array.isArray(data.concept_ids) && data.concept_ids.every((item) => typeof item === "string")))) return false;
     if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
     if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
     if (data.description !== undefined && !((data.description === null || typeof data.description === "string"))) return false;
@@ -688,6 +833,7 @@ export class Topic {
 
   toJSON() {
     return {
+      concept_ids: this.concept_ids,
       created_by: this.created_by,
       created_time: this.created_time,
       description: this.description,

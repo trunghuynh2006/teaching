@@ -121,6 +121,33 @@ func (c Client) GenerateAnkiCards(ctx context.Context, input domaincontent.Gener
 	return result.Cards, nil
 }
 
+// ExtractConcepts calls the LLM to extract concepts from source text.
+func (c Client) ExtractConcepts(ctx context.Context, input domaincontent.ExtractConceptsInput) ([]domaincontent.ExtractedConcept, error) {
+	userPrompt, err := c.Prompts.RenderExtractConcepts(prompts.ExtractConceptsData{
+		SourceText: input.SourceText,
+		Language:   input.Language,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+
+	var result struct {
+		Concepts []domaincontent.ExtractedConcept `json:"concepts"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse concepts response: %w", err)
+	}
+	if len(result.Concepts) == 0 {
+		return nil, ErrUnexpectedResponse
+	}
+	return result.Concepts, nil
+}
+
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	return c.LLM.Complete(ctx, llm.Request{
 		SystemPrompt: c.Prompts.SystemPrompt(),

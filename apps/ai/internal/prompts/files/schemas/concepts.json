@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Concepts",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["concepts"],
+  "properties": {
+    "concepts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["canonical_name", "description"],
+        "properties": {
+          "canonical_name": {
+            "type": "string",
+            "description": "The canonical name of the concept, in English, lowercase unless a proper noun"
+          },
+          "description": {
+            "type": "string",
+            "description": "A clear, concise one-to-two sentence definition of the concept"
+          },
+          "domain": {
+            "type": "string",
+            "description": "Subject domain or namespace (e.g. physics, finance, linguistics)"
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "2–5 lowercase, hyphenated tags for filtering and search"
+          },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Alternative names or abbreviations for this concept"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "canonical_names of concepts that must be understood before this one"
+          }
+        }
+      }
+    }
+  }
+}

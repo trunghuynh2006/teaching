@@ -24,9 +24,12 @@ type Registry struct {
 	lessonSchema              string
 	ankiCardsConstraints      string
 	ankiCardsSchema           string
+	conceptsConstraints       string
+	conceptsSchema            string
 	listTitlesTmpl            *template.Template
 	generateLessonTmpl        *template.Template
 	generateAnkiCardsTmpl     *template.Template
+	extractConceptsTmpl       *template.Template
 }
 
 // New loads all prompt files from the embedded filesystem and compiles templates.
@@ -75,6 +78,14 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	conceptsConstraints, err := read("files/constraints/concepts.md")
+	if err != nil {
+		return nil, err
+	}
+	conceptsSchema, err := read("files/schemas/concepts.json")
+	if err != nil {
+		return nil, err
+	}
 	listTitlesTmpl, err := parse("list-lesson-titles", "files/templates/list-lesson-titles.tmpl")
 	if err != nil {
 		return nil, err
@@ -87,6 +98,10 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	extractConceptsTmpl, err := parse("extract-concepts", "files/templates/extract-concepts.tmpl")
+	if err != nil {
+		return nil, err
+	}
 
 	return &Registry{
 		systemPrompt:              systemPrompt,
@@ -95,9 +110,12 @@ func New() (*Registry, error) {
 		lessonSchema:              lessonSchema,
 		ankiCardsConstraints:      ankiCardsConstraints,
 		ankiCardsSchema:           ankiCardsSchema,
+		conceptsConstraints:       conceptsConstraints,
+		conceptsSchema:            conceptsSchema,
 		listTitlesTmpl:            listTitlesTmpl,
 		generateLessonTmpl:        generateLessonTmpl,
 		generateAnkiCardsTmpl:     generateAnkiCardsTmpl,
+		extractConceptsTmpl:       extractConceptsTmpl,
 	}, nil
 }
 
@@ -160,6 +178,30 @@ func (r *Registry) RenderGenerateAnkiCards(data GenerateAnkiCardsData) (string, 
 		AnkiCardsSchema:       r.ankiCardsSchema,
 	}); err != nil {
 		return "", fmt.Errorf("render generate-anki-cards: %w", err)
+	}
+	return buf.String(), nil
+}
+
+// ExtractConceptsData is the input data for the extract-concepts template.
+type ExtractConceptsData struct {
+	SourceText string
+	Language   string
+}
+
+// RenderExtractConcepts renders the user prompt for extracting concepts from source text.
+func (r *Registry) RenderExtractConcepts(data ExtractConceptsData) (string, error) {
+	type td struct {
+		ExtractConceptsData
+		ConceptsConstraints string
+		ConceptsSchema      string
+	}
+	var buf bytes.Buffer
+	if err := r.extractConceptsTmpl.Execute(&buf, td{
+		ExtractConceptsData: data,
+		ConceptsConstraints: r.conceptsConstraints,
+		ConceptsSchema:      r.conceptsSchema,
+	}); err != nil {
+		return "", fmt.Errorf("render extract-concepts: %w", err)
 	}
 	return buf.String(), nil
 }

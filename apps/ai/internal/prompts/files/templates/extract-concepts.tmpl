@@ -1,0 +1,15 @@
+Extract all key concepts from the following source text.
+
+Language: {{.Language}}
+
+{{.ConceptsConstraints}}
+
+Source text:
+---
+{{.SourceText}}
+---
+
+Your response must be a JSON object that conforms to this schema:
+{{.ConceptsSchema}}
+
+Respond with valid JSON only. No markdown fences. No extra text.

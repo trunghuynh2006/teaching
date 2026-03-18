@@ -66,6 +66,7 @@ A neutral, reusable unit of knowledge. Not owned by any Topic or Source — it i
 | canonical_name | string | required |
 | domain | string? | e.g. `physics`, `linguistics` |
 | description | string? | |
+| tags | string[] | search/filter tags |
 | created_by / updated_by | string? | |
 | created_time / updated_time | datetime? | |
 

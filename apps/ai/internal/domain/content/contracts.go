@@ -39,6 +39,22 @@ type GeneratedAnkiCard struct {
 	Tags       []string `json:"tags,omitempty"`
 }
 
+// ExtractConceptsInput describes a request to extract concepts from source text.
+type ExtractConceptsInput struct {
+	SourceText string
+	Language   string
+}
+
+// ExtractedConcept is a concept identified by the AI from source text.
+type ExtractedConcept struct {
+	CanonicalName string   `json:"canonical_name"`
+	Description   string   `json:"description"`
+	Domain        string   `json:"domain,omitempty"`
+	Tags          []string `json:"tags,omitempty"`
+	Aliases       []string `json:"aliases,omitempty"`
+	Prerequisites []string `json:"prerequisites,omitempty"`
+}
+
 // Generator produces AI-generated curriculum content.
 type Generator interface {
 	// ListLessonTitles returns Count candidate lesson titles for the given skill.
@@ -47,6 +63,8 @@ type Generator interface {
 	GenerateLesson(ctx context.Context, input GenerateLessonInput) (sharedmodels.Lesson, error)
 	// GenerateAnkiCards returns suggested Anki cards derived from the given source text.
 	GenerateAnkiCards(ctx context.Context, input GenerateAnkiCardsInput) ([]GeneratedAnkiCard, error)
+	// ExtractConcepts returns concepts identified in the given source text.
+	ExtractConcepts(ctx context.Context, input ExtractConceptsInput) ([]ExtractedConcept, error)
 }
 
 // Cache stores and retrieves serialised generation results keyed by a prompt hash.
