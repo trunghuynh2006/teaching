@@ -17,6 +17,11 @@
       "type": "string",
       "description": "Short folder description."
     },
+    "domain": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Subject domain this folder belongs to (e.g. mathematics, computer-science)."
+    },
     "created_by": {
       "type": ["string", "null"],
       "default": null,

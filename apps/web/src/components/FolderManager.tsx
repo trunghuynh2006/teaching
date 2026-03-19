@@ -16,6 +16,7 @@ interface FolderItem {
   id: string
   name: string
   description?: string
+  domain?: string
   theme?: string
   icon?: string
   created_by?: string
@@ -32,13 +33,35 @@ interface FolderManagerProps {
 interface FormState {
   name: string
   description: string
+  domain: string
   theme: string
   icon: string
 }
 
-const DEFAULT_FORM: FormState = { name: '', description: '', theme: '', icon: '' }
+const DEFAULT_FORM: FormState = { name: '', description: '', domain: '', theme: '', icon: '' }
 
 const FOLDER_THEMES = ['', 'blue', 'green', 'purple', 'orange', 'red', 'teal', 'gray']
+
+const POPULAR_DOMAINS = [
+  'mathematics',
+  'physics',
+  'chemistry',
+  'biology',
+  'computer-science',
+  'history',
+  'geography',
+  'literature',
+  'economics',
+  'psychology',
+  'philosophy',
+  'linguistics',
+  'engineering',
+  'medicine',
+  'law',
+  'business',
+  'art',
+  'music',
+]
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -149,7 +172,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
 
   const openEditForm = (folder: FolderItem) => {
     setEditingId(folder.id)
-    setForm({ name: folder.name, description: folder.description ?? '', theme: folder.theme ?? '', icon: folder.icon ?? '' })
+    setForm({ name: folder.name, description: folder.description ?? '', domain: folder.domain ?? '', theme: folder.theme ?? '', icon: folder.icon ?? '' })
     setShowForm(true)
     setNotice('')
     setError('')
@@ -174,7 +197,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
       const res = await fetch(url, {
         method,
         headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description: form.description.trim(), theme: form.theme, icon: form.icon.trim() }),
+        body: JSON.stringify({ name, description: form.description.trim(), domain: form.domain, theme: form.theme, icon: form.icon.trim() }),
       })
       if (res.status === 401) { onUnauthorized?.(); return }
       if (!res.ok) throw new Error(await parseError(res))
@@ -312,6 +335,13 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
               />
             </label>
             <label>
+              Domain
+              <select value={form.domain} onChange={(e) => setForm((prev) => ({ ...prev, domain: e.target.value }))}>
+                <option value="">— none —</option>
+                {POPULAR_DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </label>
+            <label>
               Theme
               <select value={form.theme} onChange={(e) => setForm((prev) => ({ ...prev, theme: e.target.value }))}>
                 <option value="">— none —</option>
@@ -343,6 +373,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
                 </header>
                 {folder.description && <p>{folder.description}</p>}
                 <div className="skill-meta">
+                  {folder.domain && <span>Domain: {folder.domain}</span>}
                   {folder.theme && <span>Theme: {folder.theme}</span>}
                   <span>Created by: {folder.created_by || '-'}</span>
                   <span>Created: {formatDate(folder.created_time)}</span>

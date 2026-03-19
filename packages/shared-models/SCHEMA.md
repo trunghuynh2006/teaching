@@ -14,6 +14,7 @@ Top-level container. Groups Knowledge entries, Topics, and Spaces together for a
 | id | string | PK |
 | name | string | required |
 | description | string? | |
+| domain | string? | e.g. `mathematics`, `computer-science` |
 | theme | string? | UI color theme |
 | icon | string? | |
 | created_by / updated_by | string? | |

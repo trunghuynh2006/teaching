@@ -166,6 +166,7 @@ type Folder struct {
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
 	Description *string `json:"description,omitempty"`
+	Domain *string `json:"domain,omitempty"`
 	Id string `json:"id"`
 	Name string `json:"name"`
 	UpdatedBy *string `json:"updated_by,omitempty"`

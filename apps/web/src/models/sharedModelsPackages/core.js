@@ -320,6 +320,7 @@ export class Folder {
     this.created_by = data.created_by;
     this.created_time = data.created_time;
     this.description = data.description;
+    this.domain = data.domain;
     this.id = data.id;
     this.name = data.name;
     this.updated_by = data.updated_by;
@@ -330,6 +331,7 @@ export class Folder {
     if (data.created_by !== undefined && !((data.created_by === null || typeof data.created_by === "string"))) return false;
     if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
     if (data.description !== undefined && !(typeof data.description === "string")) return false;
+    if (data.domain !== undefined && !((data.domain === null || typeof data.domain === "string"))) return false;
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
     if (data.name === undefined) return false;
@@ -344,6 +346,7 @@ export class Folder {
       created_by: this.created_by,
       created_time: this.created_time,
       description: this.description,
+      domain: this.domain,
       id: this.id,
       name: this.name,
       updated_by: this.updated_by,
