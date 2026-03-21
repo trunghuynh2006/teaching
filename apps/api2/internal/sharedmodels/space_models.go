@@ -1,18 +1,5 @@
 package sharedmodels
 
-// Folder is a top-level container for spaces and knowledge.
-type Folder struct {
-	Id          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Theme       *string `json:"theme,omitempty"`
-	Icon        *string `json:"icon,omitempty"`
-	CreatedBy   *string `json:"created_by,omitempty"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-}
-
 // Space is a typed collection inside a folder.
 type Space struct {
 	Id          string  `json:"id"`

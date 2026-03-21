@@ -321,8 +321,10 @@ export class Folder {
     this.created_time = data.created_time;
     this.description = data.description;
     this.domain = data.domain;
+    this.icon = data.icon;
     this.id = data.id;
     this.name = data.name;
+    this.theme = data.theme;
     this.updated_by = data.updated_by;
     this.updated_time = data.updated_time;
   }
@@ -332,10 +334,12 @@ export class Folder {
     if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
     if (data.description !== undefined && !(typeof data.description === "string")) return false;
     if (data.domain !== undefined && !((data.domain === null || typeof data.domain === "string"))) return false;
+    if (data.icon !== undefined && !((data.icon === null || typeof data.icon === "string"))) return false;
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
     if (data.name === undefined) return false;
     if (data.name !== undefined && !(typeof data.name === "string")) return false;
+    if (data.theme !== undefined && !((data.theme === null || typeof data.theme === "string"))) return false;
     if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
     if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
     return true;
@@ -347,8 +351,10 @@ export class Folder {
       created_time: this.created_time,
       description: this.description,
       domain: this.domain,
+      icon: this.icon,
       id: this.id,
       name: this.name,
+      theme: this.theme,
       updated_by: this.updated_by,
       updated_time: this.updated_time,
     };

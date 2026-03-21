@@ -22,6 +22,16 @@
       "default": null,
       "description": "Subject domain this folder belongs to (e.g. mathematics, computer-science)."
     },
+    "theme": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "UI theme token for this folder."
+    },
+    "icon": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Icon token for this folder."
+    },
     "created_by": {
       "type": ["string", "null"],
       "default": null,
