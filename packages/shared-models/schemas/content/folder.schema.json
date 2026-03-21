@@ -9,6 +9,26 @@
       "type": "string",
       "description": "Unique folder identifier."
     },
+    "folder_type": {
+      "type": "string",
+      "enum": ["teacher", "learner", "program"],
+      "description": "Classifies who this folder belongs to and how it was created: teacher-created content library, learner personal study space, or assigned from a training program."
+    },
+    "owner_id": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "User this folder belongs to. For teacher/learner folders this equals created_by; for program-assigned folders this is the learner receiving the folder."
+    },
+    "program_id": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Training program that assigned this folder. Only set when folder_type is 'program'."
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, the owner cannot modify folder metadata or structure (typically set for program-assigned folders)."
+    },
     "name": {
       "type": "string",
       "description": "Folder name."
@@ -55,5 +75,12 @@
       "description": "Record update timestamp (ISO 8601)."
     }
   },
-  "required": ["id", "name"]
+  "required": ["id", "name", "folder_type"],
+  "if": {
+    "properties": { "folder_type": { "const": "program" } },
+    "required": ["folder_type"]
+  },
+  "then": {
+    "required": ["program_id"]
+  }
 }
