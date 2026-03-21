@@ -134,34 +134,6 @@ type Chapter struct {
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
-type Concept struct {
-	CanonicalName string `json:"canonical_name"`
-	CreatedBy *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Domain *string `json:"domain,omitempty"`
-	Id string `json:"id"`
-	Tags []string `json:"tags,omitempty"`
-	UpdatedBy *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-}
-
-type ConceptAlias struct {
-	Alias string `json:"alias"`
-	ConceptId string `json:"concept_id"`
-	CreatedBy *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Id string `json:"id"`
-}
-
-type ConceptRelation struct {
-	ConceptAId string `json:"concept_a_id"`
-	ConceptBId string `json:"concept_b_id"`
-	CreatedBy *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	RelationType string `json:"relation_type"`
-}
-
 type Folder struct {
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
@@ -173,6 +145,34 @@ type Folder struct {
 	Theme *string `json:"theme,omitempty"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type Source struct {
+	Content string `json:"content"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	FileUrl *string `json:"file_url,omitempty"`
+	FolderId string `json:"folder_id"`
+	Id string `json:"id"`
+	Status *string `json:"status,omitempty"`
+	Title *string `json:"title,omitempty"`
+	Type *string `json:"type,omitempty"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type SourceConcept struct {
+	ConceptId string `json:"concept_id"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	SourceId string `json:"source_id"`
+}
+
+type SourceTopic struct {
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	SourceId string `json:"source_id"`
+	TopicId string `json:"topic_id"`
 }
 
 type Lesson struct {
@@ -225,32 +225,44 @@ type SkillLesson struct {
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
-type Source struct {
-	Content string `json:"content"`
+type Concept struct {
+	CanonicalName string `json:"canonical_name"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
-	FileUrl *string `json:"file_url,omitempty"`
-	FolderId string `json:"folder_id"`
+	Description *string `json:"description,omitempty"`
+	Domain *string `json:"domain,omitempty"`
 	Id string `json:"id"`
-	Status *string `json:"status,omitempty"`
-	Title *string `json:"title,omitempty"`
-	Type *string `json:"type,omitempty"`
+	Tags []string `json:"tags,omitempty"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
-type SourceConcept struct {
+type ConceptAlias struct {
+	Alias string `json:"alias"`
 	ConceptId string `json:"concept_id"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
-	SourceId string `json:"source_id"`
+	Id string `json:"id"`
 }
 
-type SourceTopic struct {
+type ConceptRelation struct {
+	ConceptAId string `json:"concept_a_id"`
+	ConceptBId string `json:"concept_b_id"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`
-	SourceId string `json:"source_id"`
-	TopicId string `json:"topic_id"`
+	RelationType string `json:"relation_type"`
+}
+
+type Topic struct {
+	ConceptIds []string `json:"concept_ids,omitempty"`
+	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedTime *string `json:"created_time,omitempty"`
+	Description *string `json:"description,omitempty"`
+	FolderId string `json:"folder_id"`
+	Id string `json:"id"`
+	Name string `json:"name"`
+	UpdatedBy *string `json:"updated_by,omitempty"`
+	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
 type StudentPerformance struct {
@@ -294,18 +306,6 @@ type StudentPerformanceTimeline struct {
 	SkillId *string `json:"skill_id,omitempty"`
 	Snapshots []map[string]any `json:"snapshots"`
 	ToTime *string `json:"to_time,omitempty"`
-}
-
-type Topic struct {
-	ConceptIds []string `json:"concept_ids,omitempty"`
-	CreatedBy *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	Description *string `json:"description,omitempty"`
-	FolderId string `json:"folder_id"`
-	Id string `json:"id"`
-	Name string `json:"name"`
-	UpdatedBy *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
 type StudentProfile struct {
