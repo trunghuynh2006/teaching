@@ -139,12 +139,24 @@ type Folder struct {
 	CreatedTime *string `json:"created_time,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Domain *string `json:"domain,omitempty"`
+	FolderType string `json:"folder_type"`
 	Icon *string `json:"icon,omitempty"`
 	Id string `json:"id"`
+	IsLocked *bool `json:"is_locked,omitempty"`
 	Name string `json:"name"`
+	OwnerId *string `json:"owner_id,omitempty"`
+	ProgramId *string `json:"program_id,omitempty"`
 	Theme *string `json:"theme,omitempty"`
 	UpdatedBy *string `json:"updated_by,omitempty"`
 	UpdatedTime *string `json:"updated_time,omitempty"`
+}
+
+type FolderMember struct {
+	AddedBy *string `json:"added_by,omitempty"`
+	AddedTime *string `json:"added_time,omitempty"`
+	FolderId string `json:"folder_id"`
+	Role string `json:"role"`
+	UserId string `json:"user_id"`
 }
 
 type Source struct {

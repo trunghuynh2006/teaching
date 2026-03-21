@@ -3,7 +3,7 @@
 
 export { AnkiCard, AnkiDeck, AnkiReviewLog, ReviewSession } from "./anki.js";
 export { Assessment, Assignment } from "./assessment.js";
-export { Book, Chapter, Folder, Source, SourceConcept, SourceTopic } from "./content.js";
+export { Book, Chapter, Folder, FolderMember, Source, SourceConcept, SourceTopic } from "./content.js";
 export { Lesson, Skill, SkillInput, SkillLesson } from "./curriculum.js";
 export { Concept, ConceptAlias, ConceptRelation, Topic } from "./knowledge.js";
 export { StudentPerformance, StudentPerformanceSnapshot, StudentPerformanceTimeline, StudentProfile } from "./student.js";

@@ -3,7 +3,7 @@
 
 export { AnkiCard, AnkiDeck, AnkiReviewLog, ReviewSession } from "./sharedModelsPackages/anki.js";
 export { Assessment, Assignment } from "./sharedModelsPackages/assessment.js";
-export { Book, Chapter, Folder, Source, SourceConcept, SourceTopic } from "./sharedModelsPackages/content.js";
+export { Book, Chapter, Folder, FolderMember, Source, SourceConcept, SourceTopic } from "./sharedModelsPackages/content.js";
 export { Lesson, Skill, SkillInput, SkillLesson } from "./sharedModelsPackages/curriculum.js";
 export { Concept, ConceptAlias, ConceptRelation, Topic } from "./sharedModelsPackages/knowledge.js";
 export { StudentPerformance, StudentPerformanceSnapshot, StudentPerformanceTimeline, StudentProfile } from "./sharedModelsPackages/student.js";

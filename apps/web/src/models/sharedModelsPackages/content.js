@@ -95,9 +95,13 @@ export class Folder {
     this.created_time = data.created_time;
     this.description = data.description;
     this.domain = data.domain;
+    this.folder_type = data.folder_type;
     this.icon = data.icon;
     this.id = data.id;
+    this.is_locked = data.is_locked ?? false;
     this.name = data.name;
+    this.owner_id = data.owner_id;
+    this.program_id = data.program_id;
     this.theme = data.theme;
     this.updated_by = data.updated_by;
     this.updated_time = data.updated_time;
@@ -108,11 +112,16 @@ export class Folder {
     if (data.created_time !== undefined && !((data.created_time === null || typeof data.created_time === "string"))) return false;
     if (data.description !== undefined && !(typeof data.description === "string")) return false;
     if (data.domain !== undefined && !((data.domain === null || typeof data.domain === "string"))) return false;
+    if (data.folder_type === undefined) return false;
+    if (data.folder_type !== undefined && !(typeof data.folder_type === "string")) return false;
     if (data.icon !== undefined && !((data.icon === null || typeof data.icon === "string"))) return false;
     if (data.id === undefined) return false;
     if (data.id !== undefined && !(typeof data.id === "string")) return false;
+    if (data.is_locked !== undefined && !(typeof data.is_locked === "boolean")) return false;
     if (data.name === undefined) return false;
     if (data.name !== undefined && !(typeof data.name === "string")) return false;
+    if (data.owner_id !== undefined && !((data.owner_id === null || typeof data.owner_id === "string"))) return false;
+    if (data.program_id !== undefined && !((data.program_id === null || typeof data.program_id === "string"))) return false;
     if (data.theme !== undefined && !((data.theme === null || typeof data.theme === "string"))) return false;
     if (data.updated_by !== undefined && !((data.updated_by === null || typeof data.updated_by === "string"))) return false;
     if (data.updated_time !== undefined && !((data.updated_time === null || typeof data.updated_time === "string"))) return false;
@@ -125,12 +134,48 @@ export class Folder {
       created_time: this.created_time,
       description: this.description,
       domain: this.domain,
+      folder_type: this.folder_type,
       icon: this.icon,
       id: this.id,
+      is_locked: this.is_locked,
       name: this.name,
+      owner_id: this.owner_id,
+      program_id: this.program_id,
       theme: this.theme,
       updated_by: this.updated_by,
       updated_time: this.updated_time,
+    };
+  }
+}
+
+export class FolderMember {
+  constructor(data = {}) {
+    this.added_by = data.added_by;
+    this.added_time = data.added_time;
+    this.folder_id = data.folder_id;
+    this.role = data.role;
+    this.user_id = data.user_id;
+  }
+
+  static validate(data) {
+    if (data.added_by !== undefined && !((data.added_by === null || typeof data.added_by === "string"))) return false;
+    if (data.added_time !== undefined && !((data.added_time === null || typeof data.added_time === "string"))) return false;
+    if (data.folder_id === undefined) return false;
+    if (data.folder_id !== undefined && !(typeof data.folder_id === "string")) return false;
+    if (data.role === undefined) return false;
+    if (data.role !== undefined && !(typeof data.role === "string")) return false;
+    if (data.user_id === undefined) return false;
+    if (data.user_id !== undefined && !(typeof data.user_id === "string")) return false;
+    return true;
+  }
+
+  toJSON() {
+    return {
+      added_by: this.added_by,
+      added_time: this.added_time,
+      folder_id: this.folder_id,
+      role: this.role,
+      user_id: this.user_id,
     };
   }
 }
