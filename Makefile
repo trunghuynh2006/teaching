@@ -5,7 +5,7 @@ AI_DIR := apps/ai
 WEB_DIR := apps/web
 PNPM_BIN ?= /home/trung/.nvm/versions/node/v22.16.0/bin/pnpm
 
-.PHONY: help start-frontend start-backend start-ai seed-users generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db
+.PHONY: help start-frontend start-backend start-ai seed-users seed-data generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db
 
 help:
 	@echo "Available targets:"
@@ -13,6 +13,7 @@ help:
 	@echo "  make start-backend                  # Start Go backend dev server"
 	@echo "  make start-ai                       # Start Go AI service dev server"
 	@echo "  make seed-users                     # Seed demo users in PostgreSQL"
+	@echo "  make seed-data                      # Seed demo content (folders, sources, concepts, topics, …)"
 	@echo "  make generate-models                # Generate shared models from JSON schema"
 	@echo "  make generate-sqlc                  # Generate SQLC typed queries for api2"
 	@echo "  make generate-sqlc-ai               # Generate SQLC typed queries for ai"
@@ -31,6 +32,9 @@ start-ai:
 
 seed-users:
 	cd $(API_DIR) && go run . seed-users
+
+seed-data:
+	psql -h localhost -U postgres -d study_platform -f scripts/seed_data.sql
 
 generate-models:
 	go run ./scripts/generate_shared_models.go
@@ -51,4 +55,4 @@ create-db:
 	createdb -h localhost -U postgres study_platform
 	psql -h localhost -U postgres -d study_platform -f $(API_DIR)/db/schema.sql
 
-reset-db: drop-db create-db seed-users
+reset-db: drop-db create-db seed-users seed-data

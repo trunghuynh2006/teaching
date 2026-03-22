@@ -67,7 +67,13 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitFoldersCreatedTimeIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.MigrateFoldersAddOwnership(ctx); err != nil {
+		return err
+	}
 	if err := a.queries.InitSkillFoldersTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitFolderMembersTable(ctx); err != nil {
 		return err
 	}
 	if err := a.queries.InitSourcesTable(ctx); err != nil {
