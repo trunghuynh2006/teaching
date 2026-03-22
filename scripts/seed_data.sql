@@ -5,6 +5,28 @@
 -- =============================================================================
 
 -- ---------------------------------------------------------------------------
+-- 0. Schema migrations — ensure columns/tables added after initial schema.sql
+--    These are idempotent (ADD COLUMN IF NOT EXISTS / CREATE TABLE IF NOT EXISTS)
+-- ---------------------------------------------------------------------------
+
+ALTER TABLE folders ADD COLUMN IF NOT EXISTS folder_type VARCHAR(20) NOT NULL DEFAULT 'teacher';
+ALTER TABLE folders ADD COLUMN IF NOT EXISTS owner_id    VARCHAR(64);
+ALTER TABLE folders ADD COLUMN IF NOT EXISTS program_id  VARCHAR(64);
+ALTER TABLE folders ADD COLUMN IF NOT EXISTS is_locked   BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE folders ADD COLUMN IF NOT EXISTS domain      VARCHAR(100);
+ALTER TABLE folders ADD COLUMN IF NOT EXISTS theme       VARCHAR(50) NOT NULL DEFAULT '';
+ALTER TABLE folders ADD COLUMN IF NOT EXISTS icon        VARCHAR(50) NOT NULL DEFAULT '';
+
+CREATE TABLE IF NOT EXISTS folder_members (
+    folder_id  VARCHAR(64) NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+    user_id    VARCHAR(64) NOT NULL,
+    role       VARCHAR(20) NOT NULL DEFAULT 'viewer',
+    added_by   VARCHAR(64),
+    added_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (folder_id, user_id)
+);
+
+-- ---------------------------------------------------------------------------
 -- 1. Missing tables (entities that exist in schemas but not yet in the DB)
 -- ---------------------------------------------------------------------------
 
@@ -41,12 +63,13 @@ CREATE TABLE IF NOT EXISTS topics (
     id           VARCHAR(64) PRIMARY KEY,
     name         VARCHAR(200) NOT NULL,
     folder_id    VARCHAR(64) NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
-    description  TEXT,
-    created_by   VARCHAR(64),
-    updated_by   VARCHAR(64),
+    description  TEXT NOT NULL DEFAULT '',
+    created_by   VARCHAR(64) NOT NULL DEFAULT '',
+    updated_by   VARCHAR(64) NOT NULL DEFAULT '',
     created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_topics_folder_id ON topics (folder_id);
 
 CREATE TABLE IF NOT EXISTS topic_concepts (
     topic_id     VARCHAR(64) NOT NULL REFERENCES topics(id) ON DELETE CASCADE,

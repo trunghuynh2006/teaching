@@ -4,6 +4,7 @@ import { API_URL } from '../config'
 import { FolderIconDisplay } from '../config/folderIcons'
 import IconPicker from './IconPicker'
 import KnowledgeManager from './KnowledgeManager'
+import TopicManager from './TopicManager'
 import SpaceManager from './SpaceManager'
 import SpaceItemsSidebar from './SpaceItemsSidebar'
 import ProblemDetail from './ProblemDetail'
@@ -89,7 +90,7 @@ const SPACE_TYPE_ICONS: Record<string, string> = {
 }
 const spaceTypeIcon = (t?: string) => (t ? (SPACE_TYPE_ICONS[t] ?? '•') : '')
 
-type FolderSection = 'knowledge' | 'spaces'
+type FolderSection = 'knowledge' | 'topics' | 'spaces'
 
 interface SidebarSpace {
   id: string
@@ -104,6 +105,8 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [activeSection, setActiveSection] = useState<FolderSection>('knowledge')
   const [knowledgeCount, setKnowledgeCount] = useState(0)
   const [knowledgeAddTrigger, setKnowledgeAddTrigger] = useState(0)
+  const [topicsCount, setTopicsCount] = useState(0)
+  const [topicsAddTrigger, setTopicsAddTrigger] = useState(0)
   const [spacesCount, setSpacesCount] = useState(0)
   const [showSpaceModal, setShowSpaceModal] = useState(false)
   const [spaceModalName, setSpaceModalName] = useState('')
@@ -231,6 +234,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     setSelectedFolder(folder)
     setActiveSection('knowledge')
     setKnowledgeCount(0)
+    setTopicsCount(0)
     setSpacesCount(0)
     setSidebarSpaces([])
     setSelectedSpace(null)
@@ -244,7 +248,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     if (selectedFolder) fetchSidebarSpaces(selectedFolder.id)
   }, [spacesCount])
 
-  const SPACE_TYPES = ['Problem', 'Exercise', 'Question', 'Anki', 'Note', 'Quiz', 'Topic', 'Other']
+  const SPACE_TYPES = ['Problem', 'Exercise', 'Question', 'Anki', 'Note', 'Quiz', 'Other']
 
   const openSpaceModal = () => {
     setSpaceModalName('')
@@ -416,6 +420,24 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
           </div>
         </button>
 
+        {/* Topics nav item */}
+        <button
+          className={`folder-sidebar-item${activeSection === 'topics' ? ' active' : ''}`}
+          onClick={() => { setActiveSection('topics'); setSelectedSpace(null) }}
+        >
+          <span>Topics</span>
+          <div className="folder-sidebar-item-end">
+            <span className="folder-sidebar-count">{topicsCount}</span>
+            <button
+              className="folder-sidebar-add-btn"
+              title="Add topic"
+              onClick={(e) => { e.stopPropagation(); setActiveSection('topics'); setTopicsAddTrigger((n) => n + 1) }}
+            >
+              +
+            </button>
+          </div>
+        </button>
+
         {/* Spaces section title */}
         <div className="folder-sidebar-section-title">
           <span>Spaces</span>
@@ -472,6 +494,15 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             onUnauthorized={onUnauthorized}
             onCountChange={setKnowledgeCount}
             addTrigger={knowledgeAddTrigger}
+          />
+        )}
+        {activeSection === 'topics' && (
+          <TopicManager
+            folderId={selectedFolder.id}
+            token={token}
+            onUnauthorized={onUnauthorized}
+            onCountChange={setTopicsCount}
+            addTrigger={topicsAddTrigger}
           />
         )}
         {activeSection === 'spaces' && selectedSpace && isDetailSpace(selectedSpace) && (

@@ -76,6 +76,12 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitFolderMembersTable(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitTopicsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitTopicsFolderIndex(ctx); err != nil {
+		return err
+	}
 	if err := a.queries.InitSourcesTable(ctx); err != nil {
 		return err
 	}
