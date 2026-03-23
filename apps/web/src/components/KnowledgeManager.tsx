@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
+import ConceptPanel, { type ConceptItem } from './ConceptPanel'
 
 interface SourceItem {
   id: string
@@ -52,6 +53,15 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
+  // concept state per source
+  const [sourceConcepts, setSourceConcepts] = useState<Record<string, ConceptItem[]>>({})
+  const [selectedConcept, setSelectedConcept] = useState<{ concept: ConceptItem; sourceId: string } | null>(null)
+  const [addingConceptFor, setAddingConceptFor] = useState<string | null>(null)
+  const [conceptSearch, setConceptSearch] = useState('')
+  const [searchResults, setSearchResults] = useState<ConceptItem[]>([])
+  const [conceptError, setConceptError] = useState('')
+  const searchRef = useRef<HTMLDivElement>(null)
+
   const headers = { Authorization: `Bearer ${token}` }
 
   const fetchSources = useCallback(async () => {
@@ -65,6 +75,15 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
       const items: SourceItem[] = Array.isArray(data) ? data : []
       setSources(items)
       onCountChange?.(items.length)
+      // fetch concepts for all sources in parallel
+      const entries = await Promise.all(
+        items.map(async (s) => {
+          const r = await fetch(`${API_URL}/sources/${s.id}/concepts`, { headers })
+          const concepts: ConceptItem[] = r.ok ? (await r.json()) ?? [] : []
+          return [s.id, concepts] as [string, ConceptItem[]]
+        })
+      )
+      setSourceConcepts(Object.fromEntries(entries))
     } catch (err) {
       setError((err as Error).message || 'Failed to load sources')
     } finally {
@@ -143,6 +162,79 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
     }
   }
 
+  // ── concept search + link ──────────────────────────────────────────────────
+
+  const openAddConcept = (sourceId: string) => {
+    setAddingConceptFor(sourceId)
+    setConceptSearch('')
+    setSearchResults([])
+    setConceptError('')
+  }
+
+  const closeAddConcept = () => {
+    setAddingConceptFor(null)
+    setConceptSearch('')
+    setSearchResults([])
+    setConceptError('')
+  }
+
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) closeAddConcept()
+    }
+    if (addingConceptFor) document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [addingConceptFor])
+
+  const searchConcepts = async (q: string) => {
+    setConceptSearch(q)
+    if (q.trim().length < 1) { setSearchResults([]); return }
+    try {
+      const res = await fetch(`${API_URL}/concepts`, { headers })
+      if (!res.ok) return
+      const all: ConceptItem[] = (await res.json()) ?? []
+      const lower = q.toLowerCase()
+      setSearchResults(all.filter((c) => c.canonical_name.toLowerCase().includes(lower)).slice(0, 8))
+    } catch (_) {}
+  }
+
+  const linkConcept = async (sourceId: string, concept: ConceptItem) => {
+    setConceptError('')
+    try {
+      const res = await fetch(`${API_URL}/sources/${sourceId}/concepts`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ concept_id: concept.id }),
+      })
+      if (!res.ok) throw new Error('Failed to link concept')
+      setSourceConcepts((prev) => ({
+        ...prev,
+        [sourceId]: [...(prev[sourceId] ?? []).filter((c) => c.id !== concept.id), concept],
+      }))
+      closeAddConcept()
+    } catch (err) {
+      setConceptError((err as Error).message)
+    }
+  }
+
+  const createAndLink = async (sourceId: string) => {
+    const name = conceptSearch.trim()
+    if (!name) return
+    setConceptError('')
+    try {
+      const createRes = await fetch(`${API_URL}/concepts`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ canonical_name: name }),
+      })
+      if (!createRes.ok) throw new Error('Failed to create concept')
+      const newConcept: ConceptItem = await createRes.json()
+      await linkConcept(sourceId, newConcept)
+    } catch (err) {
+      setConceptError((err as Error).message)
+    }
+  }
+
   return (
     <div className="knowledge-manager">
       {notice && <div className="notice">{notice}</div>}
@@ -186,6 +278,62 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
             <article className="knowledge-item" key={item.id}>
               {item.title && <h5 className="knowledge-title">{item.title}</h5>}
               <p className="knowledge-content">{item.content}</p>
+
+              {/* concept chips */}
+              <div className="concept-chip-row">
+                {(sourceConcepts[item.id] ?? []).map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="concept-chip"
+                    onClick={() => setSelectedConcept({ concept: c, sourceId: item.id })}
+                  >
+                    {c.canonical_name}
+                    {c.domain && <span className="concept-chip-domain">{c.domain}</span>}
+                  </button>
+                ))}
+
+                {addingConceptFor === item.id ? (
+                  <div className="concept-add-popover" ref={searchRef}>
+                    <input
+                      autoFocus
+                      className="concept-search-input"
+                      value={conceptSearch}
+                      onChange={(e) => searchConcepts(e.target.value)}
+                      placeholder="Search or create concept…"
+                      onKeyDown={(e) => { if (e.key === 'Escape') closeAddConcept() }}
+                    />
+                    {conceptError && <p className="error" style={{ margin: '0.25rem 0 0' }}>{conceptError}</p>}
+                    <ul className="concept-search-results">
+                      {searchResults.map((c) => (
+                        <li key={c.id}>
+                          <button type="button" onClick={() => linkConcept(item.id, c)}>
+                            {c.canonical_name}
+                            {c.domain && <span className="concept-chip-domain">{c.domain}</span>}
+                          </button>
+                        </li>
+                      ))}
+                      {conceptSearch.trim() && (
+                        <li className="concept-create-option">
+                          <button type="button" onClick={() => createAndLink(item.id)}>
+                            + Create "{conceptSearch.trim()}"
+                          </button>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="concept-chip concept-chip-add"
+                    onClick={() => openAddConcept(item.id)}
+                    title="Add concept"
+                  >
+                    +
+                  </button>
+                )}
+              </div>
+
               <div className="knowledge-meta">
                 <span>By: {item.created_by || '-'}</span>
                 <span>Created: {formatDate(item.created_time)}</span>
@@ -201,6 +349,22 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
           ))
         )}
       </div>
+
+      {selectedConcept && (
+        <ConceptPanel
+          concept={selectedConcept.concept}
+          token={token}
+          sourceId={selectedConcept.sourceId}
+          onClose={() => setSelectedConcept(null)}
+          onUnlinked={() => {
+            const { concept, sourceId } = selectedConcept
+            setSourceConcepts((prev) => ({
+              ...prev,
+              [sourceId]: (prev[sourceId] ?? []).filter((c) => c.id !== concept.id),
+            }))
+          }}
+        />
+      )}
     </div>
   )
 }

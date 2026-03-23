@@ -130,6 +130,18 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitFlashCardsSpaceIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitConceptsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitConceptsDomainIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitSourceConceptsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitTopicConceptsTable(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

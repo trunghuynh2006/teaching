@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
+import ConceptPanel, { type ConceptItem } from './ConceptPanel'
 
 interface TopicItem {
   id: string
@@ -51,6 +52,15 @@ export default function TopicManager({ folderId, token, onUnauthorized, onCountC
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
+  // concept state per topic
+  const [topicConcepts, setTopicConcepts] = useState<Record<string, ConceptItem[]>>({})
+  const [selectedConcept, setSelectedConcept] = useState<{ concept: ConceptItem; topicId: string } | null>(null)
+  const [addingConceptFor, setAddingConceptFor] = useState<string | null>(null)
+  const [conceptSearch, setConceptSearch] = useState('')
+  const [searchResults, setSearchResults] = useState<ConceptItem[]>([])
+  const [conceptError, setConceptError] = useState('')
+  const searchRef = useRef<HTMLDivElement>(null)
+
   const headers = { Authorization: `Bearer ${token}` }
 
   const fetchTopics = useCallback(async () => {
@@ -64,6 +74,15 @@ export default function TopicManager({ folderId, token, onUnauthorized, onCountC
       const items: TopicItem[] = Array.isArray(data) ? data : []
       setTopics(items)
       onCountChange?.(items.length)
+      // fetch concepts for all topics in parallel
+      const entries = await Promise.all(
+        items.map(async (t) => {
+          const r = await fetch(`${API_URL}/topics/${t.id}/concepts`, { headers })
+          const concepts: ConceptItem[] = r.ok ? (await r.json()) ?? [] : []
+          return [t.id, concepts] as [string, ConceptItem[]]
+        })
+      )
+      setTopicConcepts(Object.fromEntries(entries))
     } catch (err) {
       setError((err as Error).message || 'Failed to load topics')
     } finally {
@@ -141,6 +160,79 @@ export default function TopicManager({ folderId, token, onUnauthorized, onCountC
     }
   }
 
+  // ── concept search + link ──────────────────────────────────────────────────
+
+  const openAddConcept = (topicId: string) => {
+    setAddingConceptFor(topicId)
+    setConceptSearch('')
+    setSearchResults([])
+    setConceptError('')
+  }
+
+  const closeAddConcept = () => {
+    setAddingConceptFor(null)
+    setConceptSearch('')
+    setSearchResults([])
+    setConceptError('')
+  }
+
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) closeAddConcept()
+    }
+    if (addingConceptFor) document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [addingConceptFor])
+
+  const searchConcepts = async (q: string) => {
+    setConceptSearch(q)
+    if (q.trim().length < 1) { setSearchResults([]); return }
+    try {
+      const res = await fetch(`${API_URL}/concepts`, { headers })
+      if (!res.ok) return
+      const all: ConceptItem[] = (await res.json()) ?? []
+      const lower = q.toLowerCase()
+      setSearchResults(all.filter((c) => c.canonical_name.toLowerCase().includes(lower)).slice(0, 8))
+    } catch (_) {}
+  }
+
+  const linkConcept = async (topicId: string, concept: ConceptItem) => {
+    setConceptError('')
+    try {
+      const res = await fetch(`${API_URL}/topics/${topicId}/concepts`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ concept_id: concept.id }),
+      })
+      if (!res.ok) throw new Error('Failed to link concept')
+      setTopicConcepts((prev) => ({
+        ...prev,
+        [topicId]: [...(prev[topicId] ?? []).filter((c) => c.id !== concept.id), concept],
+      }))
+      closeAddConcept()
+    } catch (err) {
+      setConceptError((err as Error).message)
+    }
+  }
+
+  const createAndLink = async (topicId: string) => {
+    const name = conceptSearch.trim()
+    if (!name) return
+    setConceptError('')
+    try {
+      const createRes = await fetch(`${API_URL}/concepts`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ canonical_name: name }),
+      })
+      if (!createRes.ok) throw new Error('Failed to create concept')
+      const newConcept: ConceptItem = await createRes.json()
+      await linkConcept(topicId, newConcept)
+    } catch (err) {
+      setConceptError((err as Error).message)
+    }
+  }
+
   return (
     <div className="knowledge-manager">
       {notice && <div className="notice">{notice}</div>}
@@ -183,6 +275,62 @@ export default function TopicManager({ folderId, token, onUnauthorized, onCountC
             <article className="knowledge-item" key={item.id}>
               <h5 className="knowledge-title">{item.name}</h5>
               {item.description && <p className="knowledge-content">{item.description}</p>}
+
+              {/* concept chips */}
+              <div className="concept-chip-row">
+                {(topicConcepts[item.id] ?? []).map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="concept-chip"
+                    onClick={() => setSelectedConcept({ concept: c, topicId: item.id })}
+                  >
+                    {c.canonical_name}
+                    {c.domain && <span className="concept-chip-domain">{c.domain}</span>}
+                  </button>
+                ))}
+
+                {addingConceptFor === item.id ? (
+                  <div className="concept-add-popover" ref={searchRef}>
+                    <input
+                      autoFocus
+                      className="concept-search-input"
+                      value={conceptSearch}
+                      onChange={(e) => searchConcepts(e.target.value)}
+                      placeholder="Search or create concept…"
+                      onKeyDown={(e) => { if (e.key === 'Escape') closeAddConcept() }}
+                    />
+                    {conceptError && <p className="error" style={{ margin: '0.25rem 0 0' }}>{conceptError}</p>}
+                    <ul className="concept-search-results">
+                      {searchResults.map((c) => (
+                        <li key={c.id}>
+                          <button type="button" onClick={() => linkConcept(item.id, c)}>
+                            {c.canonical_name}
+                            {c.domain && <span className="concept-chip-domain">{c.domain}</span>}
+                          </button>
+                        </li>
+                      ))}
+                      {conceptSearch.trim() && (
+                        <li className="concept-create-option">
+                          <button type="button" onClick={() => createAndLink(item.id)}>
+                            + Create "{conceptSearch.trim()}"
+                          </button>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="concept-chip concept-chip-add"
+                    onClick={() => openAddConcept(item.id)}
+                    title="Add concept"
+                  >
+                    +
+                  </button>
+                )}
+              </div>
+
               <div className="knowledge-meta">
                 <span>By: {item.created_by || '-'}</span>
                 <span>Created: {formatDate(item.created_time)}</span>
@@ -198,6 +346,22 @@ export default function TopicManager({ folderId, token, onUnauthorized, onCountC
           ))
         )}
       </div>
+
+      {selectedConcept && (
+        <ConceptPanel
+          concept={selectedConcept.concept}
+          token={token}
+          topicId={selectedConcept.topicId}
+          onClose={() => setSelectedConcept(null)}
+          onUnlinked={() => {
+            const { concept, topicId } = selectedConcept
+            setTopicConcepts((prev) => ({
+              ...prev,
+              [topicId]: (prev[topicId] ?? []).filter((c) => c.id !== concept.id),
+            }))
+          }}
+        />
+      )}
     </div>
   )
 }
