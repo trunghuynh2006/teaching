@@ -263,17 +263,17 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Concepts within each topic (ordered)
-INSERT INTO topic_concepts (topic_id, concept_id, position)
+INSERT INTO topic_concepts (topic_id, concept_id)
 VALUES
-    ('topic_emailstruct01', 'concept_subjectline01', 0),
-    ('topic_emailstruct01', 'concept_salutation01',  1),
-    ('topic_emailtone001',  'concept_tone001',        0),
-    ('topic_emailtone001',  'concept_cta001',         1),
-    ('topic_basiclaws001',  'concept_voltage001',     0),
-    ('topic_basiclaws001',  'concept_resistance01',   1),
-    ('topic_basiclaws001',  'concept_ohmslaw001',     2),
-    ('topic_circuittypes01','concept_current001',     0),
-    ('topic_circuittypes01','concept_voltage001',     1)
+    ('topic_emailstruct01', 'concept_subjectline01'),
+    ('topic_emailstruct01', 'concept_salutation01'),
+    ('topic_emailtone001',  'concept_tone001'),
+    ('topic_emailtone001',  'concept_cta001'),
+    ('topic_basiclaws001',  'concept_voltage001'),
+    ('topic_basiclaws001',  'concept_resistance01'),
+    ('topic_basiclaws001',  'concept_ohmslaw001'),
+    ('topic_circuittypes01','concept_current001'),
+    ('topic_circuittypes01','concept_voltage001')
 ON CONFLICT (topic_id, concept_id) DO NOTHING;
 
 -- ---------------------------------------------------------------------------
