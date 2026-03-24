@@ -5,6 +5,11 @@ AI_DIR := apps/ai
 WEB_DIR := apps/web
 PNPM_BIN ?= /home/trung/.nvm/versions/node/v22.16.0/bin/pnpm
 
+PGHOST ?= localhost
+PGUSER ?= postgres
+PGPASSWORD ?= postgres
+export PGPASSWORD
+
 .PHONY: help start-frontend start-backend start-ai seed-users seed-data generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
 
 help:
@@ -37,7 +42,7 @@ seed-users:
 	cd $(API_DIR) && go run . seed-users
 
 seed-data:
-	psql -h localhost -U postgres -d study_platform_api -f scripts/seed_data.sql
+	psql -h $(PGHOST) -U $(PGUSER) -d study_platform_api -f scripts/seed_data.sql
 
 generate-models:
 	go run ./scripts/generate_shared_models.go
@@ -51,23 +56,23 @@ generate-sqlc-ai:
 drop-db:
 	@echo "WARNING: This will drop the 'study_platform_api' database!"
 	@read -p "Are you sure? [y/N] " confirm && [ "$$confirm" = "y" ]
-	psql -h localhost -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'study_platform_api' AND pid <> pg_backend_pid();"
-	dropdb --if-exists -h localhost -U postgres study_platform_api
+	psql -h $(PGHOST) -U $(PGUSER) -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'study_platform_api' AND pid <> pg_backend_pid();"
+	dropdb --if-exists -h $(PGHOST) -U $(PGUSER) study_platform_api
 
 create-db:
-	createdb -h localhost -U postgres study_platform_api
-	psql -h localhost -U postgres -d study_platform_api -f $(API_DIR)/db/schema.sql
+	createdb -h $(PGHOST) -U $(PGUSER) study_platform_api
+	psql -h $(PGHOST) -U $(PGUSER) -d study_platform_api -f $(API_DIR)/db/schema.sql
 
 reset-db: drop-db create-db seed-users seed-data
 
 drop-db-ai:
 	@echo "WARNING: This will drop the 'study_platform_ai' database!"
 	@read -p "Are you sure? [y/N] " confirm && [ "$$confirm" = "y" ]
-	psql -h localhost -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'study_platform_ai' AND pid <> pg_backend_pid();"
-	dropdb --if-exists -h localhost -U postgres study_platform_ai
+	psql -h $(PGHOST) -U $(PGUSER) -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'study_platform_ai' AND pid <> pg_backend_pid();"
+	dropdb --if-exists -h $(PGHOST) -U $(PGUSER) study_platform_ai
 
 create-db-ai:
-	createdb -h localhost -U postgres study_platform_ai
-	psql -h localhost -U postgres -d study_platform_ai -f $(AI_DIR)/db/schema.sql
+	createdb -h $(PGHOST) -U $(PGUSER) study_platform_ai
+	psql -h $(PGHOST) -U $(PGUSER) -d study_platform_ai -f $(AI_DIR)/db/schema.sql
 
 reset-db-ai: drop-db-ai create-db-ai
