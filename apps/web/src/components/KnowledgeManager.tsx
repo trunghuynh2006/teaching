@@ -48,6 +48,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
   const [editingItem, setEditingItem] = useState<SourceItem | null>(null)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [showForm, setShowForm] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -97,7 +98,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
     if (addTrigger) {
       setEditingItem(null)
       setForm(DEFAULT_FORM)
-      setShowForm(true)
+      setShowModal(true)
       setNotice('')
       setError('')
     }
@@ -113,6 +114,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
 
   const cancelForm = () => {
     setShowForm(false)
+    setShowModal(false)
     setEditingItem(null)
     setForm(DEFAULT_FORM)
   }
@@ -268,6 +270,47 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
             <button type="button" className="secondary" onClick={cancelForm}>Cancel</button>
           </div>
         </form>
+      )}
+
+      {showModal && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) cancelForm() }}>
+          <div className="modal-box">
+            <div className="modal-header">
+              <span>Add Knowledge</span>
+              <button className="modal-close" type="button" onClick={cancelForm}>✕</button>
+            </div>
+            <div className="modal-body">
+              {error && <div className="error">{error}</div>}
+              <form onSubmit={handleSubmit}>
+                <label className="modal-field">
+                  Title (optional)
+                  <input
+                    autoFocus
+                    value={form.title}
+                    onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g. Definition of velocity"
+                  />
+                </label>
+                <label className="modal-field">
+                  Content
+                  <textarea
+                    className="modal-textarea"
+                    value={form.content}
+                    onChange={(e) => setForm((prev) => ({ ...prev, content: e.target.value }))}
+                    placeholder="Write the source content here…"
+                    required
+                  />
+                </label>
+                <div className="modal-actions">
+                  <button type="submit" disabled={saving}>
+                    {saving ? 'Saving…' : 'Create'}
+                  </button>
+                  <button type="button" className="secondary" onClick={cancelForm}>Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="knowledge-list">
