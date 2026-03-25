@@ -24,9 +24,10 @@ interface KnowledgeManagerProps {
 interface FormState {
   title: string
   content: string
+  urlInput: string
 }
 
-const DEFAULT_FORM: FormState = { title: '', content: '' }
+const DEFAULT_FORM: FormState = { title: '', content: '', urlInput: '' }
 
 async function parseError(response: Response): Promise<string> {
   try {
@@ -51,6 +52,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [fetching, setFetching] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
@@ -106,7 +108,7 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
 
   const openEditForm = (item: SourceItem) => {
     setEditingItem(item)
-    setForm({ title: item.title ?? '', content: item.content })
+    setForm({ title: item.title ?? '', content: item.content, urlInput: '' })
     setShowForm(true)
     setNotice('')
     setError('')
@@ -117,6 +119,32 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
     setShowModal(false)
     setEditingItem(null)
     setForm(DEFAULT_FORM)
+  }
+
+  const fetchFromURL = async () => {
+    const rawURL = form.urlInput.trim()
+    if (!rawURL) return
+    setFetching(true)
+    setError('')
+    try {
+      const res = await fetch(`${API_URL}/sources/fetch-url`, {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: rawURL }),
+      })
+      if (res.status === 401) { onUnauthorized?.(); return }
+      if (!res.ok) throw new Error(await parseError(res))
+      const data = await res.json()
+      setForm((prev) => ({
+        ...prev,
+        title: prev.title || data.title || '',
+        content: data.content || '',
+      }))
+    } catch (err) {
+      setError((err as Error).message || 'Failed to fetch URL')
+    } finally {
+      setFetching(false)
+    }
   }
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -245,6 +273,20 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
       {showForm && (
         <form className="skill-form" onSubmit={handleSubmit}>
           <label>
+            URL (optional — fetch content from a public page)
+            <div className="url-fetch-row">
+              <input
+                value={form.urlInput}
+                onChange={(e) => setForm((prev) => ({ ...prev, urlInput: e.target.value }))}
+                placeholder="https://example.com/article"
+                type="url"
+              />
+              <button type="button" className="secondary" onClick={fetchFromURL} disabled={fetching || !form.urlInput.trim()}>
+                {fetching ? 'Fetching…' : 'Fetch'}
+              </button>
+            </div>
+          </label>
+          <label>
             Title (optional)
             <input
               autoFocus
@@ -282,6 +324,20 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
             <div className="modal-body">
               {error && <div className="error">{error}</div>}
               <form onSubmit={handleSubmit}>
+                <label className="modal-field">
+                  URL (optional — fetch content from a public page)
+                  <div className="url-fetch-row">
+                    <input
+                      value={form.urlInput}
+                      onChange={(e) => setForm((prev) => ({ ...prev, urlInput: e.target.value }))}
+                      placeholder="https://example.com/article"
+                      type="url"
+                    />
+                    <button type="button" className="secondary" onClick={fetchFromURL} disabled={fetching || !form.urlInput.trim()}>
+                      {fetching ? 'Fetching…' : 'Fetch'}
+                    </button>
+                  </div>
+                </label>
                 <label className="modal-field">
                   Title (optional)
                   <input

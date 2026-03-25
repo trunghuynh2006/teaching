@@ -1247,6 +1247,17 @@ button.danger {
   line-height: 1.55;
 }
 
+.url-fetch-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.url-fetch-row input {
+  flex: 1;
+  min-width: 0;
+}
+
 .knowledge-list {
   display: grid;
   gap: 0.75rem;

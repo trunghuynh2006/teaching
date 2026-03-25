@@ -115,6 +115,7 @@ func main() {
 	mux.HandleFunc("POST /folders/{id}/topics", handler.Auth(handler.CreateTopic))
 	mux.HandleFunc("PUT /topics/{id}", handler.Auth(handler.UpdateTopic))
 	mux.HandleFunc("DELETE /topics/{id}", handler.Auth(handler.DeleteTopic))
+	mux.HandleFunc("POST /sources/fetch-url", handler.Auth(handler.FetchURLContent))
 	mux.HandleFunc("GET /folders/{id}/sources", handler.Auth(handler.ListFolderSources))
 	mux.HandleFunc("POST /folders/{id}/sources", handler.Auth(handler.CreateSource))
 	mux.HandleFunc("GET /sources/{id}", handler.Auth(handler.GetSource))

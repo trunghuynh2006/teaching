@@ -1,11 +1,15 @@
 package httpapi
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
+	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -200,4 +204,106 @@ func toSharedSource(s store.Source) sharedmodels.Source {
 type sourceInput struct {
 	Title   string
 	Content string
+}
+
+func (h *Handler) FetchURLContent(w http.ResponseWriter, r *http.Request, _ user.User) {
+	var body struct {
+		URL string `json:"url"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Invalid request body"})
+		return
+	}
+
+	rawURL := strings.TrimSpace(body.URL)
+	if rawURL == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "URL is required"})
+		return
+	}
+
+	parsed, err := url.Parse(rawURL)
+	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "URL must use http or https"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Invalid URL"})
+		return
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; T2T-Bot/1.0)")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: "Failed to fetch URL"})
+		return
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := io.ReadAll(io.LimitReader(resp.Body, 2<<20))
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Failed to read response"})
+		return
+	}
+
+	htmlContent := string(bodyBytes)
+	writeJSON(w, http.StatusOK, map[string]string{
+		"title":   extractHTMLTitle(htmlContent),
+		"content": extractHTMLText(htmlContent),
+	})
+}
+
+var (
+	reTitleTag = regexp.MustCompile(`(?is)<title[^>]*>(.*?)</title>`)
+	reMain     = regexp.MustCompile(`(?is)<main[^>]*>(.*?)</main>`)
+	reArticle  = regexp.MustCompile(`(?is)<article[^>]*>(.*?)</article>`)
+	reScript   = regexp.MustCompile(`(?is)<script[^>]*>.*?</script>`)
+	reStyle    = regexp.MustCompile(`(?is)<style[^>]*>.*?</style>`)
+	reHead     = regexp.MustCompile(`(?is)<head[^>]*>.*?</head>`)
+	reNav      = regexp.MustCompile(`(?is)<nav[^>]*>.*?</nav>`)
+	reHeader   = regexp.MustCompile(`(?is)<header[^>]*>.*?</header>`)
+	reFooter   = regexp.MustCompile(`(?is)<footer[^>]*>.*?</footer>`)
+	reAside    = regexp.MustCompile(`(?is)<aside[^>]*>.*?</aside>`)
+	reTag      = regexp.MustCompile(`<[^>]+>`)
+	reSpaces   = regexp.MustCompile(`\s+`)
+)
+
+var htmlEntities = strings.NewReplacer(
+	"&amp;", "&", "&lt;", "<", "&gt;", ">",
+	"&quot;", `"`, "&#39;", "'", "&nbsp;", " ",
+)
+
+func extractHTMLTitle(html string) string {
+	m := reTitleTag.FindStringSubmatch(html)
+	if len(m) > 1 {
+		return strings.TrimSpace(m[1])
+	}
+	return ""
+}
+
+func extractHTMLText(html string) string {
+	// Remove scripts, styles, head first
+	html = reScript.ReplaceAllString(html, "")
+	html = reStyle.ReplaceAllString(html, "")
+	html = reHead.ReplaceAllString(html, "")
+
+	// Prefer <main> content, then <article>, then full body minus boilerplate
+	if m := reMain.FindStringSubmatch(html); len(m) > 1 {
+		html = m[1]
+	} else if m := reArticle.FindStringSubmatch(html); len(m) > 1 {
+		html = m[1]
+	} else {
+		html = reNav.ReplaceAllString(html, "")
+		html = reHeader.ReplaceAllString(html, "")
+		html = reFooter.ReplaceAllString(html, "")
+		html = reAside.ReplaceAllString(html, "")
+	}
+
+	html = reTag.ReplaceAllString(html, " ")
+	html = htmlEntities.Replace(html)
+	return strings.TrimSpace(reSpaces.ReplaceAllString(html, " "))
 }
