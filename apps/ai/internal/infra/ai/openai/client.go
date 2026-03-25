@@ -126,6 +126,7 @@ func (c Client) ExtractConcepts(ctx context.Context, input domaincontent.Extract
 	userPrompt, err := c.Prompts.RenderExtractConcepts(prompts.ExtractConceptsData{
 		SourceText: input.SourceText,
 		Language:   input.Language,
+		Domain:     input.Domain,
 	})
 	if err != nil {
 		return nil, err
@@ -136,16 +137,26 @@ func (c Client) ExtractConcepts(ctx context.Context, input domaincontent.Extract
 		return nil, err
 	}
 
+	// The LLM sometimes echoes the schema structure back, placing concepts
+	// under "properties.concepts" instead of the top-level "concepts" key.
+	// Try both locations before giving up.
 	var result struct {
-		Concepts []domaincontent.ExtractedConcept `json:"concepts"`
+		Concepts   []domaincontent.ExtractedConcept `json:"concepts"`
+		Properties struct {
+			Concepts []domaincontent.ExtractedConcept `json:"concepts"`
+		} `json:"properties"`
 	}
 	if err := json.Unmarshal([]byte(raw), &result); err != nil {
 		return nil, fmt.Errorf("parse concepts response: %w", err)
 	}
-	if len(result.Concepts) == 0 {
+	concepts := result.Concepts
+	if len(concepts) == 0 {
+		concepts = result.Properties.Concepts
+	}
+	if len(concepts) == 0 {
 		return nil, ErrUnexpectedResponse
 	}
-	return result.Concepts, nil
+	return concepts, nil
 }
 
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {

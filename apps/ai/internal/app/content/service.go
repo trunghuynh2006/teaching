@@ -55,6 +55,7 @@ type GenerateAnkiCardsInput struct {
 type ExtractConceptsInput struct {
 	SourceText string
 	Language   string
+	Domain     string
 }
 
 // ListLessonTitles generates a list of candidate lesson titles for a skill.
@@ -198,6 +199,7 @@ func (s Service) ExtractConcepts(ctx context.Context, input ExtractConceptsInput
 	normalized := domaincontent.ExtractConceptsInput{
 		SourceText: strings.TrimSpace(input.SourceText),
 		Language:   fallback(input.Language, "English"),
+		Domain:     strings.TrimSpace(input.Domain),
 	}
 
 	cacheKey := hashKey("extract-concepts", normalized)

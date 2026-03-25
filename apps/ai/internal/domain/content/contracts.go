@@ -43,6 +43,7 @@ type GeneratedAnkiCard struct {
 type ExtractConceptsInput struct {
 	SourceText string
 	Language   string
+	Domain     string // optional hint to guide the LLM (e.g. folder domain)
 }
 
 // ExtractedConcept is a concept identified by the AI from source text.

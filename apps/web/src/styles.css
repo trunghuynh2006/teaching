@@ -1273,30 +1273,78 @@ button.danger {
   background: #fff;
   border: 1px solid #e2ecef;
   border-radius: 12px;
-  padding: 0.9rem;
+  padding: 0.75rem 0.9rem;
   display: grid;
   gap: 0.4rem;
 }
 
+.knowledge-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.knowledge-card-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.knowledge-card-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
 .knowledge-title {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.knowledge-content {
+.knowledge-excerpt {
   margin: 0;
-  white-space: pre-wrap;
-  line-height: 1.6;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
+  color: #5a7080;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.knowledge-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1rem;
+.btn-sm {
+  padding: 0.2rem 0.55rem;
   font-size: 0.8rem;
-  color: #5a7080;
+}
+
+.btn-generate-concepts {
+  font-size: 0.75rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  border: 1px dashed #a0b4c0;
+  background: transparent;
+  color: #4a7090;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-generate-concepts:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-generate-concepts:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.concept-gen-error {
+  font-size: 0.75rem;
+  color: var(--error, #c0392b);
 }
 
 /* ── Sidebar Folder Section ──────────────────────────────── */

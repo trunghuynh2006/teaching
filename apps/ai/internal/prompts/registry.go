@@ -186,6 +186,7 @@ func (r *Registry) RenderGenerateAnkiCards(data GenerateAnkiCardsData) (string, 
 type ExtractConceptsData struct {
 	SourceText string
 	Language   string
+	Domain     string
 }
 
 // RenderExtractConcepts renders the user prompt for extracting concepts from source text.

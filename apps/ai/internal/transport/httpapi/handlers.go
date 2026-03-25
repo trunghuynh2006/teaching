@@ -162,6 +162,7 @@ func (h *Handler) GenerateAnkiCards(w http.ResponseWriter, r *http.Request, clai
 type ExtractConceptsRequest struct {
 	SourceText string `json:"source_text"`
 	Language   string `json:"language"`
+	Domain     string `json:"domain"`
 }
 
 // ExtractConcepts handles POST /content/concepts (teacher/admin only).
@@ -180,6 +181,7 @@ func (h *Handler) ExtractConcepts(w http.ResponseWriter, r *http.Request, claims
 	concepts, err := h.ContentService.ExtractConcepts(r.Context(), appcontent.ExtractConceptsInput{
 		SourceText: payload.SourceText,
 		Language:   payload.Language,
+		Domain:     payload.Domain,
 	})
 	if err != nil {
 		switch {

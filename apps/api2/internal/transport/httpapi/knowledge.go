@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"api2/internal/domain/user"
+	infra_ai "api2/internal/infra/ai"
 	"api2/internal/sharedmodels"
 	"api2/internal/store"
 
@@ -204,6 +205,82 @@ func toSharedSource(s store.Source) sharedmodels.Source {
 type sourceInput struct {
 	Title   string
 	Content string
+}
+
+func (h *Handler) GenerateSourceConcepts(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+	id := strings.TrimSpace(r.PathValue("id"))
+	if id == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Source id is required"})
+		return
+	}
+
+	src, err := h.Queries.GetSourceByID(r.Context(), id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Source not found"})
+			return
+		}
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	folder, err := h.Queries.GetFolderByID(r.Context(), src.FolderID)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	domain := ""
+	if folder.Domain != nil && strings.TrimSpace(*folder.Domain) != "" {
+		domain = strings.TrimSpace(*folder.Domain)
+	} else {
+		domain = folder.Name
+	}
+
+	if h.AIClient == nil {
+		writeJSON(w, http.StatusServiceUnavailable, ErrorResponse{Detail: "AI service not configured"})
+		return
+	}
+
+	// Mint a short-lived service token so the AI call succeeds regardless of
+	// the calling user's role (api2 has already authenticated and authorised).
+	serviceToken, err := h.AuthService.Tokens.CreateAccessToken("api2-service", "teacher")
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
+	defer cancel()
+
+	extracted, err := h.AIClient.ExtractConcepts(ctx, serviceToken, infra_ai.ExtractConceptsRequest{
+		SourceText: src.Content,
+		Domain:     domain,
+	})
+	if err != nil {
+		writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		return
+	}
+
+	out := make([]sharedmodels.Concept, 0, len(extracted))
+	for _, ec := range extracted {
+		row, createErr := h.Queries.CreateConcept(r.Context(), store.CreateConceptParams{
+			ID:            newConceptID(),
+			CanonicalName: ec.CanonicalName,
+			Domain:        ec.Domain,
+			Description:   ec.Description,
+			Tags:          ec.Tags,
+			CreatedBy:     currentUser.Username,
+			UpdatedBy:     currentUser.Username,
+		})
+		if createErr != nil {
+			continue
+		}
+		_ = h.Queries.LinkSourceConcept(r.Context(), id, row.ID, currentUser.Username)
+		out = append(out, toSharedConcept(row))
+	}
+
+	writeJSON(w, http.StatusOK, out)
 }
 
 func (h *Handler) FetchURLContent(w http.ResponseWriter, r *http.Request, _ user.User) {

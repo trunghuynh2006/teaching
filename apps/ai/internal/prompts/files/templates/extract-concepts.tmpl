@@ -1,6 +1,9 @@
 Extract all key concepts from the following source text.
 
 Language: {{.Language}}
+{{- if .Domain}}
+Domain: {{.Domain}}
+{{- end}}
 
 {{.ConceptsConstraints}}
 
