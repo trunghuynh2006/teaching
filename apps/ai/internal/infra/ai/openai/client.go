@@ -162,6 +162,34 @@ func (c Client) ExtractConcepts(ctx context.Context, input domaincontent.Extract
 	return concepts, nil
 }
 
+// GenerateMCQuestions calls the LLM to generate multiple-choice questions from source text.
+func (c Client) GenerateMCQuestions(ctx context.Context, input domaincontent.GenerateMCQuestionsInput) ([]domaincontent.GeneratedMCQuestion, error) {
+	userPrompt, err := c.Prompts.RenderGenerateMCQuestions(prompts.GenerateMCQuestionsData{
+		SourceText: input.SourceText,
+		Language:   input.Language,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+
+	var result struct {
+		Questions  []domaincontent.GeneratedMCQuestion `json:"questions"`
+		Properties json.RawMessage                     `json:"properties"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse mc questions response: %w", err)
+	}
+	if len(result.Questions) == 0 {
+		return nil, ErrUnexpectedResponse
+	}
+	return result.Questions, nil
+}
+
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	return c.LLM.Complete(ctx, llm.Request{
 		SystemPrompt: c.Prompts.SystemPrompt(),

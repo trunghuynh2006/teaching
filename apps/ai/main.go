@@ -75,6 +75,7 @@ func main() {
 	mux.HandleFunc("POST /content/lesson", handler.Auth(handler.GenerateLesson))
 	mux.HandleFunc("POST /content/anki-cards", handler.Auth(handler.GenerateAnkiCards))
 	mux.HandleFunc("POST /content/concepts", handler.Auth(handler.ExtractConcepts))
+	mux.HandleFunc("POST /content/mc-questions", handler.Auth(handler.GenerateMCQuestions))
 
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("ai listening on %s", addr)

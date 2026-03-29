@@ -56,6 +56,24 @@ type ExtractedConcept struct {
 	Prerequisites []string `json:"prerequisites,omitempty"`
 }
 
+// GenerateMCQuestionsInput describes a request to generate multiple-choice questions from source text.
+type GenerateMCQuestionsInput struct {
+	SourceText string
+	Language   string
+}
+
+// GeneratedMCAnswer is one answer choice in a generated multiple-choice question.
+type GeneratedMCAnswer struct {
+	Text      string `json:"text"`
+	IsCorrect bool   `json:"is_correct"`
+}
+
+// GeneratedMCQuestion is one multiple-choice question returned by the AI.
+type GeneratedMCQuestion struct {
+	Body    string              `json:"body"`
+	Answers []GeneratedMCAnswer `json:"answers"`
+}
+
 // Generator produces AI-generated curriculum content.
 type Generator interface {
 	// ListLessonTitles returns Count candidate lesson titles for the given skill.
@@ -66,6 +84,8 @@ type Generator interface {
 	GenerateAnkiCards(ctx context.Context, input GenerateAnkiCardsInput) ([]GeneratedAnkiCard, error)
 	// ExtractConcepts returns concepts identified in the given source text.
 	ExtractConcepts(ctx context.Context, input ExtractConceptsInput) ([]ExtractedConcept, error)
+	// GenerateMCQuestions returns multiple-choice questions derived from the given source text.
+	GenerateMCQuestions(ctx context.Context, input GenerateMCQuestionsInput) ([]GeneratedMCQuestion, error)
 }
 
 // Cache stores and retrieves serialised generation results keyed by a prompt hash.

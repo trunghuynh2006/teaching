@@ -199,6 +199,45 @@ func (h *Handler) ExtractConcepts(w http.ResponseWriter, r *http.Request, claims
 	writeJSON(w, http.StatusOK, map[string]any{"concepts": concepts})
 }
 
+// GenerateMCQuestionsRequest is the body for POST /content/mc-questions.
+type GenerateMCQuestionsRequest struct {
+	SourceText string `json:"source_text"`
+	Language   string `json:"language"`
+}
+
+// GenerateMCQuestions handles POST /content/mc-questions (teacher/admin only).
+func (h *Handler) GenerateMCQuestions(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+
+	var payload GenerateMCQuestionsRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
+		return
+	}
+
+	questions, err := h.ContentService.GenerateMCQuestions(r.Context(), appcontent.GenerateMCQuestionsInput{
+		SourceText: payload.SourceText,
+		Language:   payload.Language,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, appcontent.ErrInvalidSourceText):
+			writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: err.Error()})
+		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
+			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
+		default:
+			log.Printf("generate mc questions error: %v", err)
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		}
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"questions": questions})
+}
+
 func isContentEditor(role string) bool {
 	return role == "teacher" || role == "admin"
 }

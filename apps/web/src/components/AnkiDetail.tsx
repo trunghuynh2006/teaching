@@ -14,12 +14,13 @@ interface Props {
 }
 
 export default function AnkiDetail({ spaceId, token, onUnauthorized }: Props) {
-  const [card, setCard] = useState<FlashCard | null>(null)
+  const [cards, setCards] = useState<FlashCard[]>([])
+  const [index, setIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const fetchCard = useCallback(async () => {
+  const fetchCards = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
@@ -27,10 +28,10 @@ export default function AnkiDetail({ spaceId, token, onUnauthorized }: Props) {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.status === 401) { onUnauthorized?.(); return }
-      if (!res.ok) throw new Error('Failed to load flash card')
+      if (!res.ok) throw new Error('Failed to load flash cards')
       const data = await res.json()
-      const list: FlashCard[] = Array.isArray(data) ? data : []
-      setCard(list[0] ?? null)
+      setCards(Array.isArray(data) ? data : [])
+      setIndex(0)
       setFlipped(false)
     } catch (err) {
       setError((err as Error).message)
@@ -39,11 +40,18 @@ export default function AnkiDetail({ spaceId, token, onUnauthorized }: Props) {
     }
   }, [spaceId, token])
 
-  useEffect(() => { fetchCard() }, [fetchCard])
+  useEffect(() => { fetchCards() }, [fetchCards])
+
+  const go = (delta: number) => {
+    setIndex((i) => i + delta)
+    setFlipped(false)
+  }
 
   if (loading) return <div className="space-item-detail"><p className="space-item-detail-empty">Loading…</p></div>
   if (error) return <div className="space-item-detail"><p className="error">{error}</p></div>
-  if (!card) return <div className="space-item-detail"><p className="space-item-detail-empty">No flash card found.</p></div>
+  if (cards.length === 0) return <div className="space-item-detail"><p className="space-item-detail-empty">No flash cards yet.</p></div>
+
+  const card = cards[index]
 
   return (
     <div className="anki-detail">
@@ -60,6 +68,12 @@ export default function AnkiDetail({ spaceId, token, onUnauthorized }: Props) {
         </div>
       </div>
       <p className="anki-flip-hint">{flipped ? 'Click to see front' : 'Click to flip'}</p>
+
+      <div className="anki-nav">
+        <button className="secondary" onClick={() => go(-1)} disabled={index === 0}>← Prev</button>
+        <span className="anki-nav-counter">{index + 1} / {cards.length}</span>
+        <button className="secondary" onClick={() => go(1)} disabled={index === cards.length - 1}>Next →</button>
+      </div>
     </div>
   )
 }

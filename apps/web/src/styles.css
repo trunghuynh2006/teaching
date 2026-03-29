@@ -1057,6 +1057,19 @@ button.danger {
   background: rgba(14, 133, 118, 0.08);
 }
 
+.question-answer-item.selected {
+  background: rgba(14, 100, 180, 0.08);
+  border: 1px solid rgba(14, 100, 180, 0.2);
+}
+
+.question-answer-item.wrong {
+  background: rgba(200, 50, 50, 0.07);
+}
+
+.question-answer-item.wrong .question-answer-marker {
+  color: #c83232;
+}
+
 .question-answer-marker {
   font-size: 0.85rem;
   font-weight: 700;
@@ -1197,6 +1210,89 @@ button.danger {
   font-size: 0.75rem;
   color: #b0bec8;
   font-style: italic;
+}
+
+/* ── Question detail nav / actions ───────────────────────── */
+
+.qd-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.qd-counter {
+  font-size: 0.82rem;
+  color: #7a92a3;
+}
+
+.qd-nav-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.qd-actions {
+  margin-top: 0.75rem;
+}
+
+.qd-result {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ── Question generate modal review list ─────────────────── */
+
+.qgen-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 380px;
+  overflow-y: auto;
+  margin-bottom: 0.75rem;
+}
+
+.qgen-review-item {
+  background: #f7fafc;
+  border: 1px solid #e2ecef;
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+}
+
+.qgen-review-body {
+  margin: 0 0 0.4rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.qgen-review-answers {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.87rem;
+  color: #4a6070;
+}
+
+.qgen-review-answers .qgen-answer-correct {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.anki-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.anki-nav-counter {
+  font-size: 0.85rem;
+  color: #6b7a87;
+  min-width: 4rem;
+  text-align: center;
 }
 
 .folder-sidebar-divider {

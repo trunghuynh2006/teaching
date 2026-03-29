@@ -13,6 +13,7 @@ import AnkiDetail from './AnkiDetail'
 import QuestionModal from './QuestionModal'
 import AnkiModal from './AnkiModal'
 import AnkiGenerateModal from './AnkiGenerateModal'
+import QuestionGenerateModal from './QuestionGenerateModal'
 
 interface FolderItem {
   id: string
@@ -123,6 +124,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [showInlineQuestionModal, setShowInlineQuestionModal] = useState(false)
   const [showInlineAnkiModal, setShowInlineAnkiModal] = useState(false)
   const [showAnkiGenerateModal, setShowAnkiGenerateModal] = useState(false)
+  const [showQuestionGenerateModal, setShowQuestionGenerateModal] = useState(false)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -520,6 +522,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             <>
               <div className="folder-content-actions">
                 <button onClick={() => setShowInlineQuestionModal(true)}>+ New Question</button>
+                <button className="secondary" onClick={() => setShowQuestionGenerateModal(true)}>Generate from Knowledge</button>
               </div>
               <QuestionDetail
                 key={`${selectedSpace.id}-${detailRefreshKey}`}
@@ -534,6 +537,16 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
                   onUnauthorized={onUnauthorized}
                   onSaved={() => { setShowInlineQuestionModal(false); setDetailRefreshKey((k) => k + 1) }}
                   onClose={() => setShowInlineQuestionModal(false)}
+                />
+              )}
+              {showQuestionGenerateModal && selectedFolder && (
+                <QuestionGenerateModal
+                  spaceId={selectedSpace.id}
+                  folderId={selectedFolder.id}
+                  token={token}
+                  onUnauthorized={onUnauthorized}
+                  onDone={() => { setShowQuestionGenerateModal(false); setDetailRefreshKey((k) => k + 1) }}
+                  onClose={() => setShowQuestionGenerateModal(false)}
                 />
               )}
             </>

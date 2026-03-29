@@ -1,0 +1,32 @@
+Generate multiple-choice questions from the following source text.
+
+Language: {{.Language}}
+
+Rules:
+- Each question tests a single, clearly defined concept
+- Each question has exactly 4 answer choices
+- Exactly one answer is correct; the other three are plausible but wrong distractors
+- Questions should be self-contained — no need to reference the source text to answer
+- Generate between 3 and 8 questions depending on how much content there is
+
+Source text:
+---
+{{.SourceText}}
+---
+
+Respond with a JSON object in exactly this format (no extra keys — just data):
+{
+  "questions": [
+    {
+      "body": "What does X mean?",
+      "answers": [
+        {"text": "Correct answer", "is_correct": true},
+        {"text": "Wrong answer 1", "is_correct": false},
+        {"text": "Wrong answer 2", "is_correct": false},
+        {"text": "Wrong answer 3", "is_correct": false}
+      ]
+    }
+  ]
+}
+
+Respond with valid JSON only. No markdown fences. No extra text.

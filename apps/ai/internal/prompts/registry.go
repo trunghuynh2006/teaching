@@ -30,6 +30,7 @@ type Registry struct {
 	generateLessonTmpl        *template.Template
 	generateAnkiCardsTmpl     *template.Template
 	extractConceptsTmpl       *template.Template
+	generateMCQuestionsTmpl   *template.Template
 }
 
 // New loads all prompt files from the embedded filesystem and compiles templates.
@@ -102,6 +103,10 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	generateMCQuestionsTmpl, err := parse("generate-mc-questions", "files/templates/generate-mc-questions.tmpl")
+	if err != nil {
+		return nil, err
+	}
 
 	return &Registry{
 		systemPrompt:              systemPrompt,
@@ -116,7 +121,23 @@ func New() (*Registry, error) {
 		generateLessonTmpl:        generateLessonTmpl,
 		generateAnkiCardsTmpl:     generateAnkiCardsTmpl,
 		extractConceptsTmpl:       extractConceptsTmpl,
+		generateMCQuestionsTmpl:   generateMCQuestionsTmpl,
 	}, nil
+}
+
+// GenerateMCQuestionsData is the input data for the generate-mc-questions template.
+type GenerateMCQuestionsData struct {
+	SourceText string
+	Language   string
+}
+
+// RenderGenerateMCQuestions renders the user prompt for generating multiple-choice questions.
+func (r *Registry) RenderGenerateMCQuestions(data GenerateMCQuestionsData) (string, error) {
+	var buf bytes.Buffer
+	if err := r.generateMCQuestionsTmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("render generate-mc-questions: %w", err)
+	}
+	return buf.String(), nil
 }
 
 // SystemPrompt returns the base role/persona for the LLM system message.

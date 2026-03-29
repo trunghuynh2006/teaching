@@ -225,6 +225,49 @@ func (s Service) ExtractConcepts(ctx context.Context, input ExtractConceptsInput
 	return concepts, nil
 }
 
+// GenerateMCQuestionsInput is the application-layer input for generating multiple-choice questions.
+type GenerateMCQuestionsInput struct {
+	SourceText string
+	Language   string
+}
+
+// GenerateMCQuestions generates multiple-choice questions from a given source text.
+func (s Service) GenerateMCQuestions(ctx context.Context, input GenerateMCQuestionsInput) ([]domaincontent.GeneratedMCQuestion, error) {
+	if strings.TrimSpace(input.SourceText) == "" {
+		return nil, ErrInvalidSourceText
+	}
+	if s.Generator == nil {
+		return nil, ErrGeneratorUnavailable
+	}
+
+	normalized := domaincontent.GenerateMCQuestionsInput{
+		SourceText: strings.TrimSpace(input.SourceText),
+		Language:   fallback(input.Language, "English"),
+	}
+
+	cacheKey := hashKey("generate-mc-questions", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var questions []domaincontent.GeneratedMCQuestion
+			if err := json.Unmarshal(raw, &questions); err == nil {
+				return questions, nil
+			}
+		}
+	}
+
+	questions, err := s.Generator.GenerateMCQuestions(ctx, normalized)
+	if err != nil {
+		return nil, err
+	}
+
+	if s.Cache != nil {
+		if raw, err := json.Marshal(questions); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return questions, nil
+}
+
 func hashKey(prefix string, v any) string {
 	payload, err := json.Marshal(v)
 	if err != nil {
