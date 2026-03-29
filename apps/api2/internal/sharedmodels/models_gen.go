@@ -160,6 +160,7 @@ type FolderMember struct {
 }
 
 type Source struct {
+	AnkiGenerated bool `json:"anki_generated"`
 	Content string `json:"content"`
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedTime *string `json:"created_time,omitempty"`

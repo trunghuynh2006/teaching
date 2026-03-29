@@ -184,12 +184,13 @@ func newSourceID() string {
 
 func toSharedSource(s store.Source) sharedmodels.Source {
 	out := sharedmodels.Source{
-		Id:        s.ID,
-		FolderId:  s.FolderID,
-		Title:     &s.Title,
-		Content:   s.Content,
-		CreatedBy: &s.CreatedBy,
-		UpdatedBy: &s.UpdatedBy,
+		Id:            s.ID,
+		FolderId:      s.FolderID,
+		Title:         &s.Title,
+		Content:       s.Content,
+		AnkiGenerated: s.AnkiGenerated,
+		CreatedBy:     &s.CreatedBy,
+		UpdatedBy:     &s.UpdatedBy,
 	}
 	if s.CreatedTime.Valid {
 		ts := s.CreatedTime.Time.UTC().Format(time.RFC3339Nano)

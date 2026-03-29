@@ -8,14 +8,15 @@ import (
 
 // Source is a piece of content belonging to a folder.
 type Source struct {
-	ID          string             `json:"id"`
-	FolderID    string             `json:"folder_id"`
-	Title       string             `json:"title"`
-	Content     string             `json:"content"`
-	CreatedBy   string             `json:"created_by"`
-	UpdatedBy   string             `json:"updated_by"`
-	CreatedTime pgtype.Timestamptz `json:"created_time"`
-	UpdatedTime pgtype.Timestamptz `json:"updated_time"`
+	ID             string             `json:"id"`
+	FolderID       string             `json:"folder_id"`
+	Title          string             `json:"title"`
+	Content        string             `json:"content"`
+	AnkiGenerated  bool               `json:"anki_generated"`
+	CreatedBy      string             `json:"created_by"`
+	UpdatedBy      string             `json:"updated_by"`
+	CreatedTime    pgtype.Timestamptz `json:"created_time"`
+	UpdatedTime    pgtype.Timestamptz `json:"updated_time"`
 }
 
 type CreateSourceParams struct {
@@ -37,19 +38,19 @@ type UpdateSourceParams struct {
 const createSource = `
 INSERT INTO sources (id, folder_id, title, content, created_by, updated_by)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, folder_id, title, content, created_by, updated_by, created_time, updated_time
+RETURNING id, folder_id, title, content, anki_generated, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) CreateSource(ctx context.Context, arg CreateSourceParams) (Source, error) {
 	row := q.db.QueryRow(ctx, createSource,
 		arg.ID, arg.FolderID, arg.Title, arg.Content, arg.CreatedBy, arg.UpdatedBy)
 	var s Source
-	err := row.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime)
+	err := row.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.AnkiGenerated, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime)
 	return s, err
 }
 
 const listSourcesByFolder = `
-SELECT id, folder_id, title, content, created_by, updated_by, created_time, updated_time
+SELECT id, folder_id, title, content, anki_generated, created_by, updated_by, created_time, updated_time
 FROM sources
 WHERE folder_id = $1
 ORDER BY created_time ASC
@@ -65,7 +66,7 @@ func (q *Queries) ListSourcesByFolder(ctx context.Context, folderID string) ([]S
 	var sources []Source
 	for rows.Next() {
 		var s Source
-		if err := rows.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime); err != nil {
+		if err := rows.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.AnkiGenerated, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime); err != nil {
 			return nil, err
 		}
 		sources = append(sources, s)
@@ -74,14 +75,14 @@ func (q *Queries) ListSourcesByFolder(ctx context.Context, folderID string) ([]S
 }
 
 const getSourceByID = `
-SELECT id, folder_id, title, content, created_by, updated_by, created_time, updated_time
+SELECT id, folder_id, title, content, anki_generated, created_by, updated_by, created_time, updated_time
 FROM sources WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetSourceByID(ctx context.Context, id string) (Source, error) {
 	row := q.db.QueryRow(ctx, getSourceByID, id)
 	var s Source
-	err := row.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime)
+	err := row.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.AnkiGenerated, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime)
 	return s, err
 }
 
@@ -89,14 +90,21 @@ const updateSource = `
 UPDATE sources
 SET title = $2, content = $3, updated_by = $4, updated_time = NOW()
 WHERE id = $1
-RETURNING id, folder_id, title, content, created_by, updated_by, created_time, updated_time
+RETURNING id, folder_id, title, content, anki_generated, created_by, updated_by, created_time, updated_time
 `
 
 func (q *Queries) UpdateSource(ctx context.Context, arg UpdateSourceParams) (Source, error) {
 	row := q.db.QueryRow(ctx, updateSource, arg.ID, arg.Title, arg.Content, arg.UpdatedBy)
 	var s Source
-	err := row.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime)
+	err := row.Scan(&s.ID, &s.FolderID, &s.Title, &s.Content, &s.AnkiGenerated, &s.CreatedBy, &s.UpdatedBy, &s.CreatedTime, &s.UpdatedTime)
 	return s, err
+}
+
+const markSourceAnkiGenerated = `UPDATE sources SET anki_generated = TRUE WHERE id = $1`
+
+func (q *Queries) MarkSourceAnkiGenerated(ctx context.Context, id string) error {
+	_, err := q.db.Exec(ctx, markSourceAnkiGenerated, id)
+	return err
 }
 
 const deleteSource = `DELETE FROM sources WHERE id = $1`
@@ -135,5 +143,12 @@ const initSourcesCreatedTimeIndex = `CREATE INDEX IF NOT EXISTS idx_sources_crea
 
 func (q *Queries) InitSourcesCreatedTimeIndex(ctx context.Context) error {
 	_, err := q.db.Exec(ctx, initSourcesCreatedTimeIndex)
+	return err
+}
+
+const initSourceAnkiGeneratedColumn = `ALTER TABLE sources ADD COLUMN IF NOT EXISTS anki_generated BOOLEAN NOT NULL DEFAULT FALSE`
+
+func (q *Queries) InitSourceAnkiGeneratedColumn(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, initSourceAnkiGeneratedColumn)
 	return err
 }

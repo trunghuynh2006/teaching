@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { API_URL } from '../config'
 import ConceptPanel, { type ConceptItem } from './ConceptPanel'
 
-interface SourceItem {
+export interface SourceItem {
   id: string
   folder_id: string
   title?: string
   content: string
+  anki_generated?: boolean
   created_by?: string
   updated_by?: string
   created_time?: string

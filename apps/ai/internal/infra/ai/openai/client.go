@@ -109,8 +109,11 @@ func (c Client) GenerateAnkiCards(ctx context.Context, input domaincontent.Gener
 		return nil, err
 	}
 
+	// The LLM sometimes echoes the full JSON schema alongside the actual data.
+	// "properties" contains schema metadata (objects), not card data — ignore it.
 	var result struct {
-		Cards []domaincontent.GeneratedAnkiCard `json:"cards"`
+		Cards      []domaincontent.GeneratedAnkiCard `json:"cards"`
+		Properties json.RawMessage                   `json:"properties"`
 	}
 	if err := json.Unmarshal([]byte(raw), &result); err != nil {
 		return nil, fmt.Errorf("parse anki cards response: %w", err)

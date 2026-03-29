@@ -9,7 +9,17 @@ Source text:
 {{.SourceText}}
 ---
 
-Your response must be a JSON object that conforms to this schema:
-{{.AnkiCardsSchema}}
+Respond with a JSON object in exactly this format (no schema, no extra keys — just data):
+{
+  "cards": [
+    {
+      "front_text": "What is X?",
+      "back_text": "X is ...",
+      "bloom_level": "remember",
+      "tags": ["topic-a", "topic-b"]
+    }
+  ]
+}
 
+bloom_level must be one of: remember, understand, apply, analyze, evaluate, create.
 Respond with valid JSON only. No markdown fences. No extra text.

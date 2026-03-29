@@ -12,6 +12,7 @@ import QuestionDetail from './QuestionDetail'
 import AnkiDetail from './AnkiDetail'
 import QuestionModal from './QuestionModal'
 import AnkiModal from './AnkiModal'
+import AnkiGenerateModal from './AnkiGenerateModal'
 
 interface FolderItem {
   id: string
@@ -121,6 +122,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
   const [showInlineQuestionModal, setShowInlineQuestionModal] = useState(false)
   const [showInlineAnkiModal, setShowInlineAnkiModal] = useState(false)
+  const [showAnkiGenerateModal, setShowAnkiGenerateModal] = useState(false)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -539,6 +541,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             <>
               <div className="folder-content-actions">
                 <button onClick={() => setShowInlineAnkiModal(true)}>+ New Card</button>
+                <button className="secondary" onClick={() => setShowAnkiGenerateModal(true)}>Generate from Knowledge</button>
               </div>
               <AnkiDetail
                 key={`${selectedSpace.id}-${detailRefreshKey}`}
@@ -553,6 +556,16 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
                   onUnauthorized={onUnauthorized}
                   onSaved={() => { setShowInlineAnkiModal(false); setDetailRefreshKey((k) => k + 1) }}
                   onClose={() => setShowInlineAnkiModal(false)}
+                />
+              )}
+              {showAnkiGenerateModal && selectedFolder && (
+                <AnkiGenerateModal
+                  spaceId={selectedSpace.id}
+                  folderId={selectedFolder.id}
+                  token={token}
+                  onUnauthorized={onUnauthorized}
+                  onSaved={() => { setShowAnkiGenerateModal(false); setDetailRefreshKey((k) => k + 1) }}
+                  onClose={() => setShowAnkiGenerateModal(false)}
                 />
               )}
             </>

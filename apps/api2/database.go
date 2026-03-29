@@ -91,6 +91,9 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitSourcesCreatedTimeIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitSourceAnkiGeneratedColumn(ctx); err != nil {
+		return err
+	}
 	if err := a.queries.InitSpacesTable(ctx); err != nil {
 		return err
 	}
