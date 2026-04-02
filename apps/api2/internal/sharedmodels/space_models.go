@@ -64,14 +64,18 @@ type ProblemStep struct {
 	UpdatedTime *string `json:"updated_time,omitempty"`
 }
 
-// FlashCard belongs to a Space.
+// FlashCard belongs to a Space and carries SM-2 spaced-repetition state.
 type FlashCard struct {
-	Id          string  `json:"id"`
-	SpaceId     string  `json:"space_id"`
-	Front       string  `json:"front"`
-	Back        string  `json:"back"`
-	CreatedBy   *string `json:"created_by,omitempty"`
-	UpdatedBy   *string `json:"updated_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
+	Id           string   `json:"id"`
+	SpaceId      string   `json:"space_id"`
+	Front        string   `json:"front"`
+	Back         string   `json:"back"`
+	DueAt        *string  `json:"due_at,omitempty"`
+	IntervalDays *int     `json:"interval_days,omitempty"`
+	EaseFactor   *float64 `json:"ease_factor,omitempty"`
+	ReviewCount  *int     `json:"review_count,omitempty"`
+	CreatedBy    *string  `json:"created_by,omitempty"`
+	UpdatedBy    *string  `json:"updated_by,omitempty"`
+	CreatedTime  *string  `json:"created_time,omitempty"`
+	UpdatedTime  *string  `json:"updated_time,omitempty"`
 }

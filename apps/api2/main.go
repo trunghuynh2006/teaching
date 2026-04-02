@@ -157,10 +157,12 @@ func main() {
 	mux.HandleFunc("POST /spaces/{id}/generate-anki-cards", handler.Auth(handler.GenerateAnkiCardsForSpace))
 	mux.HandleFunc("POST /spaces/{id}/generate-questions", handler.Auth(handler.GenerateQuestionsForSpace))
 	mux.HandleFunc("GET /spaces/{id}/flash-cards", handler.Auth(handler.ListSpaceFlashCards))
+	mux.HandleFunc("GET /spaces/{id}/flash-cards/due", handler.Auth(handler.ListSpaceFlashCardsDue))
 	mux.HandleFunc("POST /spaces/{id}/flash-cards", handler.Auth(handler.CreateFlashCard))
 	mux.HandleFunc("GET /flash-cards/{id}", handler.Auth(handler.GetFlashCard))
 	mux.HandleFunc("PUT /flash-cards/{id}", handler.Auth(handler.UpdateFlashCard))
 	mux.HandleFunc("DELETE /flash-cards/{id}", handler.Auth(handler.DeleteFlashCard))
+	mux.HandleFunc("POST /flash-cards/{id}/review", handler.Auth(handler.ReviewFlashCard))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)

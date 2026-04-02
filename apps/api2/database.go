@@ -133,6 +133,9 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitFlashCardsSpaceIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.MigrateFlashCardsSRColumns(ctx); err != nil {
+		return err
+	}
 	if err := a.queries.InitConceptsTable(ctx); err != nil {
 		return err
 	}

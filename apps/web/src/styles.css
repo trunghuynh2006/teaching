@@ -1212,6 +1212,47 @@ button.danger {
   font-style: italic;
 }
 
+.anki-due-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0 0 0.5rem;
+}
+
+.anki-caught-up {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 0.4rem;
+}
+
+.anki-rating-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.anki-rate-btn {
+  flex: 1;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.anki-rate-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.anki-rate-again { background: #fde8e8; color: #c0392b; }
+.anki-rate-hard  { background: #fef3cd; color: #8a6200; }
+.anki-rate-good  { background: #d4edda; color: #1a7a3c; }
+.anki-rate-easy  { background: #cce5ff; color: #0056b3; }
+
 /* ── Question detail nav / actions ───────────────────────── */
 
 .qd-nav-row {
