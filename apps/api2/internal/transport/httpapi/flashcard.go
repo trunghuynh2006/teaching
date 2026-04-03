@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -223,6 +224,65 @@ func (h *Handler) ReviewFlashCard(w http.ResponseWriter, r *http.Request, curren
 	}
 
 	writeJSON(w, http.StatusOK, toSharedFlashCard(updated))
+}
+
+// ── SM-2 spaced repetition ────────────────────────────────────
+
+// ReviewRating is the user's self-assessed difficulty for a card.
+type ReviewRating string
+
+const (
+	RatingAgain ReviewRating = "again"
+	RatingHard  ReviewRating = "hard"
+	RatingGood  ReviewRating = "good"
+	RatingEasy  ReviewRating = "easy"
+)
+
+// applyReview runs the SM-2 algorithm.
+// Returns (newEaseFactor, newIntervalDays, newRepetitions, newLapses).
+func applyReview(rating ReviewRating, ease float64, interval, repetitions, lapses int) (float64, int, int, int) {
+	const minEase = 1.3
+
+	switch rating {
+	case RatingAgain:
+		ease = math.Max(minEase, ease-0.2)
+		return ease, 1, 0, lapses + 1
+
+	case RatingHard:
+		ease = math.Max(minEase, ease-0.15)
+		newInterval := int(math.Max(1, math.Round(float64(interval)*1.2)))
+		return ease, newInterval, repetitions, lapses
+
+	case RatingGood:
+		var newInterval int
+		switch repetitions {
+		case 0:
+			newInterval = 1
+		case 1:
+			newInterval = 4
+		default:
+			newInterval = int(math.Round(float64(interval) * ease))
+		}
+		if newInterval < 1 {
+			newInterval = 1
+		}
+		return ease, newInterval, repetitions + 1, lapses
+
+	case RatingEasy:
+		var newInterval int
+		if repetitions == 0 {
+			newInterval = 4
+		} else {
+			newInterval = int(math.Round(float64(interval) * ease * 1.3))
+		}
+		if newInterval < 1 {
+			newInterval = 1
+		}
+		ease += 0.15
+		return ease, newInterval, repetitions + 1, lapses
+	}
+
+	return ease, interval, repetitions, lapses
 }
 
 // ── Helpers ───────────────────────────────────────────────────

@@ -26,8 +26,6 @@ export const SIDEBAR_BY_SECTION: Record<string, MenuItem[]> = {
     { label: 'Folders',        path: '/teacher/content-studio/folders',        icon: '📁' },
     { label: 'Voice Recorder', path: '/teacher/content-studio/recorder',       icon: '🎙️' },
     { label: 'Audio Records',  path: '/teacher/content-studio/audio-records',  icon: '🔊' },
-    { label: 'Anki Generator', path: '/teacher/content-studio/anki-generator', icon: '🃏' },
-    { label: 'Anki Review',    path: '/teacher/content-studio/anki-review',    icon: '🔁' },
   ],
   '/teacher/classes':   [],
   '/teacher/gradebook': [],

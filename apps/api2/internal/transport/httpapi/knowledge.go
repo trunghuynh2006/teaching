@@ -1,14 +1,17 @@
 package httpapi
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -19,6 +22,7 @@ import (
 	"api2/internal/store"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/ledongthuc/pdf"
 )
 
 func (h *Handler) ListFolderSources(w http.ResponseWriter, r *http.Request, _ user.User) {
@@ -206,6 +210,123 @@ func toSharedSource(s store.Source) sharedmodels.Source {
 type sourceInput struct {
 	Title   string
 	Content string
+}
+
+const pdfChunkPages = 5
+const pdfMaxBytes = 50 << 20 // 50 MB
+
+func (h *Handler) UploadPDFSource(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+	folderID := strings.TrimSpace(r.PathValue("id"))
+	if folderID == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Folder id is required"})
+		return
+	}
+
+	if _, err := h.Queries.GetFolderByID(r.Context(), folderID); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Folder not found"})
+			return
+		}
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	if err := r.ParseMultipartForm(pdfMaxBytes); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "File too large (max 50 MB)"})
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Missing file field"})
+		return
+	}
+	defer file.Close()
+
+	// Write to temp file — ledongthuc/pdf needs io.ReaderAt + size
+	tmp, err := os.CreateTemp("", "upload-*.pdf")
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+	defer os.Remove(tmp.Name())
+	defer tmp.Close()
+
+	size, err := io.Copy(tmp, file)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Failed to read upload"})
+		return
+	}
+
+	pdfReader, err := pdf.NewReader(tmp, size)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Could not parse PDF"})
+		return
+	}
+
+	totalPages := pdfReader.NumPage()
+	baseName := strings.TrimSuffix(header.Filename, ".pdf")
+
+	type chunk struct {
+		title   string
+		content string
+	}
+	var chunks []chunk
+
+	for start := 1; start <= totalPages; start += pdfChunkPages {
+		end := start + pdfChunkPages - 1
+		if end > totalPages {
+			end = totalPages
+		}
+
+		var buf bytes.Buffer
+		for p := start; p <= end; p++ {
+			page := pdfReader.Page(p)
+			if page.V.IsNull() {
+				continue
+			}
+			text, err := page.GetPlainText(nil)
+			if err != nil {
+				continue
+			}
+			buf.WriteString(text)
+			buf.WriteString("\n")
+		}
+
+		content := strings.TrimSpace(buf.String())
+		if content == "" {
+			continue
+		}
+
+		title := fmt.Sprintf("%s — Pages %d–%d", baseName, start, end)
+		if totalPages <= pdfChunkPages {
+			title = baseName
+		}
+		chunks = append(chunks, chunk{title: title, content: content})
+	}
+
+	if len(chunks) == 0 {
+		writeJSON(w, http.StatusUnprocessableEntity, ErrorResponse{Detail: "No text could be extracted from the PDF"})
+		return
+	}
+
+	created := make([]sharedmodels.Source, 0, len(chunks))
+	for _, c := range chunks {
+		row, err := h.Queries.CreateSource(r.Context(), store.CreateSourceParams{
+			ID:        newSourceID(),
+			FolderID:  folderID,
+			Title:     c.title,
+			Content:   c.content,
+			CreatedBy: currentUser.Username,
+			UpdatedBy: currentUser.Username,
+		})
+		if err != nil {
+			continue
+		}
+		created = append(created, toSharedSource(row))
+	}
+
+	writeJSON(w, http.StatusCreated, created)
 }
 
 func (h *Handler) GenerateSourceConcepts(w http.ResponseWriter, r *http.Request, currentUser user.User) {

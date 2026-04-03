@@ -1,4 +1,3 @@
-import AnkiReview from '../components/AnkiReview'
 import AudioRecordList from '../components/AudioRecordList'
 import AudioRecorder from '../components/AudioRecorder'
 import FolderManager from '../components/FolderManager'
@@ -10,14 +9,6 @@ interface LandingProps {
 }
 
 export function LearnerLanding({ activeItem, token, onUnauthorized }: LandingProps) {
-  if (activeItem === 'Anki Review') {
-    return (
-      <section className="panel">
-        <AnkiReview token={token!} onUnauthorized={onUnauthorized!} />
-      </section>
-    )
-  }
-
   if (activeItem === 'Voice Recorder') {
     return (
       <section className="panel">

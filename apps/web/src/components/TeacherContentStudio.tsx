@@ -1,6 +1,4 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import AnkiCardGenerator from './AnkiCardGenerator'
-import AnkiReview from './AnkiReview'
 import AudioRecordList from './AudioRecordList'
 import AudioRecorder from './AudioRecorder'
 import FolderManager from './FolderManager'
@@ -19,8 +17,6 @@ export default function TeacherContentStudio({ token, onUnauthorized }: TeacherC
       <Route path="create" element={<TeacherSkillManager token={token} mode="form" onUnauthorized={onUnauthorized} />} />
       <Route path="recorder" element={<AudioRecorder token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="audio-records" element={<AudioRecordList token={token} onUnauthorized={onUnauthorized} />} />
-      <Route path="anki-generator" element={<AnkiCardGenerator token={token} onUnauthorized={onUnauthorized} />} />
-      <Route path="anki-review" element={<AnkiReview token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="folders" element={<FolderManager token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="*" element={<Navigate to="skills" replace />} />
     </Routes>

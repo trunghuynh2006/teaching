@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { API_URL } from '../config'
 import ConceptPanel, { type ConceptItem } from './ConceptPanel'
 
@@ -49,6 +49,9 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
   const [fetching, setFetching] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+
+  const [uploadingPDF, setUploadingPDF] = useState(false)
+  const pdfInputRef = useRef<HTMLInputElement>(null)
 
   const [sourceConcepts, setSourceConcepts] = useState<Record<string, ConceptItem[]>>({})
   const [selectedConcept, setSelectedConcept] = useState<{ concept: ConceptItem; sourceId: string } | null>(null)
@@ -181,6 +184,32 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
     }
   }
 
+  const handlePDFUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setUploadingPDF(true)
+    setError('')
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch(`${API_URL}/folders/${folderId}/sources/upload-pdf`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      })
+      if (res.status === 401) { onUnauthorized?.(); return }
+      if (!res.ok) throw new Error(await parseError(res))
+      const created: SourceItem[] = await res.json()
+      setNotice(`${created.length} source${created.length !== 1 ? 's' : ''} created from PDF`)
+      await fetchSources()
+    } catch (err) {
+      setError((err as Error).message || 'Failed to upload PDF')
+    } finally {
+      setUploadingPDF(false)
+    }
+  }
+
   const generateConcepts = async (sourceId: string) => {
     setGeneratingFor(sourceId)
     setConceptError((prev) => ({ ...prev, [sourceId]: '' }))
@@ -255,6 +284,14 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
         </form>
       )}
 
+      <input
+        ref={pdfInputRef}
+        type="file"
+        accept=".pdf"
+        style={{ display: 'none' }}
+        onChange={handlePDFUpload}
+      />
+
       {showModal && (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) cancelForm() }}>
           <div className="modal-box">
@@ -264,6 +301,18 @@ export default function KnowledgeManager({ folderId, token, onUnauthorized, onCo
             </div>
             <div className="modal-body">
               {error && <div className="error">{error}</div>}
+              <div className="modal-upload-pdf-row">
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => { cancelForm(); pdfInputRef.current?.click() }}
+                  disabled={uploadingPDF}
+                >
+                  {uploadingPDF ? 'Uploading PDF…' : 'Upload PDF instead'}
+                </button>
+                <span className="modal-upload-hint">Auto-splits into sections</span>
+              </div>
+              <div className="modal-divider">or enter manually</div>
               <form onSubmit={handleSubmit}>
                 <label className="modal-field">
                   URL (optional — fetch content from a public page)
