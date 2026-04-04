@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strings"
 
 	appcontent "ai/internal/app/content"
 	"ai/internal/infra/security"
@@ -236,6 +237,41 @@ func (h *Handler) GenerateMCQuestions(w http.ResponseWriter, r *http.Request, cl
 	}
 
 	writeJSON(w, http.StatusOK, map[string]any{"questions": questions})
+}
+
+// SeedConceptsRequest is the body for POST /content/seed-concepts.
+type SeedConceptsRequest struct {
+	Domain string `json:"domain"`
+}
+
+// SeedConcepts handles POST /content/seed-concepts (teacher/admin only).
+func (h *Handler) SeedConcepts(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+
+	var payload SeedConceptsRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil || strings.TrimSpace(payload.Domain) == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "domain is required"})
+		return
+	}
+
+	concepts, err := h.ContentService.SeedFoundationConcepts(r.Context(), appcontent.SeedFoundationConceptsInput{
+		Domain: strings.TrimSpace(payload.Domain),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
+			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
+		default:
+			log.Printf("seed concepts error: %v", err)
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		}
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"concepts": concepts})
 }
 
 func isContentEditor(role string) bool {

@@ -3,6 +3,7 @@ go 1.26.1
 use (
 	./apps/ai
 	./apps/api2
+	./apps/wikiprovider
 	./packages/lessonplan
 	./packages/llm
 )

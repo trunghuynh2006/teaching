@@ -165,6 +165,64 @@ func (c *Client) GenerateMCQuestions(ctx context.Context, bearerToken string, re
 	return result.Questions, nil
 }
 
+// SeedFoundationConceptsRequest is the body for POST /content/seed-concepts.
+type SeedFoundationConceptsRequest struct {
+	Domain string `json:"domain"`
+}
+
+// SeededConcept is one concept returned by the seed endpoint.
+type SeededConcept struct {
+	CanonicalName string   `json:"canonical_name"`
+	Description   string   `json:"description"`
+	Level         string   `json:"level"`
+	Scope         string   `json:"scope"`
+	Tags          []string `json:"tags,omitempty"`
+}
+
+// SeedFoundationConcepts calls POST /content/seed-concepts on the ai service.
+func (c *Client) SeedFoundationConcepts(ctx context.Context, bearerToken string, req SeedFoundationConceptsRequest) ([]SeededConcept, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	httpClient := c.HTTPClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 60 * time.Second}
+	}
+	url := strings.TrimSuffix(c.BaseURL, "/") + "/content/seed-concepts"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+bearerToken)
+	resp, err := httpClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("ai service unavailable: %w", err)
+	}
+	defer resp.Body.Close()
+	rawBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		var errBody struct {
+			Detail string `json:"detail"`
+		}
+		if jsonErr := json.Unmarshal(rawBody, &errBody); jsonErr == nil && errBody.Detail != "" {
+			return nil, fmt.Errorf("ai service error: %s", errBody.Detail)
+		}
+		return nil, fmt.Errorf("ai service returned %d", resp.StatusCode)
+	}
+	var result struct {
+		Concepts []SeededConcept `json:"concepts"`
+	}
+	if err := json.Unmarshal(rawBody, &result); err != nil {
+		return nil, fmt.Errorf("ai service: parse response: %w", err)
+	}
+	return result.Concepts, nil
+}
+
 // GenerateAnkiCards calls POST /content/anki-cards on the ai service.
 // The bearerToken is forwarded as-is (same JWT secret is shared).
 func (c *Client) GenerateAnkiCards(ctx context.Context, bearerToken string, req GenerateAnkiCardsRequest) ([]GeneratedCard, error) {

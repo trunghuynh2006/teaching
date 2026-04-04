@@ -190,6 +190,32 @@ func (c Client) GenerateMCQuestions(ctx context.Context, input domaincontent.Gen
 	return result.Questions, nil
 }
 
+// SeedFoundationConcepts calls the LLM to generate foundation concepts for a domain.
+func (c Client) SeedFoundationConcepts(ctx context.Context, input domaincontent.SeedFoundationConceptsInput) ([]domaincontent.SeededConcept, error) {
+	userPrompt, err := c.Prompts.RenderSeedFoundationConcepts(prompts.SeedFoundationConceptsData{
+		Domain: input.Domain,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+
+	var result struct {
+		Concepts []domaincontent.SeededConcept `json:"concepts"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse seed concepts response: %w", err)
+	}
+	if len(result.Concepts) == 0 {
+		return nil, ErrUnexpectedResponse
+	}
+	return result.Concepts, nil
+}
+
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	return c.LLM.Complete(ctx, llm.Request{
 		SystemPrompt: c.Prompts.SystemPrompt(),

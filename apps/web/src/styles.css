@@ -2299,6 +2299,14 @@ button.danger {
   color: var(--text);
 }
 
+.concept-panel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
 .concept-panel-domain {
   margin: 0;
   font-size: 0.8rem;
@@ -2306,6 +2314,63 @@ button.danger {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.concept-level-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.concept-scope-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #555;
+  background: #eef0f3;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+
+.concept-prereq-section {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #e8eef3;
+}
+
+.concept-prereq-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8a97a3;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+}
+
+.concept-prereq-empty {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #aab4bc;
+}
+
+.concept-prereq-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.concept-prereq-chip {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #333;
+  background: #f5f8fa;
+  border: 1.5px solid #aaa;
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  cursor: default;
 }
 
 .concept-panel-desc {

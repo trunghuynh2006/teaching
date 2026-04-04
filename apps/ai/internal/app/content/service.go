@@ -268,6 +268,40 @@ func (s Service) GenerateMCQuestions(ctx context.Context, input GenerateMCQuesti
 	return questions, nil
 }
 
+// SeedFoundationConceptsInput is the application-layer input for seeding foundation concepts.
+type SeedFoundationConceptsInput struct {
+	Domain string
+}
+
+// SeedFoundationConcepts generates a curated list of foundational concepts for a domain.
+func (s Service) SeedFoundationConcepts(ctx context.Context, input SeedFoundationConceptsInput) ([]domaincontent.SeededConcept, error) {
+	if s.Generator == nil {
+		return nil, ErrGeneratorUnavailable
+	}
+	normalized := domaincontent.SeedFoundationConceptsInput{
+		Domain: strings.TrimSpace(input.Domain),
+	}
+	cacheKey := hashKey("seed-foundation-concepts", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var concepts []domaincontent.SeededConcept
+			if err := json.Unmarshal(raw, &concepts); err == nil {
+				return concepts, nil
+			}
+		}
+	}
+	concepts, err := s.Generator.SeedFoundationConcepts(ctx, normalized)
+	if err != nil {
+		return nil, err
+	}
+	if s.Cache != nil {
+		if raw, err := json.Marshal(concepts); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return concepts, nil
+}
+
 func hashKey(prefix string, v any) string {
 	payload, err := json.Marshal(v)
 	if err != nil {

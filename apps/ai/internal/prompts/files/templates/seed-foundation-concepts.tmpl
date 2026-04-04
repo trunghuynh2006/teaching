@@ -1,0 +1,13 @@
+Generate a list of the most important foundational concepts for the domain: {{.Domain}}
+
+Rules:
+- Return 15-25 concepts
+- Focus on concepts that are prerequisites for understanding more advanced topics
+- Assign each concept a level: "foundation", "intermediate", or "advanced"
+- Assign each concept a scope: "universal" (applies across all languages/frameworks), "language-specific", or "framework-specific"
+- Foundation concepts are the most basic building blocks that everything else depends on
+- Include a clear, concise description (1-2 sentences)
+- Include relevant tags
+
+Respond with a JSON object in exactly this format:
+{"concepts": [{"canonical_name": "Variables", "description": "Named storage locations that hold values which can change during program execution.", "level": "foundation", "scope": "universal", "tags": ["basics", "programming"]}, {"canonical_name": "Functions", "description": "Reusable blocks of code that perform a specific task and can accept inputs and return outputs.", "level": "foundation", "scope": "universal", "tags": ["basics", "abstraction"]}]}

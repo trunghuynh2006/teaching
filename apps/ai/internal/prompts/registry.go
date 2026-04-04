@@ -30,7 +30,8 @@ type Registry struct {
 	generateLessonTmpl        *template.Template
 	generateAnkiCardsTmpl     *template.Template
 	extractConceptsTmpl       *template.Template
-	generateMCQuestionsTmpl   *template.Template
+	generateMCQuestionsTmpl        *template.Template
+	seedFoundationConceptsTmpl     *template.Template
 }
 
 // New loads all prompt files from the embedded filesystem and compiles templates.
@@ -107,6 +108,10 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	seedFoundationConceptsTmpl, err := parse("seed-foundation-concepts", "files/templates/seed-foundation-concepts.tmpl")
+	if err != nil {
+		return nil, err
+	}
 
 	return &Registry{
 		systemPrompt:              systemPrompt,
@@ -121,8 +126,23 @@ func New() (*Registry, error) {
 		generateLessonTmpl:        generateLessonTmpl,
 		generateAnkiCardsTmpl:     generateAnkiCardsTmpl,
 		extractConceptsTmpl:       extractConceptsTmpl,
-		generateMCQuestionsTmpl:   generateMCQuestionsTmpl,
+		generateMCQuestionsTmpl:        generateMCQuestionsTmpl,
+		seedFoundationConceptsTmpl:     seedFoundationConceptsTmpl,
 	}, nil
+}
+
+// SeedFoundationConceptsData is the input data for the seed-foundation-concepts template.
+type SeedFoundationConceptsData struct {
+	Domain string
+}
+
+// RenderSeedFoundationConcepts renders the user prompt for seeding foundation concepts.
+func (r *Registry) RenderSeedFoundationConcepts(data SeedFoundationConceptsData) (string, error) {
+	var buf bytes.Buffer
+	if err := r.seedFoundationConceptsTmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("render seed-foundation-concepts: %w", err)
+	}
+	return buf.String(), nil
 }
 
 // GenerateMCQuestionsData is the input data for the generate-mc-questions template.

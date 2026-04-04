@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
@@ -10,16 +11,59 @@ import (
 	"time"
 
 	"api2/internal/domain/user"
+	infra_ai "api2/internal/infra/ai"
 	"api2/internal/sharedmodels"
 	"api2/internal/store"
 
 	"github.com/jackc/pgx/v5"
 )
 
+// conceptResponse is the JSON shape returned for all concept endpoints.
+// Richer than sharedmodels.Concept — includes level, scope, and optional prerequisites.
+type conceptResponse struct {
+	ID            string            `json:"id"`
+	CanonicalName string            `json:"canonical_name"`
+	Domain        string            `json:"domain,omitempty"`
+	Description   string            `json:"description,omitempty"`
+	Tags          []string          `json:"tags,omitempty"`
+	Level         string            `json:"level"`
+	Scope         string            `json:"scope"`
+	CreatedBy     string            `json:"created_by,omitempty"`
+	UpdatedBy     string            `json:"updated_by,omitempty"`
+	CreatedTime   string            `json:"created_time,omitempty"`
+	UpdatedTime   string            `json:"updated_time,omitempty"`
+	Prerequisites []conceptResponse `json:"prerequisites,omitempty"`
+}
+
+func toConceptResponse(c store.Concept) conceptResponse {
+	r := conceptResponse{
+		ID:            c.ID,
+		CanonicalName: c.CanonicalName,
+		Domain:        c.Domain,
+		Description:   c.Description,
+		Tags:          c.Tags,
+		Level:         c.Level,
+		Scope:         c.Scope,
+		CreatedBy:     c.CreatedBy,
+		UpdatedBy:     c.UpdatedBy,
+	}
+	if r.Tags == nil {
+		r.Tags = []string{}
+	}
+	if c.CreatedTime.Valid {
+		r.CreatedTime = c.CreatedTime.Time.UTC().Format(time.RFC3339Nano)
+	}
+	if c.UpdatedTime.Valid {
+		r.UpdatedTime = c.UpdatedTime.Time.UTC().Format(time.RFC3339Nano)
+	}
+	return r
+}
+
 // ─── Concept CRUD ────────────────────────────────────────────────────────────
 
 func (h *Handler) ListConcepts(w http.ResponseWriter, r *http.Request, _ user.User) {
 	domain := strings.TrimSpace(r.URL.Query().Get("domain"))
+	level := strings.TrimSpace(r.URL.Query().Get("level"))
 	var (
 		rows []store.Concept
 		err  error
@@ -33,9 +77,12 @@ func (h *Handler) ListConcepts(w http.ResponseWriter, r *http.Request, _ user.Us
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
-	out := make([]sharedmodels.Concept, 0, len(rows))
+	out := make([]conceptResponse, 0, len(rows))
 	for _, row := range rows {
-		out = append(out, toSharedConcept(row))
+		if level != "" && row.Level != level {
+			continue
+		}
+		out = append(out, toConceptResponse(row))
 	}
 	writeJSON(w, http.StatusOK, out)
 }
@@ -55,7 +102,13 @@ func (h *Handler) GetConcept(w http.ResponseWriter, r *http.Request, _ user.User
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
-	writeJSON(w, http.StatusOK, toSharedConcept(row))
+	resp := toConceptResponse(row)
+	// Embed prerequisites inline
+	prereqs, _ := h.Queries.ListConceptPrerequisites(r.Context(), id)
+	for _, p := range prereqs {
+		resp.Prerequisites = append(resp.Prerequisites, toConceptResponse(p))
+	}
+	writeJSON(w, http.StatusOK, resp)
 }
 
 func (h *Handler) CreateConcept(w http.ResponseWriter, r *http.Request, currentUser user.User) {
@@ -70,6 +123,8 @@ func (h *Handler) CreateConcept(w http.ResponseWriter, r *http.Request, currentU
 		Domain:        input.Domain,
 		Description:   input.Description,
 		Tags:          input.Tags,
+		Level:         input.Level,
+		Scope:         input.Scope,
 		CreatedBy:     currentUser.Username,
 		UpdatedBy:     currentUser.Username,
 	})
@@ -77,7 +132,7 @@ func (h *Handler) CreateConcept(w http.ResponseWriter, r *http.Request, currentU
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
-	writeJSON(w, http.StatusCreated, toSharedConcept(row))
+	writeJSON(w, http.StatusCreated, toConceptResponse(row))
 }
 
 func (h *Handler) UpdateConcept(w http.ResponseWriter, r *http.Request, currentUser user.User) {
@@ -97,6 +152,8 @@ func (h *Handler) UpdateConcept(w http.ResponseWriter, r *http.Request, currentU
 		Domain:        input.Domain,
 		Description:   input.Description,
 		Tags:          input.Tags,
+		Level:         input.Level,
+		Scope:         input.Scope,
 		UpdatedBy:     currentUser.Username,
 	})
 	if err != nil {
@@ -107,7 +164,7 @@ func (h *Handler) UpdateConcept(w http.ResponseWriter, r *http.Request, currentU
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
 		return
 	}
-	writeJSON(w, http.StatusOK, toSharedConcept(row))
+	writeJSON(w, http.StatusOK, toConceptResponse(row))
 }
 
 func (h *Handler) DeleteConcept(w http.ResponseWriter, r *http.Request, _ user.User) {
@@ -121,6 +178,116 @@ func (h *Handler) DeleteConcept(w http.ResponseWriter, r *http.Request, _ user.U
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// ─── Prerequisites ───────────────────────────────────────────────────────────
+
+func (h *Handler) ListConceptPrerequisites(w http.ResponseWriter, r *http.Request, _ user.User) {
+	id := strings.TrimSpace(r.PathValue("id"))
+	rows, err := h.Queries.ListConceptPrerequisites(r.Context(), id)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+	out := make([]conceptResponse, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, toConceptResponse(row))
+	}
+	writeJSON(w, http.StatusOK, out)
+}
+
+func (h *Handler) AddConceptPrerequisite(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+	id := strings.TrimSpace(r.PathValue("id"))
+	var payload struct {
+		PrerequisiteID string `json:"prerequisite_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil || strings.TrimSpace(payload.PrerequisiteID) == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "prerequisite_id is required"})
+		return
+	}
+	if err := h.Queries.AddConceptPrerequisite(r.Context(), id, strings.TrimSpace(payload.PrerequisiteID), currentUser.Username); err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) RemoveConceptPrerequisite(w http.ResponseWriter, r *http.Request, _ user.User) {
+	id := strings.TrimSpace(r.PathValue("id"))
+	prereqID := strings.TrimSpace(r.PathValue("prerequisite_id"))
+	if err := h.Queries.RemoveConceptPrerequisite(r.Context(), id, prereqID); err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// ─── Seed domain foundation concepts ─────────────────────────────────────────
+
+// SeedDomainConcepts calls the AI to generate foundation concepts for a domain
+// and persists them if they don't already exist (matched by canonical_name+domain).
+func (h *Handler) SeedDomainConcepts(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+	var payload struct {
+		Domain string `json:"domain"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil || strings.TrimSpace(payload.Domain) == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "domain is required"})
+		return
+	}
+	domain := strings.TrimSpace(payload.Domain)
+
+	if h.AIClient == nil {
+		writeJSON(w, http.StatusServiceUnavailable, ErrorResponse{Detail: "AI service not configured"})
+		return
+	}
+
+	serviceToken, err := h.AuthService.Tokens.CreateAccessToken("api2-service", "teacher")
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
+	defer cancel()
+
+	generated, err := h.AIClient.SeedFoundationConcepts(ctx, serviceToken, infra_ai.SeedFoundationConceptsRequest{
+		Domain: domain,
+	})
+	if err != nil {
+		writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		return
+	}
+
+	// Fetch existing concepts for dedup
+	existing, _ := h.Queries.ListConceptsByDomain(r.Context(), domain)
+	existingNames := make(map[string]bool, len(existing))
+	for _, c := range existing {
+		existingNames[strings.ToLower(c.CanonicalName)] = true
+	}
+
+	created := make([]conceptResponse, 0, len(generated))
+	for _, gc := range generated {
+		if existingNames[strings.ToLower(gc.CanonicalName)] {
+			continue
+		}
+		row, err := h.Queries.CreateConcept(r.Context(), store.CreateConceptParams{
+			ID:            newConceptID(),
+			CanonicalName: gc.CanonicalName,
+			Domain:        domain,
+			Description:   gc.Description,
+			Tags:          gc.Tags,
+			Level:         gc.Level,
+			Scope:         gc.Scope,
+			CreatedBy:     currentUser.Username,
+			UpdatedBy:     currentUser.Username,
+		})
+		if err != nil {
+			continue
+		}
+		created = append(created, toConceptResponse(row))
+	}
+
+	writeJSON(w, http.StatusCreated, map[string]any{"concepts": created, "domain": domain})
 }
 
 // ─── Source ↔ Concept ────────────────────────────────────────────────────────
@@ -238,6 +405,8 @@ type conceptInput struct {
 	Domain        string
 	Description   string
 	Tags          []string
+	Level         string
+	Scope         string
 }
 
 func decodeConceptInput(r *http.Request) (conceptInput, error) {
@@ -246,6 +415,8 @@ func decodeConceptInput(r *http.Request) (conceptInput, error) {
 		Domain        string   `json:"domain"`
 		Description   string   `json:"description"`
 		Tags          []string `json:"tags"`
+		Level         string   `json:"level"`
+		Scope         string   `json:"scope"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		return conceptInput{}, errors.New("Invalid request body")
@@ -263,6 +434,8 @@ func decodeConceptInput(r *http.Request) (conceptInput, error) {
 		Domain:        strings.TrimSpace(payload.Domain),
 		Description:   strings.TrimSpace(payload.Description),
 		Tags:          tags,
+		Level:         strings.TrimSpace(payload.Level),
+		Scope:         strings.TrimSpace(payload.Scope),
 	}, nil
 }
 

@@ -14,6 +14,7 @@ import (
 	infra_ai "api2/internal/infra/ai"
 	"api2/internal/infra/persistence/postgres"
 	"api2/internal/infra/security"
+	"api2/internal/infra/wiki"
 	"api2/internal/store"
 	"api2/internal/transport/httpapi"
 
@@ -62,6 +63,7 @@ func main() {
 		UploadDir:      getenv("UPLOAD_DIR", "./uploads"),
 		OpenAIKey:      getenv("OPENAI_API_KEY", ""),
 		AIClient:       &infra_ai.Client{BaseURL: getenv("AI_SERVICE_URL", "http://localhost:8100")},
+		WikiClient:     &wiki.Client{BaseURL: getenv("WIKI_SERVICE_URL", "http://localhost:8200")},
 	}
 
 	application := &app{
@@ -111,6 +113,8 @@ func main() {
 	mux.HandleFunc("POST /folders/{id}/topics", handler.Auth(handler.CreateTopic))
 	mux.HandleFunc("PUT /topics/{id}", handler.Auth(handler.UpdateTopic))
 	mux.HandleFunc("DELETE /topics/{id}", handler.Auth(handler.DeleteTopic))
+	mux.HandleFunc("GET /wiki/concepts/search", handler.Auth(handler.SearchWikiConcepts))
+	mux.HandleFunc("GET /wiki/concepts/by-domain", handler.Auth(handler.GetWikiConceptsByDomain))
 	mux.HandleFunc("POST /sources/fetch-url", handler.Auth(handler.FetchURLContent))
 	mux.HandleFunc("POST /sources/{id}/generate-concepts", handler.Auth(handler.GenerateSourceConcepts))
 	mux.HandleFunc("GET /folders/{id}/sources", handler.Auth(handler.ListFolderSources))
@@ -127,9 +131,13 @@ func main() {
 	mux.HandleFunc("DELETE /topics/{id}/concepts/{concept_id}", handler.Auth(handler.UnlinkTopicConcept))
 	mux.HandleFunc("GET /concepts", handler.Auth(handler.ListConcepts))
 	mux.HandleFunc("POST /concepts", handler.Auth(handler.CreateConcept))
+	mux.HandleFunc("POST /concepts/seed-domain", handler.Auth(handler.SeedDomainConcepts))
 	mux.HandleFunc("GET /concepts/{id}", handler.Auth(handler.GetConcept))
 	mux.HandleFunc("PUT /concepts/{id}", handler.Auth(handler.UpdateConcept))
 	mux.HandleFunc("DELETE /concepts/{id}", handler.Auth(handler.DeleteConcept))
+	mux.HandleFunc("GET /concepts/{id}/prerequisites", handler.Auth(handler.ListConceptPrerequisites))
+	mux.HandleFunc("POST /concepts/{id}/prerequisites", handler.Auth(handler.AddConceptPrerequisite))
+	mux.HandleFunc("DELETE /concepts/{id}/prerequisites/{prerequisite_id}", handler.Auth(handler.RemoveConceptPrerequisite))
 	mux.HandleFunc("GET /folders/{id}/spaces", handler.Auth(handler.ListFolderSpaces))
 	mux.HandleFunc("POST /folders/{id}/spaces", handler.Auth(handler.CreateSpace))
 	mux.HandleFunc("GET /spaces/{id}", handler.Auth(handler.GetSpace))

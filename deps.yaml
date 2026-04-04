@@ -15,7 +15,7 @@ services:
   api2:
     port: 8000
     source_dir: apps/api2
-    may_call: [ai]
+    may_call: [ai, wikiprovider]
     # web's port appears in CORS AllowedOrigin config — not an outbound call
     cors_from: [web]
 
@@ -24,3 +24,8 @@ services:
     source_dir: apps/ai
     may_call: []
     cors_from: [web]
+
+  wikiprovider:
+    port: 8200
+    source_dir: apps/wikiprovider
+    may_call: []

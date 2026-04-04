@@ -74,6 +74,20 @@ type GeneratedMCQuestion struct {
 	Answers []GeneratedMCAnswer `json:"answers"`
 }
 
+// SeedFoundationConceptsInput describes a request to generate foundation concepts for a domain.
+type SeedFoundationConceptsInput struct {
+	Domain string
+}
+
+// SeededConcept is one foundation concept returned by the AI.
+type SeededConcept struct {
+	CanonicalName string   `json:"canonical_name"`
+	Description   string   `json:"description"`
+	Level         string   `json:"level"`
+	Scope         string   `json:"scope"`
+	Tags          []string `json:"tags,omitempty"`
+}
+
 // Generator produces AI-generated curriculum content.
 type Generator interface {
 	// ListLessonTitles returns Count candidate lesson titles for the given skill.
@@ -86,6 +100,8 @@ type Generator interface {
 	ExtractConcepts(ctx context.Context, input ExtractConceptsInput) ([]ExtractedConcept, error)
 	// GenerateMCQuestions returns multiple-choice questions derived from the given source text.
 	GenerateMCQuestions(ctx context.Context, input GenerateMCQuestionsInput) ([]GeneratedMCQuestion, error)
+	// SeedFoundationConcepts returns a list of foundational concepts for the given domain.
+	SeedFoundationConcepts(ctx context.Context, input SeedFoundationConceptsInput) ([]SeededConcept, error)
 }
 
 // Cache stores and retrieves serialised generation results keyed by a prompt hash.

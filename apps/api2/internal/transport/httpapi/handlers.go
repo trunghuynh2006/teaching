@@ -9,6 +9,7 @@ import (
 	"api2/internal/app/profile"
 	"api2/internal/domain/user"
 	infra_ai "api2/internal/infra/ai"
+	"api2/internal/infra/wiki"
 	"api2/internal/store"
 )
 
@@ -20,6 +21,7 @@ type Handler struct {
 	UploadDir      string
 	OpenAIKey      string
 	AIClient       *infra_ai.Client
+	WikiClient     *wiki.Client
 }
 
 type LoginRequest struct {
