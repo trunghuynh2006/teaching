@@ -21,31 +21,33 @@ import (
 // conceptResponse is the JSON shape returned for all concept endpoints.
 // Richer than sharedmodels.Concept — includes level, scope, and optional prerequisites.
 type conceptResponse struct {
-	ID            string            `json:"id"`
-	CanonicalName string            `json:"canonical_name"`
-	Domain        string            `json:"domain,omitempty"`
-	Description   string            `json:"description,omitempty"`
-	Tags          []string          `json:"tags,omitempty"`
-	Level         string            `json:"level"`
-	Scope         string            `json:"scope"`
-	CreatedBy     string            `json:"created_by,omitempty"`
-	UpdatedBy     string            `json:"updated_by,omitempty"`
-	CreatedTime   string            `json:"created_time,omitempty"`
-	UpdatedTime   string            `json:"updated_time,omitempty"`
-	Prerequisites []conceptResponse `json:"prerequisites,omitempty"`
+	ID              string            `json:"id"`
+	CanonicalName   string            `json:"canonical_name"`
+	Domain          string            `json:"domain,omitempty"`
+	Description     string            `json:"description,omitempty"`
+	Tags            []string          `json:"tags,omitempty"`
+	Level           string            `json:"level"`
+	Scope           string            `json:"scope"`
+	ParentConceptID string            `json:"parent_concept_id,omitempty"`
+	CreatedBy       string            `json:"created_by,omitempty"`
+	UpdatedBy       string            `json:"updated_by,omitempty"`
+	CreatedTime     string            `json:"created_time,omitempty"`
+	UpdatedTime     string            `json:"updated_time,omitempty"`
+	Prerequisites   []conceptResponse `json:"prerequisites,omitempty"`
 }
 
 func toConceptResponse(c store.Concept) conceptResponse {
 	r := conceptResponse{
-		ID:            c.ID,
-		CanonicalName: c.CanonicalName,
-		Domain:        c.Domain,
-		Description:   c.Description,
-		Tags:          c.Tags,
-		Level:         c.Level,
-		Scope:         c.Scope,
-		CreatedBy:     c.CreatedBy,
-		UpdatedBy:     c.UpdatedBy,
+		ID:              c.ID,
+		CanonicalName:   c.CanonicalName,
+		Domain:          c.Domain,
+		Description:     c.Description,
+		Tags:            c.Tags,
+		Level:           c.Level,
+		Scope:           c.Scope,
+		ParentConceptID: c.ParentConceptID,
+		CreatedBy:       c.CreatedBy,
+		UpdatedBy:       c.UpdatedBy,
 	}
 	if r.Tags == nil {
 		r.Tags = []string{}
@@ -118,15 +120,16 @@ func (h *Handler) CreateConcept(w http.ResponseWriter, r *http.Request, currentU
 		return
 	}
 	row, err := h.Queries.CreateConcept(r.Context(), store.CreateConceptParams{
-		ID:            newConceptID(),
-		CanonicalName: input.CanonicalName,
-		Domain:        input.Domain,
-		Description:   input.Description,
-		Tags:          input.Tags,
-		Level:         input.Level,
-		Scope:         input.Scope,
-		CreatedBy:     currentUser.Username,
-		UpdatedBy:     currentUser.Username,
+		ID:              newConceptID(),
+		CanonicalName:   input.CanonicalName,
+		Domain:          input.Domain,
+		Description:     input.Description,
+		Tags:            input.Tags,
+		Level:           input.Level,
+		Scope:           input.Scope,
+		ParentConceptID: input.ParentConceptID,
+		CreatedBy:       currentUser.Username,
+		UpdatedBy:       currentUser.Username,
 	})
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
@@ -147,14 +150,15 @@ func (h *Handler) UpdateConcept(w http.ResponseWriter, r *http.Request, currentU
 		return
 	}
 	row, err := h.Queries.UpdateConcept(r.Context(), store.UpdateConceptParams{
-		ID:            id,
-		CanonicalName: input.CanonicalName,
-		Domain:        input.Domain,
-		Description:   input.Description,
-		Tags:          input.Tags,
-		Level:         input.Level,
-		Scope:         input.Scope,
-		UpdatedBy:     currentUser.Username,
+		ID:              id,
+		CanonicalName:   input.CanonicalName,
+		Domain:          input.Domain,
+		Description:     input.Description,
+		Tags:            input.Tags,
+		Level:           input.Level,
+		Scope:           input.Scope,
+		ParentConceptID: input.ParentConceptID,
+		UpdatedBy:       currentUser.Username,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -401,22 +405,24 @@ func (h *Handler) UnlinkTopicConcept(w http.ResponseWriter, r *http.Request, _ u
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 type conceptInput struct {
-	CanonicalName string
-	Domain        string
-	Description   string
-	Tags          []string
-	Level         string
-	Scope         string
+	CanonicalName   string
+	Domain          string
+	Description     string
+	Tags            []string
+	Level           string
+	Scope           string
+	ParentConceptID string
 }
 
 func decodeConceptInput(r *http.Request) (conceptInput, error) {
 	var payload struct {
-		CanonicalName string   `json:"canonical_name"`
-		Domain        string   `json:"domain"`
-		Description   string   `json:"description"`
-		Tags          []string `json:"tags"`
-		Level         string   `json:"level"`
-		Scope         string   `json:"scope"`
+		CanonicalName   string   `json:"canonical_name"`
+		Domain          string   `json:"domain"`
+		Description     string   `json:"description"`
+		Tags            []string `json:"tags"`
+		Level           string   `json:"level"`
+		Scope           string   `json:"scope"`
+		ParentConceptID string   `json:"parent_concept_id"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		return conceptInput{}, errors.New("Invalid request body")
@@ -430,12 +436,13 @@ func decodeConceptInput(r *http.Request) (conceptInput, error) {
 		tags = []string{}
 	}
 	return conceptInput{
-		CanonicalName: name,
-		Domain:        strings.TrimSpace(payload.Domain),
-		Description:   strings.TrimSpace(payload.Description),
-		Tags:          tags,
-		Level:         strings.TrimSpace(payload.Level),
-		Scope:         strings.TrimSpace(payload.Scope),
+		CanonicalName:   name,
+		Domain:          strings.TrimSpace(payload.Domain),
+		Description:     strings.TrimSpace(payload.Description),
+		Tags:            tags,
+		Level:           strings.TrimSpace(payload.Level),
+		Scope:           strings.TrimSpace(payload.Scope),
+		ParentConceptID: strings.TrimSpace(payload.ParentConceptID),
 	}, nil
 }
 
@@ -469,6 +476,11 @@ func toSharedConcept(c store.Concept) sharedmodels.Concept {
 }
 
 func newConceptID() string {
+	return NewConceptIDExported()
+}
+
+// NewConceptIDExported is the exported form used by the seed CLI.
+func NewConceptIDExported() string {
 	var b [8]byte
 	if _, err := rand.Read(b[:]); err != nil {
 		return "concept_" + time.Now().UTC().Format("20060102150405")

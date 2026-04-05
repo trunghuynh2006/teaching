@@ -11,7 +11,7 @@ PGUSER ?= postgres
 PGPASSWORD ?= postgres
 export PGPASSWORD
 
-.PHONY: help start-frontend start-backend start-ai start-wiki cache-wiki-domain cache-wiki-domains seed-users seed-data generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
+.PHONY: help start-frontend start-backend start-ai start-wiki cache-wiki-domain cache-wiki-domains seed-users seed-data seed-concepts seed-concept-domain generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
 
 help:
 	@echo "Available targets:"
@@ -23,6 +23,8 @@ help:
 	@echo "  make cache-wiki-domains             # Pre-cache all default domains"
 	@echo "  make seed-users                     # Seed demo users in PostgreSQL"
 	@echo "  make seed-data                      # Seed demo content (folders, sources, concepts, topics, …)"
+	@echo "  make seed-concept-domain CONCEPT_DOMAIN='microsoft power platform'  # Seed one domain"
+	@echo "  make seed-concepts                  # Seed all default concept domains"
 	@echo "  make generate-models                # Generate shared models from JSON schema"
 	@echo "  make generate-sqlc                  # Generate SQLC typed queries for api2"
 	@echo "  make generate-sqlc-ai               # Generate SQLC typed queries for ai"
@@ -58,6 +60,14 @@ seed-users:
 
 seed-data:
 	psql -h $(PGHOST) -U $(PGUSER) -d study_platform_api -f scripts/seed_data.sql
+
+CONCEPT_DOMAIN ?= physics
+seed-concept-domain:
+	cd $(API_DIR) && go run . seed-concepts "$(CONCEPT_DOMAIN)"
+
+CONCEPT_DOMAINS ?= physics mathematics "computer science" chemistry biology
+seed-concepts:
+	cd $(API_DIR) && go run . seed-concepts $(CONCEPT_DOMAINS)
 
 generate-models:
 	go run ./scripts/generate_shared_models.go

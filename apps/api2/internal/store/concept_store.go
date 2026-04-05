@@ -9,59 +9,62 @@ import (
 // ─── Concept ────────────────────────────────────────────────────────────────
 
 type Concept struct {
-	ID            string             `json:"id"`
-	CanonicalName string             `json:"canonical_name"`
-	Domain        string             `json:"domain"`
-	Description   string             `json:"description"`
-	Tags          []string           `json:"tags"`
-	Level         string             `json:"level"`  // foundation | intermediate | advanced
-	Scope         string             `json:"scope"`  // universal | language-specific | framework-specific
-	CreatedBy     string             `json:"created_by"`
-	UpdatedBy     string             `json:"updated_by"`
-	CreatedTime   pgtype.Timestamptz `json:"created_time"`
-	UpdatedTime   pgtype.Timestamptz `json:"updated_time"`
+	ID             string             `json:"id"`
+	CanonicalName  string             `json:"canonical_name"`
+	Domain         string             `json:"domain"`
+	Description    string             `json:"description"`
+	Tags           []string           `json:"tags"`
+	Level          string             `json:"level"`           // foundation | intermediate | advanced
+	Scope          string             `json:"scope"`           // universal | language-specific | framework-specific
+	ParentConceptID string            `json:"parent_concept_id"` // optional link to a more general concept
+	CreatedBy      string             `json:"created_by"`
+	UpdatedBy      string             `json:"updated_by"`
+	CreatedTime    pgtype.Timestamptz `json:"created_time"`
+	UpdatedTime    pgtype.Timestamptz `json:"updated_time"`
 }
 
 type CreateConceptParams struct {
-	ID            string
-	CanonicalName string
-	Domain        string
-	Description   string
-	Tags          []string
-	Level         string
-	Scope         string
-	CreatedBy     string
-	UpdatedBy     string
+	ID              string
+	CanonicalName   string
+	Domain          string
+	Description     string
+	Tags            []string
+	Level           string
+	Scope           string
+	ParentConceptID string
+	CreatedBy       string
+	UpdatedBy       string
 }
 
 type UpdateConceptParams struct {
-	ID            string
-	CanonicalName string
-	Domain        string
-	Description   string
-	Tags          []string
-	Level         string
-	Scope         string
-	UpdatedBy     string
+	ID              string
+	CanonicalName   string
+	Domain          string
+	Description     string
+	Tags            []string
+	Level           string
+	Scope           string
+	ParentConceptID string
+	UpdatedBy       string
 }
 
-const conceptColumns = `id, canonical_name, domain, description, tags, level, scope, created_by, updated_by, created_time, updated_time`
+const conceptColumns = `id, canonical_name, domain, description, tags, level, scope, COALESCE(parent_concept_id, ''), created_by, updated_by, created_time, updated_time`
 
 // conceptColumnsQ is the same list but every column is table-qualified (alias "c").
 // Use this in JOIN queries to avoid ambiguous column errors when the joined
 // table also has created_by / created_time columns.
-const conceptColumnsQ = `c.id, c.canonical_name, c.domain, c.description, c.tags, c.level, c.scope, c.created_by, c.updated_by, c.created_time, c.updated_time`
+const conceptColumnsQ = `c.id, c.canonical_name, c.domain, c.description, c.tags, c.level, c.scope, COALESCE(c.parent_concept_id, ''), c.created_by, c.updated_by, c.created_time, c.updated_time`
 
 func scanConcept(row interface{ Scan(...any) error }) (Concept, error) {
 	var c Concept
 	err := row.Scan(&c.ID, &c.CanonicalName, &c.Domain, &c.Description, &c.Tags,
-		&c.Level, &c.Scope, &c.CreatedBy, &c.UpdatedBy, &c.CreatedTime, &c.UpdatedTime)
+		&c.Level, &c.Scope, &c.ParentConceptID, &c.CreatedBy, &c.UpdatedBy, &c.CreatedTime, &c.UpdatedTime)
 	return c, err
 }
 
 const createConcept = `
-INSERT INTO concepts (id, canonical_name, domain, description, tags, level, scope, created_by, updated_by)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+INSERT INTO concepts (id, canonical_name, domain, description, tags, level, scope, parent_concept_id, created_by, updated_by)
+VALUES ($1, $2, $3, $4, $5, $6, $7, NULLIF($8, ''), $9, $10)
 RETURNING ` + conceptColumns
 
 func (q *Queries) CreateConcept(ctx context.Context, arg CreateConceptParams) (Concept, error) {
@@ -78,7 +81,8 @@ func (q *Queries) CreateConcept(ctx context.Context, arg CreateConceptParams) (C
 		scope = "universal"
 	}
 	return scanConcept(q.db.QueryRow(ctx, createConcept,
-		arg.ID, arg.CanonicalName, arg.Domain, arg.Description, tags, level, scope, arg.CreatedBy, arg.UpdatedBy))
+		arg.ID, arg.CanonicalName, arg.Domain, arg.Description, tags, level, scope,
+		arg.ParentConceptID, arg.CreatedBy, arg.UpdatedBy))
 }
 
 const listConcepts = `
@@ -136,7 +140,8 @@ func (q *Queries) GetConceptByID(ctx context.Context, id string) (Concept, error
 
 const updateConcept = `
 UPDATE concepts
-SET canonical_name = $2, domain = $3, description = $4, tags = $5, level = $6, scope = $7, updated_by = $8, updated_time = NOW()
+SET canonical_name = $2, domain = $3, description = $4, tags = $5, level = $6, scope = $7,
+    parent_concept_id = NULLIF($8, ''), updated_by = $9, updated_time = NOW()
 WHERE id = $1
 RETURNING ` + conceptColumns
 
@@ -154,7 +159,8 @@ func (q *Queries) UpdateConcept(ctx context.Context, arg UpdateConceptParams) (C
 		scope = "universal"
 	}
 	return scanConcept(q.db.QueryRow(ctx, updateConcept,
-		arg.ID, arg.CanonicalName, arg.Domain, arg.Description, tags, level, scope, arg.UpdatedBy))
+		arg.ID, arg.CanonicalName, arg.Domain, arg.Description, tags, level, scope,
+		arg.ParentConceptID, arg.UpdatedBy))
 }
 
 const deleteConcept = `DELETE FROM concepts WHERE id = $1`
@@ -166,17 +172,18 @@ func (q *Queries) DeleteConcept(ctx context.Context, id string) error {
 
 const initConceptsTable = `
 CREATE TABLE IF NOT EXISTS concepts (
-    id             VARCHAR(64) PRIMARY KEY,
-    canonical_name VARCHAR(200) NOT NULL,
-    domain         VARCHAR(100) NOT NULL DEFAULT '',
-    description    TEXT NOT NULL DEFAULT '',
-    tags           TEXT[] NOT NULL DEFAULT '{}',
-    level          VARCHAR(20) NOT NULL DEFAULT 'intermediate',
-    scope          VARCHAR(40) NOT NULL DEFAULT 'universal',
-    created_by     VARCHAR(64) NOT NULL DEFAULT '',
-    updated_by     VARCHAR(64) NOT NULL DEFAULT '',
-    created_time   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_time   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id               VARCHAR(64) PRIMARY KEY,
+    canonical_name   VARCHAR(200) NOT NULL,
+    domain           VARCHAR(100) NOT NULL DEFAULT '',
+    description      TEXT NOT NULL DEFAULT '',
+    tags             TEXT[] NOT NULL DEFAULT '{}',
+    level            VARCHAR(20) NOT NULL DEFAULT 'intermediate',
+    scope            VARCHAR(40) NOT NULL DEFAULT 'universal',
+    parent_concept_id VARCHAR(64) REFERENCES concepts(id) ON DELETE SET NULL,
+    created_by       VARCHAR(64) NOT NULL DEFAULT '',
+    updated_by       VARCHAR(64) NOT NULL DEFAULT '',
+    created_time     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 )
 `
 
@@ -321,6 +328,12 @@ func (q *Queries) InitTopicConceptsTable(ctx context.Context) error {
 
 // ─── Migrations ─────────────────────────────────────────────────────────────
 
+// MigrateConceptParentID adds the parent_concept_id column to an existing concepts table.
+func (q *Queries) MigrateConceptParentID(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, `ALTER TABLE concepts ADD COLUMN IF NOT EXISTS parent_concept_id VARCHAR(64) REFERENCES concepts(id) ON DELETE SET NULL`)
+	return err
+}
+
 // MigrateConceptLevelScope adds level and scope columns to an existing concepts table.
 func (q *Queries) MigrateConceptLevelScope(ctx context.Context) error {
 	stmts := []string{
@@ -333,6 +346,22 @@ func (q *Queries) MigrateConceptLevelScope(ctx context.Context) error {
 		}
 	}
 	return nil
+}
+
+const migrateConceptsUniqueConstraint = `
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'uq_concepts_name_domain'
+  ) THEN
+    ALTER TABLE concepts ADD CONSTRAINT uq_concepts_name_domain UNIQUE (canonical_name, domain);
+  END IF;
+END $$
+`
+
+// MigrateConceptsUniqueConstraint adds a unique constraint on (canonical_name, domain).
+func (q *Queries) MigrateConceptsUniqueConstraint(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, migrateConceptsUniqueConstraint)
+	return err
 }
 
 // ─── ConceptPrerequisite ─────────────────────────────────────────────────────

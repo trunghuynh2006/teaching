@@ -81,6 +81,13 @@ func main() {
 		log.Println("seeded demo users")
 		return
 	}
+	if len(os.Args) > 2 && os.Args[1] == "seed-concepts" {
+		domains := os.Args[2:]
+		if err := application.seedDomainConcepts(ctx, domains); err != nil {
+			log.Fatalf("failed to seed concepts: %v", err)
+		}
+		return
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handler.Health)

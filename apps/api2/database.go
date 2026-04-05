@@ -142,7 +142,13 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitConceptsDomainIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.MigrateConceptParentID(ctx); err != nil {
+		return err
+	}
 	if err := a.queries.MigrateConceptLevelScope(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.MigrateConceptsUniqueConstraint(ctx); err != nil {
 		return err
 	}
 	if err := a.queries.InitSourceConceptsTable(ctx); err != nil {
