@@ -83,18 +83,12 @@ SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
 	writeJSON(w, http.StatusOK, results)
 }
 
-// GetConceptsByDomain handles GET /concepts/by-domain?domain=...&limit=...
-func (h *Handler) GetConceptsByDomain(w http.ResponseWriter, r *http.Request) {
-	domain := strings.TrimSpace(r.URL.Query().Get("domain"))
-	if domain == "" {
-		writeJSON(w, http.StatusBadRequest, errorResponse{Detail: "domain is required"})
-		return
+// FetchConceptsByDomain queries (or returns cached) concepts for the given domain.
+// limit <= 0 uses the default of 50.
+func (h *Handler) FetchConceptsByDomain(domain string, limit int) ([]SPARQLResult, error) {
+	if limit <= 0 {
+		limit = 50
 	}
-	limit := r.URL.Query().Get("limit")
-	if limit == "" {
-		limit = "50"
-	}
-
 	sparql := fmt.Sprintf(`
 SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
   ?domain rdfs:label "%s"@en .
@@ -102,9 +96,18 @@ SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
   ?item rdfs:label ?itemLabel .
   FILTER(LANG(?itemLabel) = "en")
   OPTIONAL { ?item schema:description ?itemDescription . FILTER(LANG(?itemDescription) = "en") }
-} LIMIT %s`, escapeString(domain), limit)
+} LIMIT %d`, escapeString(domain), limit)
+	return h.runSPARQL(sparql)
+}
 
-	results, err := h.runSPARQL(sparql)
+// GetConceptsByDomain handles GET /concepts/by-domain?domain=...&limit=...
+func (h *Handler) GetConceptsByDomain(w http.ResponseWriter, r *http.Request) {
+	domain := strings.TrimSpace(r.URL.Query().Get("domain"))
+	if domain == "" {
+		writeJSON(w, http.StatusBadRequest, errorResponse{Detail: "domain is required"})
+		return
+	}
+	results, err := h.FetchConceptsByDomain(domain, 0)
 	if err != nil {
 		writeJSON(w, http.StatusBadGateway, errorResponse{Detail: err.Error()})
 		return

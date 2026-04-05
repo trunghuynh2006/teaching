@@ -11,7 +11,7 @@ PGUSER ?= postgres
 PGPASSWORD ?= postgres
 export PGPASSWORD
 
-.PHONY: help start-frontend start-backend start-ai start-wiki seed-users seed-data generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
+.PHONY: help start-frontend start-backend start-ai start-wiki cache-wiki-domain cache-wiki-domains seed-users seed-data generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
 
 help:
 	@echo "Available targets:"
@@ -19,6 +19,8 @@ help:
 	@echo "  make start-backend                  # Start Go backend dev server"
 	@echo "  make start-ai                       # Start Go AI service dev server"
 	@echo "  make start-wiki                     # Start Go wikiprovider service dev server"
+	@echo "  make cache-wiki-domain DOMAIN=physics  # Pre-cache one domain"
+	@echo "  make cache-wiki-domains             # Pre-cache all default domains"
 	@echo "  make seed-users                     # Seed demo users in PostgreSQL"
 	@echo "  make seed-data                      # Seed demo content (folders, sources, concepts, topics, …)"
 	@echo "  make generate-models                # Generate shared models from JSON schema"
@@ -42,6 +44,14 @@ start-ai:
 
 start-wiki:
 	cd $(WIKI_DIR) && go run .
+
+DOMAIN ?= physics
+cache-wiki-domain:
+	cd $(WIKI_DIR) && go run . cache by-domain "$(DOMAIN)"
+
+WIKI_DOMAINS ?= physics mathematics chemistry biology "computer science" history economics
+cache-wiki-domains:
+	cd $(WIKI_DIR) && go run . cache by-domain $(WIKI_DOMAINS)
 
 seed-users:
 	cd $(API_DIR) && go run . seed-users
