@@ -8,11 +8,36 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"wikiprovider/internal/cache"
 )
 
 const wikidataSPARQL = "https://query.wikidata.org/sparql"
 
 var httpClient = &http.Client{Timeout: 15 * time.Second}
+
+// SPARQLResult is one concept row returned by a SPARQL query.
+type SPARQLResult struct {
+	QID         string `json:"qid"`
+	Label       string `json:"label"`
+	Description string `json:"description,omitempty"`
+	ParentQID   string `json:"parent_qid,omitempty"`
+	ParentLabel string `json:"parent_label,omitempty"`
+}
+
+// Handler holds shared dependencies for all HTTP handlers.
+type Handler struct {
+	cache *cache.FileCache[[]SPARQLResult]
+}
+
+// New creates a Handler with a file cache rooted at cacheDir.
+func New(cacheDir string, cacheTTL time.Duration) (*Handler, error) {
+	c, err := cache.New[[]SPARQLResult](cacheDir, cacheTTL)
+	if err != nil {
+		return nil, err
+	}
+	return &Handler{cache: c}, nil
+}
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
@@ -24,9 +49,13 @@ type errorResponse struct {
 	Detail string `json:"detail"`
 }
 
+// Health handles GET /health
+func (h *Handler) Health(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
 // SearchConcepts handles GET /concepts/search?q=...&limit=...
-// Returns concepts matching the query from Wikidata.
-func SearchConcepts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) SearchConcepts(w http.ResponseWriter, r *http.Request) {
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
 	if q == "" {
 		writeJSON(w, http.StatusBadRequest, errorResponse{Detail: "q is required"})
@@ -46,7 +75,7 @@ SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
   OPTIONAL { ?item schema:description ?itemDescription . FILTER(LANG(?itemDescription) = "en") }
 } LIMIT %s`, escapeString(q), limit)
 
-	results, err := runSPARQL(sparql)
+	results, err := h.runSPARQL(sparql)
 	if err != nil {
 		writeJSON(w, http.StatusBadGateway, errorResponse{Detail: err.Error()})
 		return
@@ -55,8 +84,7 @@ SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
 }
 
 // GetConceptsByDomain handles GET /concepts/by-domain?domain=...&limit=...
-// Returns foundational concepts for a given domain using Wikidata subclass graph.
-func GetConceptsByDomain(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetConceptsByDomain(w http.ResponseWriter, r *http.Request) {
 	domain := strings.TrimSpace(r.URL.Query().Get("domain"))
 	if domain == "" {
 		writeJSON(w, http.StatusBadRequest, errorResponse{Detail: "domain is required"})
@@ -67,7 +95,6 @@ func GetConceptsByDomain(w http.ResponseWriter, r *http.Request) {
 		limit = "50"
 	}
 
-	// First resolve the domain label to a QID, then find subclass concepts
 	sparql := fmt.Sprintf(`
 SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
   ?domain rdfs:label "%s"@en .
@@ -77,7 +104,7 @@ SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
   OPTIONAL { ?item schema:description ?itemDescription . FILTER(LANG(?itemDescription) = "en") }
 } LIMIT %s`, escapeString(domain), limit)
 
-	results, err := runSPARQL(sparql)
+	results, err := h.runSPARQL(sparql)
 	if err != nil {
 		writeJSON(w, http.StatusBadGateway, errorResponse{Detail: err.Error()})
 		return
@@ -86,8 +113,7 @@ SELECT DISTINCT ?item ?itemLabel ?itemDescription WHERE {
 }
 
 // GetConceptByQID handles GET /concepts/{qid}
-// Returns a single Wikidata item with its label, description, and subclass-of links.
-func GetConceptByQID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetConceptByQID(w http.ResponseWriter, r *http.Request) {
 	qid := strings.TrimSpace(r.PathValue("qid"))
 	if qid == "" {
 		writeJSON(w, http.StatusBadRequest, errorResponse{Detail: "qid is required"})
@@ -102,7 +128,7 @@ SELECT ?item ?itemLabel ?itemDescription ?parent ?parentLabel WHERE {
   OPTIONAL { ?item wdt:P279 ?parent . ?parent rdfs:label ?parentLabel . FILTER(LANG(?parentLabel) = "en") }
 }`, escapeString(qid))
 
-	results, err := runSPARQL(sparql)
+	results, err := h.runSPARQL(sparql)
 	if err != nil {
 		writeJSON(w, http.StatusBadGateway, errorResponse{Detail: err.Error()})
 		return
@@ -110,22 +136,17 @@ SELECT ?item ?itemLabel ?itemDescription ?parent ?parentLabel WHERE {
 	writeJSON(w, http.StatusOK, results)
 }
 
-// Health handles GET /health
-func Health(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
-}
-
 // ─── SPARQL helpers ──────────────────────────────────────────────────────────
 
-type SPARQLResult struct {
-	QID         string `json:"qid"`
-	Label       string `json:"label"`
-	Description string `json:"description,omitempty"`
-	ParentQID   string `json:"parent_qid,omitempty"`
-	ParentLabel string `json:"parent_label,omitempty"`
-}
+func (h *Handler) runSPARQL(query string) ([]SPARQLResult, error) {
+	if cached, ok := h.cache.Get(query); ok {
+		return cached, nil
+	}
 
-func runSPARQL(query string) ([]SPARQLResult, error) {
+	if !outboundLimiter.Allow() {
+		return nil, fmt.Errorf("outbound rate limit reached — Wikidata requests are throttled to 2/s")
+	}
+
 	req, err := http.NewRequest(http.MethodGet, wikidataSPARQL, nil)
 	if err != nil {
 		return nil, err
@@ -180,6 +201,8 @@ func runSPARQL(query string) ([]SPARQLResult, error) {
 		}
 		out = append(out, r)
 	}
+
+	h.cache.Set(query, out)
 	return out, nil
 }
 

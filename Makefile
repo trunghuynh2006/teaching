@@ -3,6 +3,7 @@ SHELL := /bin/bash
 API_DIR := apps/api2
 AI_DIR := apps/ai
 WEB_DIR := apps/web
+WIKI_DIR := apps/wikiprovider
 PNPM_BIN ?= /home/trung/.nvm/versions/node/v22.16.0/bin/pnpm
 
 PGHOST ?= localhost
@@ -10,13 +11,14 @@ PGUSER ?= postgres
 PGPASSWORD ?= postgres
 export PGPASSWORD
 
-.PHONY: help start-frontend start-backend start-ai seed-users seed-data generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
+.PHONY: help start-frontend start-backend start-ai start-wiki seed-users seed-data generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
 
 help:
 	@echo "Available targets:"
 	@echo "  make start-frontend                 # Start Vite frontend dev server"
 	@echo "  make start-backend                  # Start Go backend dev server"
 	@echo "  make start-ai                       # Start Go AI service dev server"
+	@echo "  make start-wiki                     # Start Go wikiprovider service dev server"
 	@echo "  make seed-users                     # Seed demo users in PostgreSQL"
 	@echo "  make seed-data                      # Seed demo content (folders, sources, concepts, topics, …)"
 	@echo "  make generate-models                # Generate shared models from JSON schema"
@@ -37,6 +39,9 @@ start-backend:
 
 start-ai:
 	cd $(AI_DIR) && go run .
+
+start-wiki:
+	cd $(WIKI_DIR) && go run .
 
 seed-users:
 	cd $(API_DIR) && go run . seed-users
