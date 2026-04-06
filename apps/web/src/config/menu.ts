@@ -24,6 +24,7 @@ export const SIDEBAR_BY_SECTION: Record<string, MenuItem[]> = {
   '/teacher/content-studio': [
     { label: 'Skill Library',  path: '/teacher/content-studio/skills',         icon: '📚' },
     { label: 'Folders',        path: '/teacher/content-studio/folders',        icon: '📁' },
+    { label: 'Domains',        path: '/teacher/content-studio/domains',        icon: '🌐' },
     { label: 'Voice Recorder', path: '/teacher/content-studio/recorder',       icon: '🎙️' },
     { label: 'Audio Records',  path: '/teacher/content-studio/audio-records',  icon: '🔊' },
   ],

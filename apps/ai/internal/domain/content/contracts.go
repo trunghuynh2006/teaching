@@ -81,11 +81,33 @@ type SeedFoundationConceptsInput struct {
 
 // SeededConcept is one foundation concept returned by the AI.
 type SeededConcept struct {
-	CanonicalName string   `json:"canonical_name"`
-	Description   string   `json:"description"`
-	Level         string   `json:"level"`
-	Scope         string   `json:"scope"`
-	Tags          []string `json:"tags,omitempty"`
+	CanonicalName  string   `json:"canonical_name"`
+	Description    string   `json:"description"`
+	Example        string   `json:"example"`
+	Analogy        string   `json:"analogy"`
+	CommonMistakes string   `json:"common_mistakes"`
+	Level          string   `json:"level"`
+	Scope          string   `json:"scope"`
+	Tags           []string `json:"tags,omitempty"`
+}
+
+// DiscoverParentDomainsInput describes a request to discover parent domains of a given domain.
+type DiscoverParentDomainsInput struct {
+	Domain string
+}
+
+// MatchParentConceptsInput describes a request to link child concepts to parent domain concepts.
+type MatchParentConceptsInput struct {
+	Domain         string
+	ChildConcepts  []string
+	ParentDomains  []string
+	ParentConcepts []string // flat list: all concept names from all parent domains
+}
+
+// ConceptParentMatch links a child concept to a parent concept.
+type ConceptParentMatch struct {
+	ChildConcept  string `json:"child_concept"`
+	ParentConcept string `json:"parent_concept"`
 }
 
 // Generator produces AI-generated curriculum content.
@@ -102,6 +124,10 @@ type Generator interface {
 	GenerateMCQuestions(ctx context.Context, input GenerateMCQuestionsInput) ([]GeneratedMCQuestion, error)
 	// SeedFoundationConcepts returns a list of foundational concepts for the given domain.
 	SeedFoundationConcepts(ctx context.Context, input SeedFoundationConceptsInput) ([]SeededConcept, error)
+	// DiscoverParentDomains returns a list of parent (prerequisite) domain names for a given domain.
+	DiscoverParentDomains(ctx context.Context, input DiscoverParentDomainsInput) ([]string, error)
+	// MatchParentConcepts returns pairs linking child concepts to parent domain concepts.
+	MatchParentConcepts(ctx context.Context, input MatchParentConceptsInput) ([]ConceptParentMatch, error)
 }
 
 // Cache stores and retrieves serialised generation results keyed by a prompt hash.

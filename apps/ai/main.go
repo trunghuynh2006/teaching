@@ -77,6 +77,8 @@ func main() {
 	mux.HandleFunc("POST /content/concepts", handler.Auth(handler.ExtractConcepts))
 	mux.HandleFunc("POST /content/mc-questions", handler.Auth(handler.GenerateMCQuestions))
 	mux.HandleFunc("POST /content/seed-concepts", handler.Auth(handler.SeedConcepts))
+	mux.HandleFunc("POST /content/discover-parent-domains", handler.Auth(handler.DiscoverParentDomains))
+	mux.HandleFunc("POST /content/match-parent-concepts", handler.Auth(handler.MatchParentConcepts))
 
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("ai listening on %s", addr)

@@ -172,11 +172,14 @@ type SeedFoundationConceptsRequest struct {
 
 // SeededConcept is one concept returned by the seed endpoint.
 type SeededConcept struct {
-	CanonicalName string   `json:"canonical_name"`
-	Description   string   `json:"description"`
-	Level         string   `json:"level"`
-	Scope         string   `json:"scope"`
-	Tags          []string `json:"tags,omitempty"`
+	CanonicalName  string   `json:"canonical_name"`
+	Description    string   `json:"description"`
+	Example        string   `json:"example"`
+	Analogy        string   `json:"analogy"`
+	CommonMistakes string   `json:"common_mistakes"`
+	Level          string   `json:"level"`
+	Scope          string   `json:"scope"`
+	Tags           []string `json:"tags,omitempty"`
 }
 
 // SeedFoundationConcepts calls POST /content/seed-concepts on the ai service.
@@ -221,6 +224,109 @@ func (c *Client) SeedFoundationConcepts(ctx context.Context, bearerToken string,
 		return nil, fmt.Errorf("ai service: parse response: %w", err)
 	}
 	return result.Concepts, nil
+}
+
+// DiscoverParentDomainsRequest is the body for POST /content/discover-parent-domains.
+type DiscoverParentDomainsRequest struct {
+	Domain string `json:"domain"`
+}
+
+// DiscoverParentDomains calls POST /content/discover-parent-domains on the ai service.
+func (c *Client) DiscoverParentDomains(ctx context.Context, bearerToken string, req DiscoverParentDomainsRequest) ([]string, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	httpClient := c.HTTPClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 60 * time.Second}
+	}
+	url := strings.TrimSuffix(c.BaseURL, "/") + "/content/discover-parent-domains"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+bearerToken)
+	resp, err := httpClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("ai service unavailable: %w", err)
+	}
+	defer resp.Body.Close()
+	rawBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		var errBody struct{ Detail string `json:"detail"` }
+		if jsonErr := json.Unmarshal(rawBody, &errBody); jsonErr == nil && errBody.Detail != "" {
+			return nil, fmt.Errorf("ai service error: %s", errBody.Detail)
+		}
+		return nil, fmt.Errorf("ai service returned %d", resp.StatusCode)
+	}
+	var result struct {
+		ParentDomains []string `json:"parent_domains"`
+	}
+	if err := json.Unmarshal(rawBody, &result); err != nil {
+		return nil, fmt.Errorf("ai service: parse response: %w", err)
+	}
+	return result.ParentDomains, nil
+}
+
+// MatchParentConceptsRequest is the body for POST /content/match-parent-concepts.
+type MatchParentConceptsRequest struct {
+	Domain         string   `json:"domain"`
+	ChildConcepts  []string `json:"child_concepts"`
+	ParentDomains  []string `json:"parent_domains"`
+	ParentConcepts []string `json:"parent_concepts"`
+}
+
+// ConceptParentMatch links a child concept to a parent concept.
+type ConceptParentMatch struct {
+	ChildConcept  string `json:"child_concept"`
+	ParentConcept string `json:"parent_concept"`
+}
+
+// MatchParentConcepts calls POST /content/match-parent-concepts on the ai service.
+func (c *Client) MatchParentConcepts(ctx context.Context, bearerToken string, req MatchParentConceptsRequest) ([]ConceptParentMatch, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	httpClient := c.HTTPClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 60 * time.Second}
+	}
+	url := strings.TrimSuffix(c.BaseURL, "/") + "/content/match-parent-concepts"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+bearerToken)
+	resp, err := httpClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("ai service unavailable: %w", err)
+	}
+	defer resp.Body.Close()
+	rawBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		var errBody struct{ Detail string `json:"detail"` }
+		if jsonErr := json.Unmarshal(rawBody, &errBody); jsonErr == nil && errBody.Detail != "" {
+			return nil, fmt.Errorf("ai service error: %s", errBody.Detail)
+		}
+		return nil, fmt.Errorf("ai service returned %d", resp.StatusCode)
+	}
+	var result struct {
+		Matches []ConceptParentMatch `json:"matches"`
+	}
+	if err := json.Unmarshal(rawBody, &result); err != nil {
+		return nil, fmt.Errorf("ai service: parse response: %w", err)
+	}
+	return result.Matches, nil
 }
 
 // GenerateAnkiCards calls POST /content/anki-cards on the ai service.

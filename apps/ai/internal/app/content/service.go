@@ -302,6 +302,61 @@ func (s Service) SeedFoundationConcepts(ctx context.Context, input SeedFoundatio
 	return concepts, nil
 }
 
+// DiscoverParentDomainsInput is the application-layer input.
+type DiscoverParentDomainsInput struct {
+	Domain string
+}
+
+// DiscoverParentDomains returns parent domain names for a given domain.
+func (s Service) DiscoverParentDomains(ctx context.Context, input DiscoverParentDomainsInput) ([]string, error) {
+	if s.Generator == nil {
+		return nil, ErrGeneratorUnavailable
+	}
+	normalized := domaincontent.DiscoverParentDomainsInput{Domain: strings.TrimSpace(input.Domain)}
+	cacheKey := hashKey("discover-parent-domains", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var domains []string
+			if err := json.Unmarshal(raw, &domains); err == nil {
+				return domains, nil
+			}
+		}
+	}
+	domains, err := s.Generator.DiscoverParentDomains(ctx, normalized)
+	if err != nil {
+		return nil, err
+	}
+	if s.Cache != nil {
+		if raw, err := json.Marshal(domains); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return domains, nil
+}
+
+// MatchParentConceptsInput is the application-layer input.
+type MatchParentConceptsInput struct {
+	Domain         string
+	ChildConcepts  []string
+	ParentDomains  []string
+	ParentConcepts []string
+}
+
+// MatchParentConcepts returns concept-to-parent-concept pairs.
+func (s Service) MatchParentConcepts(ctx context.Context, input MatchParentConceptsInput) ([]domaincontent.ConceptParentMatch, error) {
+	if s.Generator == nil {
+		return nil, ErrGeneratorUnavailable
+	}
+	normalized := domaincontent.MatchParentConceptsInput{
+		Domain:         strings.TrimSpace(input.Domain),
+		ChildConcepts:  input.ChildConcepts,
+		ParentDomains:  input.ParentDomains,
+		ParentConcepts: input.ParentConcepts,
+	}
+	// No cache for this one — inputs are large and variable
+	return s.Generator.MatchParentConcepts(ctx, normalized)
+}
+
 func hashKey(prefix string, v any) string {
 	payload, err := json.Marshal(v)
 	if err != nil {

@@ -6,6 +6,9 @@ export interface ConceptItem {
   canonical_name: string
   domain?: string
   description?: string
+  example?: string
+  analogy?: string
+  common_mistakes?: string
   tags?: string[]
   level?: string
   scope?: string
@@ -113,6 +116,27 @@ export default function ConceptPanel({ concept, token, sourceId, topicId, onClos
 
         {concept.description && (
           <p className="concept-panel-desc">{concept.description}</p>
+        )}
+
+        {concept.example && (
+          <div className="concept-panel-block">
+            <span className="concept-panel-block-label">Example</span>
+            <p className="concept-panel-block-text">{concept.example}</p>
+          </div>
+        )}
+
+        {concept.analogy && (
+          <div className="concept-panel-block">
+            <span className="concept-panel-block-label">Analogy</span>
+            <p className="concept-panel-block-text">{concept.analogy}</p>
+          </div>
+        )}
+
+        {concept.common_mistakes && (
+          <div className="concept-panel-block concept-panel-block--warning">
+            <span className="concept-panel-block-label">Common Mistakes</span>
+            <p className="concept-panel-block-text">{concept.common_mistakes}</p>
+          </div>
         )}
 
         {concept.tags && concept.tags.length > 0 && (

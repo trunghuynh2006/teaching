@@ -216,6 +216,51 @@ func (c Client) SeedFoundationConcepts(ctx context.Context, input domaincontent.
 	return result.Concepts, nil
 }
 
+// DiscoverParentDomains calls the LLM to find parent domains for a given domain.
+func (c Client) DiscoverParentDomains(ctx context.Context, input domaincontent.DiscoverParentDomainsInput) ([]string, error) {
+	userPrompt, err := c.Prompts.RenderDiscoverParentDomains(prompts.DiscoverParentDomainsData{
+		Domain: input.Domain,
+	})
+	if err != nil {
+		return nil, err
+	}
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+	var result struct {
+		ParentDomains []string `json:"parent_domains"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse discover-parent-domains response: %w", err)
+	}
+	return result.ParentDomains, nil
+}
+
+// MatchParentConcepts calls the LLM to link child concepts to parent domain concepts.
+func (c Client) MatchParentConcepts(ctx context.Context, input domaincontent.MatchParentConceptsInput) ([]domaincontent.ConceptParentMatch, error) {
+	userPrompt, err := c.Prompts.RenderMatchParentConcepts(prompts.MatchParentConceptsData{
+		Domain:         input.Domain,
+		ChildConcepts:  input.ChildConcepts,
+		ParentDomains:  input.ParentDomains,
+		ParentConcepts: input.ParentConcepts,
+	})
+	if err != nil {
+		return nil, err
+	}
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+	var result struct {
+		Matches []domaincontent.ConceptParentMatch `json:"matches"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse match-parent-concepts response: %w", err)
+	}
+	return result.Matches, nil
+}
+
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	return c.LLM.Complete(ctx, llm.Request{
 		SystemPrompt: c.Prompts.SystemPrompt(),

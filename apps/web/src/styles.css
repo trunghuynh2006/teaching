@@ -2466,3 +2466,166 @@ button.danger {
 .anki-review-back {
   color: #4a5a68;
 }
+
+/* ── Domain Manager ─────────────────────────────────────────────────────────── */
+
+.domain-manager {
+  padding: 24px;
+  max-width: 900px;
+}
+
+.domain-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.domain-manager-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.domain-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.domain-tree-node {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.domain-tree-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #dde3ea;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.domain-tree-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.domain-tree-indent-icon {
+  color: #a0aab4;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.domain-tree-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.domain-tree-desc {
+  font-size: 0.8rem;
+  color: #6b7a8d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.domain-tree-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.domain-action-msg {
+  font-size: 0.8rem;
+  color: #4a7a5c;
+  background: #edf7f1;
+  border-radius: 4px;
+  padding: 4px 12px;
+  margin-left: 8px;
+}
+
+.domain-concepts-panel {
+  margin: 0 0 4px 8px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #dde3ea;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.domain-concepts-loading,
+.domain-concepts-empty {
+  font-size: 0.82rem;
+  color: #8a97a3;
+}
+
+.domain-concepts-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.domain-concept-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #dde3ea;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+}
+
+.domain-concept-name {
+  color: var(--text);
+}
+
+.domain-concept-level {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.concept-panel-block {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: #f4f7fa;
+  border-left: 3px solid #b0bec5;
+  border-radius: 0 6px 6px 0;
+}
+
+.concept-panel-block-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #78909c;
+  margin-bottom: 2px;
+}
+
+.concept-panel-block-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #37474f;
+  line-height: 1.4;
+}
+
+.concept-panel-block--warning {
+  border-left-color: #e67e22;
+  background: #fef9f0;
+}
+
+.concept-panel-block--warning .concept-panel-block-label {
+  color: #b7681e;
+}

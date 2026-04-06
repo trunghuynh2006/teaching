@@ -25,6 +25,9 @@ type conceptResponse struct {
 	CanonicalName   string            `json:"canonical_name"`
 	Domain          string            `json:"domain,omitempty"`
 	Description     string            `json:"description,omitempty"`
+	Example         string            `json:"example,omitempty"`
+	Analogy         string            `json:"analogy,omitempty"`
+	CommonMistakes  string            `json:"common_mistakes,omitempty"`
 	Tags            []string          `json:"tags,omitempty"`
 	Level           string            `json:"level"`
 	Scope           string            `json:"scope"`
@@ -42,6 +45,9 @@ func toConceptResponse(c store.Concept) conceptResponse {
 		CanonicalName:   c.CanonicalName,
 		Domain:          c.Domain,
 		Description:     c.Description,
+		Example:         c.Example,
+		Analogy:         c.Analogy,
+		CommonMistakes:  c.CommonMistakes,
 		Tags:            c.Tags,
 		Level:           c.Level,
 		Scope:           c.Scope,
@@ -124,6 +130,9 @@ func (h *Handler) CreateConcept(w http.ResponseWriter, r *http.Request, currentU
 		CanonicalName:   input.CanonicalName,
 		Domain:          input.Domain,
 		Description:     input.Description,
+		Example:         input.Example,
+		Analogy:         input.Analogy,
+		CommonMistakes:  input.CommonMistakes,
 		Tags:            input.Tags,
 		Level:           input.Level,
 		Scope:           input.Scope,
@@ -154,6 +163,9 @@ func (h *Handler) UpdateConcept(w http.ResponseWriter, r *http.Request, currentU
 		CanonicalName:   input.CanonicalName,
 		Domain:          input.Domain,
 		Description:     input.Description,
+		Example:         input.Example,
+		Analogy:         input.Analogy,
+		CommonMistakes:  input.CommonMistakes,
 		Tags:            input.Tags,
 		Level:           input.Level,
 		Scope:           input.Scope,
@@ -275,11 +287,14 @@ func (h *Handler) SeedDomainConcepts(w http.ResponseWriter, r *http.Request, cur
 			continue
 		}
 		row, err := h.Queries.CreateConcept(r.Context(), store.CreateConceptParams{
-			ID:            newConceptID(),
-			CanonicalName: gc.CanonicalName,
-			Domain:        domain,
-			Description:   gc.Description,
-			Tags:          gc.Tags,
+			ID:             newConceptID(),
+			CanonicalName:  gc.CanonicalName,
+			Domain:         domain,
+			Description:    gc.Description,
+			Example:        gc.Example,
+			Analogy:        gc.Analogy,
+			CommonMistakes: gc.CommonMistakes,
+			Tags:           gc.Tags,
 			Level:         gc.Level,
 			Scope:         gc.Scope,
 			CreatedBy:     currentUser.Username,
@@ -408,6 +423,9 @@ type conceptInput struct {
 	CanonicalName   string
 	Domain          string
 	Description     string
+	Example         string
+	Analogy         string
+	CommonMistakes  string
 	Tags            []string
 	Level           string
 	Scope           string
@@ -419,6 +437,9 @@ func decodeConceptInput(r *http.Request) (conceptInput, error) {
 		CanonicalName   string   `json:"canonical_name"`
 		Domain          string   `json:"domain"`
 		Description     string   `json:"description"`
+		Example         string   `json:"example"`
+		Analogy         string   `json:"analogy"`
+		CommonMistakes  string   `json:"common_mistakes"`
 		Tags            []string `json:"tags"`
 		Level           string   `json:"level"`
 		Scope           string   `json:"scope"`
@@ -439,6 +460,9 @@ func decodeConceptInput(r *http.Request) (conceptInput, error) {
 		CanonicalName:   name,
 		Domain:          strings.TrimSpace(payload.Domain),
 		Description:     strings.TrimSpace(payload.Description),
+		Example:         strings.TrimSpace(payload.Example),
+		Analogy:         strings.TrimSpace(payload.Analogy),
+		CommonMistakes:  strings.TrimSpace(payload.CommonMistakes),
 		Tags:            tags,
 		Level:           strings.TrimSpace(payload.Level),
 		Scope:           strings.TrimSpace(payload.Scope),

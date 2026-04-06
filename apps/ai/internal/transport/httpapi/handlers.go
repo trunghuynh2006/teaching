@@ -274,6 +274,76 @@ func (h *Handler) SeedConcepts(w http.ResponseWriter, r *http.Request, claims se
 	writeJSON(w, http.StatusOK, map[string]any{"concepts": concepts})
 }
 
+// DiscoverParentDomainsRequest is the body for POST /content/discover-parent-domains.
+type DiscoverParentDomainsRequest struct {
+	Domain string `json:"domain"`
+}
+
+// DiscoverParentDomains handles POST /content/discover-parent-domains.
+func (h *Handler) DiscoverParentDomains(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+	var payload DiscoverParentDomainsRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil || strings.TrimSpace(payload.Domain) == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "domain is required"})
+		return
+	}
+	domains, err := h.ContentService.DiscoverParentDomains(r.Context(), appcontent.DiscoverParentDomainsInput{
+		Domain: strings.TrimSpace(payload.Domain),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
+			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
+		default:
+			log.Printf("discover parent domains error: %v", err)
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		}
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"parent_domains": domains})
+}
+
+// MatchParentConceptsRequest is the body for POST /content/match-parent-concepts.
+type MatchParentConceptsRequest struct {
+	Domain         string   `json:"domain"`
+	ChildConcepts  []string `json:"child_concepts"`
+	ParentDomains  []string `json:"parent_domains"`
+	ParentConcepts []string `json:"parent_concepts"`
+}
+
+// MatchParentConcepts handles POST /content/match-parent-concepts.
+func (h *Handler) MatchParentConcepts(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+	var payload MatchParentConceptsRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
+		return
+	}
+	matches, err := h.ContentService.MatchParentConcepts(r.Context(), appcontent.MatchParentConceptsInput{
+		Domain:         strings.TrimSpace(payload.Domain),
+		ChildConcepts:  payload.ChildConcepts,
+		ParentDomains:  payload.ParentDomains,
+		ParentConcepts: payload.ParentConcepts,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
+			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
+		default:
+			log.Printf("match parent concepts error: %v", err)
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		}
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"matches": matches})
+}
+
 func isContentEditor(role string) bool {
 	return role == "teacher" || role == "admin"
 }

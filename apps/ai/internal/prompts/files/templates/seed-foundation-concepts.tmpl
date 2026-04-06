@@ -7,7 +7,10 @@ Rules:
 - Assign each concept a scope: "universal" (applies across all languages/frameworks), "language-specific", or "framework-specific"
 - Foundation concepts are the most basic building blocks that everything else depends on
 - Include a clear, concise description (1-2 sentences)
+- Include a short concrete example showing the concept in action (1 sentence)
+- Include a simple analogy that relates the concept to everyday life (1 sentence)
+- Include 1-2 common mistakes learners make with this concept (1-2 sentences)
 - Include relevant tags
 
 Respond with a JSON object in exactly this format:
-{"concepts": [{"canonical_name": "Variables", "description": "Named storage locations that hold values which can change during program execution.", "level": "foundation", "scope": "universal", "tags": ["basics", "programming"]}, {"canonical_name": "Functions", "description": "Reusable blocks of code that perform a specific task and can accept inputs and return outputs.", "level": "foundation", "scope": "universal", "tags": ["basics", "abstraction"]}]}
+{"concepts": [{"canonical_name": "Variables", "description": "Named storage locations that hold values which can change during program execution.", "example": "In Python: age = 25 stores the number 25 under the name 'age'.", "analogy": "A variable is like a labeled box — you can put something inside, check what's there, or swap it for something else.", "common_mistakes": "Confusing variable declaration with comparison (using = instead of ==), and forgetting that variable names are case-sensitive.", "level": "foundation", "scope": "universal", "tags": ["basics", "programming"]}, {"canonical_name": "Functions", "description": "Reusable blocks of code that perform a specific task and can accept inputs and return outputs.", "example": "def greet(name): return 'Hello ' + name — call it with greet('Alice') to get 'Hello Alice'.", "analogy": "A function is like a recipe: give it ingredients (inputs) and it produces a dish (output) the same way every time.", "common_mistakes": "Forgetting to return a value and assuming the function output is printed automatically, or calling a function without parentheses.", "level": "foundation", "scope": "universal", "tags": ["basics", "abstraction"]}]}

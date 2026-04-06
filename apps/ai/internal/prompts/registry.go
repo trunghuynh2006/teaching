@@ -32,6 +32,8 @@ type Registry struct {
 	extractConceptsTmpl       *template.Template
 	generateMCQuestionsTmpl        *template.Template
 	seedFoundationConceptsTmpl     *template.Template
+	discoverParentDomainsTmpl      *template.Template
+	matchParentConceptsTmpl        *template.Template
 }
 
 // New loads all prompt files from the embedded filesystem and compiles templates.
@@ -112,6 +114,14 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	discoverParentDomainsTmpl, err := parse("discover-parent-domains", "files/templates/discover-parent-domains.tmpl")
+	if err != nil {
+		return nil, err
+	}
+	matchParentConceptsTmpl, err := parse("match-parent-concepts", "files/templates/match-parent-concepts.tmpl")
+	if err != nil {
+		return nil, err
+	}
 
 	return &Registry{
 		systemPrompt:              systemPrompt,
@@ -128,7 +138,40 @@ func New() (*Registry, error) {
 		extractConceptsTmpl:       extractConceptsTmpl,
 		generateMCQuestionsTmpl:        generateMCQuestionsTmpl,
 		seedFoundationConceptsTmpl:     seedFoundationConceptsTmpl,
+		discoverParentDomainsTmpl:      discoverParentDomainsTmpl,
+		matchParentConceptsTmpl:        matchParentConceptsTmpl,
 	}, nil
+}
+
+// DiscoverParentDomainsData is the input data for the discover-parent-domains template.
+type DiscoverParentDomainsData struct {
+	Domain string
+}
+
+// RenderDiscoverParentDomains renders the user prompt for discovering parent domains.
+func (r *Registry) RenderDiscoverParentDomains(data DiscoverParentDomainsData) (string, error) {
+	var buf bytes.Buffer
+	if err := r.discoverParentDomainsTmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("render discover-parent-domains: %w", err)
+	}
+	return buf.String(), nil
+}
+
+// MatchParentConceptsData is the input data for the match-parent-concepts template.
+type MatchParentConceptsData struct {
+	Domain         string
+	ChildConcepts  []string
+	ParentDomains  []string
+	ParentConcepts []string
+}
+
+// RenderMatchParentConcepts renders the user prompt for matching parent concepts.
+func (r *Registry) RenderMatchParentConcepts(data MatchParentConceptsData) (string, error) {
+	var buf bytes.Buffer
+	if err := r.matchParentConceptsTmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("render match-parent-concepts: %w", err)
+	}
+	return buf.String(), nil
 }
 
 // SeedFoundationConceptsData is the input data for the seed-foundation-concepts template.

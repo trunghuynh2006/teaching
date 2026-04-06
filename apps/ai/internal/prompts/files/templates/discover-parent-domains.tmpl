@@ -1,0 +1,12 @@
+You are a curriculum expert. Given a domain, identify its parent (prerequisite) domains — the broader fields that a learner should know before studying this domain in depth.
+
+Domain: {{.Domain}}
+
+Return ONLY a JSON object like this example (no markdown, no commentary):
+{"parent_domains": ["mathematics", "statistics", "computer science"]}
+
+Rules:
+- List 2–6 parent domains, ordered from most to least fundamental.
+- Use short, well-known domain names (e.g. "mathematics", "physics", "software engineering").
+- Only include domains that are genuinely prerequisite, not just related fields.
+- Do NOT include the input domain itself.

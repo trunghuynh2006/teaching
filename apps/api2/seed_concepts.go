@@ -55,11 +55,14 @@ func (a *app) seedDomainConcepts(ctx context.Context, domains []string) error {
 				continue
 			}
 			_, err := a.queries.CreateConcept(ctx, store.CreateConceptParams{
-				ID:            httpapi.NewConceptIDExported(),
-				CanonicalName: gc.CanonicalName,
-				Domain:        domain,
-				Description:   gc.Description,
-				Tags:          gc.Tags,
+				ID:             httpapi.NewConceptIDExported(),
+				CanonicalName:  gc.CanonicalName,
+				Domain:         domain,
+				Description:    gc.Description,
+				Example:        gc.Example,
+				Analogy:        gc.Analogy,
+				CommonMistakes: gc.CommonMistakes,
+				Tags:           gc.Tags,
 				Level:         gc.Level,
 				Scope:         gc.Scope,
 				CreatedBy:     "seed",

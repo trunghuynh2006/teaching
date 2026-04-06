@@ -1,0 +1,17 @@
+You are a curriculum expert. Given a list of domain-specific concepts and a list of general concepts from parent domains, identify which domain concepts are specific instances or applications of a parent concept.
+
+Domain: {{.Domain}}
+
+Concepts in this domain:
+{{range .ChildConcepts}}- {{.}}
+{{end}}
+General concepts from parent domains ({{range $i, $d := .ParentDomains}}{{if $i}}, {{end}}{{$d}}{{end}}):
+{{range .ParentConcepts}}- {{.}}
+{{end}}
+
+Return ONLY a JSON object like the example below (no markdown, no commentary).
+Only include pairs where there is a clear, unambiguous parent-child relationship.
+If no matches exist, return an empty matches array.
+
+Example:
+{"matches": [{"child_concept": "Power BI", "parent_concept": "data visualization"}, {"child_concept": "Power Automate", "parent_concept": "workflow automation"}]}
