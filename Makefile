@@ -11,7 +11,7 @@ PGUSER ?= postgres
 PGPASSWORD ?= postgres
 export PGPASSWORD
 
-.PHONY: help start-frontend start-backend start-ai start-wiki cache-wiki-domain cache-wiki-domains seed-users seed-data seed-concepts seed-concept-domain generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
+.PHONY: help start-frontend start-backend start-ai start-wiki cache-wiki-domain cache-wiki-domains seed-users seed-data seed-java seed-concepts seed-concept-domain generate-models generate-sqlc generate-sqlc-ai drop-db create-db reset-db drop-db-ai create-db-ai reset-db-ai
 
 help:
 	@echo "Available targets:"
@@ -23,6 +23,7 @@ help:
 	@echo "  make cache-wiki-domains             # Pre-cache all default domains"
 	@echo "  make seed-users                     # Seed demo users in PostgreSQL"
 	@echo "  make seed-data                      # Seed demo content (folders, sources, concepts, topics, …)"
+	@echo "  make seed-java                      # Seed Java domain tree + concepts (static, no AI)"
 	@echo "  make seed-concept-domain CONCEPT_DOMAIN='microsoft power platform'  # Seed one domain"
 	@echo "  make seed-concepts                  # Seed all default concept domains"
 	@echo "  make generate-models                # Generate shared models from JSON schema"
@@ -60,6 +61,9 @@ seed-users:
 
 seed-data:
 	psql -h $(PGHOST) -U $(PGUSER) -d study_platform_api -f scripts/seed_data.sql
+
+seed-java:
+	psql -h $(PGHOST) -U $(PGUSER) -d study_platform_api -f scripts/seed_java_domain.sql
 
 CONCEPT_DOMAIN ?= physics
 seed-concept-domain:

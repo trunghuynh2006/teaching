@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AudioRecordList from './AudioRecordList'
 import AudioRecorder from './AudioRecorder'
+import ConceptManager from './ConceptManager'
 import DomainManager from './DomainManager'
 import FolderManager from './FolderManager'
 import TeacherSkillManager from './TeacherSkillManager'
@@ -20,6 +21,7 @@ export default function TeacherContentStudio({ token, onUnauthorized }: TeacherC
       <Route path="audio-records" element={<AudioRecordList token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="folders" element={<FolderManager token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="domains" element={<DomainManager token={token} onUnauthorized={onUnauthorized} />} />
+      <Route path="concepts" element={<ConceptManager token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="*" element={<Navigate to="skills" replace />} />
     </Routes>
   )

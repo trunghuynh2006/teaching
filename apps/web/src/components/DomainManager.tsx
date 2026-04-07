@@ -109,15 +109,19 @@ export default function DomainManager({ token, onUnauthorized }: DomainManagerPr
       if (node.parents.length === 0) {
         roots.push(node)
       } else {
-        let attached = false
-        for (const pName of node.parents) {
-          const parent = byName.get(pName)
-          if (parent) {
-            parent.childNodes.push(node)
-            attached = true
-          }
+        // When a node has multiple parents, only attach it to the most specific one —
+        // the parent that is itself a child of another parent in the list.
+        // This prevents a node appearing multiple times in the tree.
+        const validParents = node.parents.map(n => byName.get(n)).filter(Boolean) as DomainTreeNode[]
+        const bestParent = validParents.find(p =>
+          p.parents.some(grandparent => node.parents.includes(grandparent))
+        ) ?? validParents[0]
+
+        if (bestParent) {
+          bestParent.childNodes.push(node)
+        } else {
+          roots.push(node)
         }
-        if (!attached) roots.push(node)
       }
     }
     roots.sort((a, b) => a.name.localeCompare(b.name))
@@ -253,28 +257,28 @@ export default function DomainManager({ token, onUnauthorized }: DomainManagerPr
             >
               {conceptsOpen ? 'Hide Concepts' : `Concepts${conceptCount != null ? ` (${conceptCount})` : ''}`}
             </button>
-            <button
+            {/* <button
               className="btn-sm btn-secondary"
               onClick={() => openEdit(node)}
               disabled={busy}
-            >Edit</button>
-            <button
+            >Edit</button> */}
+            {/* <button
               className="btn-sm btn-secondary"
               onClick={() => discoverParents(node)}
               disabled={busy}
               title="Ask AI to suggest parent domains"
-            >{discovering[node.id] ? '…' : 'Discover Parents'}</button>
+            >{discovering[node.id] ? '…' : 'Discover Parents'}</button> */}
             <button
               className="btn-sm btn-primary"
               onClick={() => generateConcepts(node)}
               disabled={busy}
               title="Seed foundation concepts for this domain"
             >{generating[node.id] ? '…' : 'Generate Concepts'}</button>
-            <button
+            {/* <button
               className="btn-sm btn-danger"
               onClick={() => deleteDomain(node)}
               disabled={busy}
-            >Delete</button>
+            >Delete</button> */}
           </div>
         </div>
         {actionMsg[node.id] && (

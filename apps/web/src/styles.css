@@ -2629,3 +2629,126 @@ button.danger {
 .concept-panel-block--warning .concept-panel-block-label {
   color: #b7681e;
 }
+
+/* ── Concept Manager ─────────────────────────────────────────────────────────── */
+
+.concept-manager {
+  padding: 24px;
+  max-width: 900px;
+}
+
+.concept-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.concept-manager-header h2 { margin: 0; font-size: 1.4rem; }
+
+.concept-manager-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.concept-filter-search {
+  flex: 1;
+  min-width: 180px;
+  font-size: 0.88rem;
+  padding: 6px 10px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+}
+
+.concept-filter-select {
+  font-size: 0.88rem;
+  padding: 6px 10px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.concept-manager-count {
+  font-size: 0.8rem;
+  color: #8a97a3;
+  white-space: nowrap;
+}
+
+.concept-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.concept-manager-row {
+  background: #fff;
+  border: 1px solid #dde3ea;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.concept-manager-row--open {
+  border-color: #b0c4d8;
+}
+
+.concept-manager-row-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.concept-manager-row-main:hover { background: #f7fafc; }
+
+.concept-manager-row-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.concept-manager-chevron {
+  font-size: 0.75rem;
+  color: #8a97a3;
+  flex-shrink: 0;
+}
+
+.concept-manager-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.concept-manager-domain {
+  font-size: 0.75rem;
+  color: #6b7a8d;
+  background: #eef2f6;
+  border-radius: 10px;
+  padding: 1px 8px;
+}
+
+.concept-manager-row-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.concept-manager-detail {
+  padding: 0 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.concept-form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.concept-form-row .modal-field { flex: 1; }
