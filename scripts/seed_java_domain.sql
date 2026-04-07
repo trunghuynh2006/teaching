@@ -41,7 +41,8 @@ ON CONFLICT DO NOTHING;
 
 -- ── 3. Concepts (pass 1: insert all without parent links) ────────────────────
 
-INSERT INTO concepts (id, canonical_name, domain, description, example, analogy, common_mistakes, tags, level, scope, created_by, updated_by) VALUES
+INSERT INTO concepts (id, canonical_name, domain, description, example, 
+analogy, common_mistakes, tags, level, scope, created_by, updated_by) VALUES
 
 -- ── Mathematics ──────────────────────────────────────────────────────────────
   ('con_math_var',
