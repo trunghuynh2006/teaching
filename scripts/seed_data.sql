@@ -133,7 +133,7 @@ VALUES
      'teacher', 'teacher_john', false,
      'Microsoft Certified: Power Platform Developer Associate',
      'Complete study material for the PL-400 exam covering Dataverse, Power Apps, Power Automate, plugins, PCF, integrations, ALM, and governance.',
-     'software', 'purple', 'cloud',
+     'power platform', 'purple', 'cloud',
      'teacher_john', 'teacher_john')
 ON CONFLICT (id) DO NOTHING;
 
@@ -153,7 +153,7 @@ VALUES
 
 -- ── Group 1: Dataverse Fundamentals ──────────────────────────────────────────
 ('concept_pp_dataverse01', 'Microsoft Dataverse',
- 'software',
+ 'power platform',
  'Cloud-based data storage platform used by Power Platform apps to securely store and manage business data.',
  'A sales app stores Account, Contact, and Opportunity records in Dataverse tables, with row-level access controlled by security roles.',
  'Dataverse is like a managed database service built into Power Platform — similar to SQL Server but with built-in security, API, and auditing.',
@@ -161,7 +161,7 @@ VALUES
  ARRAY['dataverse','power-platform','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_table01', 'Dataverse Table',
- 'software',
+ 'power platform',
  'A structured container of rows and columns in Dataverse, equivalent to a database table, formerly called an Entity.',
  'The built-in Account table stores company data; a custom Work Order table stores field service requests.',
  'A Dataverse table is like a spreadsheet worksheet — rows are records and columns are fields — but with enforced data types and relationships.',
@@ -169,7 +169,7 @@ VALUES
  ARRAY['dataverse','table','schema','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_columntype01', 'Column Data Types',
- 'software',
+ 'power platform',
  'The set of available column types in Dataverse: Text, Number, Date/Time, Choice, Lookup, Currency, File, and Image.',
  'A Customer Name column uses Text; a Revenue column uses Currency; a Status column uses Choice; a Manager column uses Lookup.',
  'Choosing a column type is like choosing the right container — you would not store water in a paper bag or screws in a liquid bottle.',
@@ -177,7 +177,7 @@ VALUES
  ARRAY['dataverse','column','schema','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_onetomany01', 'One-to-Many Relationship',
- 'software',
+ 'power platform',
  'A Dataverse table relationship where one row in a parent table relates to multiple rows in a child table via a Lookup column.',
  'One Account can have many Contacts; the Contact table has a Lookup column pointing back to the parent Account.',
  'A one-to-many relationship is like a parent with children — one parent can have many children, but each child has one parent.',
@@ -185,7 +185,7 @@ VALUES
  ARRAY['dataverse','relationship','schema','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_manytomany01', 'Many-to-Many Relationship',
- 'software',
+ 'power platform',
  'A Dataverse relationship where rows in two tables can each be associated with multiple rows in the other, backed by an intersect table.',
  'A Contact can be associated with many Events, and an Event can have many Contacts, backed by a contact_event intersect table.',
  'Like students and courses — one student takes many courses, and one course has many students, tracked via an enrollment record.',
@@ -193,7 +193,7 @@ VALUES
  ARRAY['dataverse','relationship','schema','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_solution01', 'Solution',
- 'software',
+ 'power platform',
  'A container for Power Platform customizations used to package and transport components (apps, flows, tables) across environments.',
  'A Field Service solution contains the WorkOrder table, a Canvas App, two Cloud Flows, and a security role, all packaged together for deployment.',
  'A solution is like a ZIP file or installer package — it groups all the customizations together so they can be moved as one unit.',
@@ -201,7 +201,7 @@ VALUES
  ARRAY['alm','solution','power-platform','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_publisher01', 'Solution Publisher',
- 'software',
+ 'power platform',
  'Defines the customization prefix (e.g. "contoso_") applied to all solution components; identifies the vendor of a solution.',
  'Publisher "Contoso" with prefix "con" means all custom tables and columns get names like con_WorkOrder, con_Priority.',
  'A publisher prefix is like a namespace in code — it prevents naming collisions between solutions from different vendors.',
@@ -209,7 +209,7 @@ VALUES
  ARRAY['alm','solution','prefix','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_managed01', 'Managed vs Unmanaged Solution',
- 'software',
+ 'power platform',
  'Managed solutions are locked, distributable packages; unmanaged solutions allow direct customization and are used during development.',
  'Developers work in an unmanaged solution in Dev; the pipeline exports a managed solution and imports it into UAT and Production.',
  'Unmanaged is like source code you can edit; managed is like a compiled binary you can install but not modify directly.',
@@ -217,7 +217,7 @@ VALUES
  ARRAY['alm','solution','deployment','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_securityrole01', 'Security Role',
- 'software',
+ 'power platform',
  'A set of privileges that define what operations (Create, Read, Update, Delete) a user can perform on Dataverse tables.',
  'A "Sales Representative" security role grants Read/Create/Update on Opportunity at user level and Read on Account at business unit level.',
  'A security role is like a job access badge — it defines which doors (tables and operations) the badge holder can open.',
@@ -225,7 +225,7 @@ VALUES
  ARRAY['security','dataverse','access-control','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_businessunit01', 'Business Unit',
- 'software',
+ 'power platform',
  'A hierarchical organizational unit in Dataverse used to group users and control data access scope through security roles.',
  'A global company creates Business Units for each region; a user in the EMEA BU can only see records owned by other EMEA users.',
  'Business Units are like departments in an org chart — they define which team a user belongs to and what data that team can access.',
@@ -234,7 +234,7 @@ VALUES
 
 -- ── Group 2: Dataverse Advanced Features ─────────────────────────────────────
 ('concept_pp_calculated01', 'Calculated Column',
- 'software',
+ 'power platform',
  'A Dataverse column whose value is automatically computed from a formula referencing other columns in the same row.',
  'A Full Name column calculated as FirstName + " " + LastName; a Days Open column calculated as TODAY() minus CreatedOn.',
  'Like a formula cell in Excel — you define the formula once and it always shows the computed result based on sibling cells.',
@@ -242,7 +242,7 @@ VALUES
  ARRAY['dataverse','column','formula','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_rollup01', 'Rollup Column',
- 'software',
+ 'power platform',
  'A Dataverse column that aggregates values (sum, count, min, max, avg) from related child rows on a scheduled basis.',
  'Total Revenue on an Account row rolls up the sum of all closed Opportunity amounts related to that account, recalculated every 12 hours.',
  'Like a subtotal row at the bottom of a spreadsheet that automatically sums the child rows above it.',
@@ -250,7 +250,7 @@ VALUES
  ARRAY['dataverse','column','aggregation','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_altkey01', 'Alternate Key',
- 'software',
+ 'power platform',
  'A unique key defined on one or more columns that can identify a Dataverse row without using the primary GUID, used for upsert operations.',
  'An Order table has an alternate key on OrderNumber, enabling upsert calls like PATCH /orders(OrderNumber=''ORD-001'').',
  'An alternate key is like using an employee badge number instead of an internal employee ID to look someone up — unique and meaningful to the caller.',
@@ -258,7 +258,7 @@ VALUES
  ARRAY['dataverse','schema','upsert','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_elastictable01', 'Elastic Table',
- 'software',
+ 'power platform',
  'A Dataverse table type built on Azure Cosmos DB, designed for high-volume, high-velocity scenarios with flexible schemas.',
  'IoT sensor readings and telemetry events stored in an elastic table can handle millions of inserts per day with flexible JSON schemas.',
  'An elastic table is like a NoSQL document store plugged into Dataverse — great for high-volume, schema-variable data, unlike relational standard tables.',
@@ -266,7 +266,7 @@ VALUES
  ARRAY['dataverse','table','nosql','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_auditlog01', 'Audit Log',
- 'software',
+ 'power platform',
  'Dataverse feature that records who created, modified, or deleted records and when, for compliance and troubleshooting.',
  'Enabling audit on the Contact table records every field change with the old and new value, who changed it, and when.',
  'An audit log is like CCTV footage for your data — you can replay exactly who changed what and when.',
@@ -274,7 +274,7 @@ VALUES
  ARRAY['dataverse','audit','governance','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_dvsearch01', 'Dataverse Search',
- 'software',
+ 'power platform',
  'A full-text, relevance-based search service across multiple Dataverse tables, powered by Azure Cognitive Search.',
  'Searching "Contoso" across Account, Contact, and Opportunity tables returns ranked results based on relevance across all configured tables.',
  'Dataverse Search is like a search engine for your Dataverse data — it finds relevant records across multiple tables, not just one at a time.',
@@ -282,7 +282,7 @@ VALUES
  ARRAY['dataverse','search','full-text','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_virtualcol01', 'Virtual Column',
- 'software',
+ 'power platform',
  'A Dataverse column that retrieves its value from an external data source at query time without storing data in Dataverse.',
  'A virtual Currency column on a Quote table retrieves the live exchange rate from an external finance API each time the record is opened.',
  'A virtual column is like a live link in a spreadsheet that pulls data from an external source each time you view it, never storing a copy locally.',
@@ -290,7 +290,7 @@ VALUES
  ARRAY['dataverse','column','virtual','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_choice01', 'Choice Column',
- 'software',
+ 'power platform',
  'A Dataverse column type (formerly Option Set) that stores a value from a predefined list of integer-label pairs.',
  'A Status column with choices: Active (1), Inactive (2), Pending (3). Code references the integer value; the UI displays the label.',
  'A Choice column is like a dropdown menu where each visible option maps to a hidden integer stored in the database.',
@@ -298,7 +298,7 @@ VALUES
  ARRAY['dataverse','column','option-set','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_polylookup01', 'Polymorphic Lookup',
- 'software',
+ 'power platform',
  'A Lookup column in Dataverse that can reference rows from more than one table type (e.g. Customer lookup to Account or Contact).',
  'The built-in Regarding column on Activity tables is polymorphic — it can point to an Account, a Contact, a Lead, or a custom table.',
  'A polymorphic lookup is like a universal remote control — one physical remote that can point to a TV, a soundbar, or a streaming box.',
@@ -306,7 +306,7 @@ VALUES
  ARRAY['dataverse','relationship','lookup','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_tableperm01', 'Table Permission',
- 'software',
+ 'power platform',
  'A Power Pages security construct that grants website users access to Dataverse table rows based on scope (Global, Contact, Account, etc.).',
  'A "Self" scoped Table Permission on Contact allows a Power Pages user to read and update only their own Contact record.',
  'Table Permissions are like bouncer rules at a website — they determine which Dataverse records external website users are allowed to see or edit.',
@@ -315,7 +315,7 @@ VALUES
 
 -- ── Group 3: Power Apps Development ──────────────────────────────────────────
 ('concept_pp_canvasapp01', 'Canvas App',
- 'software',
+ 'power platform',
  'A Power Apps application built on a blank canvas where developers control every UI element, layout, and behavior using Power Fx formulas.',
  'A field technician app with a custom gallery of work orders, a details screen, and a camera control for capturing photos, built on a blank canvas.',
  'Building a Canvas App is like designing a PowerPoint slide deck with live data connections — you control every pixel and interaction.',
@@ -323,7 +323,7 @@ VALUES
  ARRAY['power-apps','canvas','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_mdapp01', 'Model-Driven App',
- 'software',
+ 'power platform',
  'A Power Apps application generated from Dataverse metadata, automatically rendering forms, views, charts, and dashboards.',
  'A CRM app generated from Account, Contact, and Opportunity tables, showing auto-generated forms, views, and dashboards based on metadata.',
  'A Model-Driven App is like a ready-made house interior — Dataverse is the blueprint, and Power Apps renders the furniture (forms, views) automatically.',
@@ -331,7 +331,7 @@ VALUES
  ARRAY['power-apps','model-driven','dataverse','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_powerfx01', 'Power Fx Formula',
- 'software',
+ 'power platform',
  'The low-code formula language used in Canvas Apps, inspired by Excel, for defining logic, data operations, and navigation.',
  'Filter(Accounts, StartsWith(Name, TextInput1.Text)) filters an Accounts gallery as the user types; Patch() saves changes back to Dataverse.',
  'Power Fx is like Excel formulas but for app logic — familiar syntax extended with app actions like navigation, data writes, and variable management.',
@@ -339,7 +339,7 @@ VALUES
  ARRAY['power-apps','power-fx','formula','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_connector01', 'Connector',
- 'software',
+ 'power platform',
  'A proxy wrapper around an external API that Power Apps and Power Automate use to communicate with services like SharePoint, SQL, or custom APIs.',
  'The SharePoint connector connects a Canvas App to a SharePoint list; the SQL Server connector streams records from an Azure SQL database.',
  'A connector is like a universal adapter plug — it translates between Power Apps''s standard interface and the specific API of each external service.',
@@ -347,7 +347,7 @@ VALUES
  ARRAY['power-apps','connector','integration','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_delegation01', 'Delegation',
- 'software',
+ 'power platform',
  'The ability for a Canvas App data function to push query processing to the data source rather than downloading all records locally, avoiding the row limit.',
  'Filter(Accounts, Status = "Active") delegates to Dataverse and returns matching records server-side. Search() on a local collection is not delegable.',
  'Delegation is like asking the library to find books on a topic versus downloading the entire catalog and searching it yourself at home.',
@@ -355,7 +355,7 @@ VALUES
  ARRAY['power-apps','performance','data','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_collection01', 'Collection',
- 'software',
+ 'power platform',
  'An in-memory table stored locally in a Canvas App, created with Collect() or ClearCollect(), used for caching or staging data.',
  'ClearCollect(MyOrders, Filter(Orders, Owner = User().Email)) caches the user''s orders in a local collection for fast screen navigation.',
  'A Collection is like a shopping cart — a temporary local store that holds data for the session, not permanently saved anywhere.',
@@ -363,7 +363,7 @@ VALUES
  ARRAY['power-apps','canvas','data','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_gallery01', 'Gallery Control',
- 'software',
+ 'power platform',
  'A Canvas App control that displays a scrollable list of records where each item shares the same layout template.',
  'A Gallery bound to a Customers table displays each customer''s name, photo, and last contact date using a template that repeats per row.',
  'A Gallery is like a physical bulletin board with repeating card slots — you design one card template and the board fills in the data automatically.',
@@ -371,7 +371,7 @@ VALUES
  ARRAY['power-apps','canvas','ui','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_appform01', 'App Form Control',
- 'software',
+ 'power platform',
  'A Canvas or Model-Driven App control for displaying and editing a single Dataverse row, supporting Edit, View, and New modes.',
  'An EditForm bound to the Projects table in Edit mode auto-generates input fields; SubmitForm() writes the changed data back to Dataverse.',
  'An App Form Control is like a pre-printed paper form — the fields are laid out automatically and mapped to the right data fields in the database.',
@@ -379,7 +379,7 @@ VALUES
  ARRAY['power-apps','form','dataverse','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_custompage01', 'Custom Page',
- 'software',
+ 'power platform',
  'A Canvas App page embedded inside a Model-Driven App, enabling rich custom UI while retaining access to Dataverse context.',
  'A richly formatted order summary page built in Canvas App style is embedded as a Custom Page inside a Model-Driven App for a seamless UX.',
  'A Custom Page is like inserting a hand-crafted brochure page into a standardized report binder — custom look within a structured container.',
@@ -387,7 +387,7 @@ VALUES
  ARRAY['power-apps','model-driven','canvas','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_appdesigner01', 'App Designer',
- 'software',
+ 'power platform',
  'The visual tool in the Power Apps maker portal for configuring a Model-Driven App''s navigation, forms, views, and dashboards.',
  'In App Designer, a developer adds the Account and Contact tables, selects which views and forms to expose, and sets up the sitemap navigation.',
  'App Designer is like a table of contents editor — it decides which chapters (tables, views, forms) are included and how users navigate between them.',
@@ -396,7 +396,7 @@ VALUES
 
 -- ── Group 4: PCF and Client Scripting ────────────────────────────────────────
 ('concept_pp_pcf01', 'Power Apps Component Framework (PCF)',
- 'software',
+ 'power platform',
  'A framework for building reusable code components using TypeScript and standard web technologies that run inside Canvas or Model-Driven Apps.',
  'A custom PCF control renders a colour-coded urgency badge instead of a plain text field on a Model-Driven App form.',
  'PCF is like a browser extension for Power Apps UI — it lets you replace default field renderings with fully custom HTML/CSS/JS controls.',
@@ -404,7 +404,7 @@ VALUES
  ARRAY['pcf','power-apps','typescript','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_typescript01', 'TypeScript in PCF',
- 'software',
+ 'power platform',
  'PCF components are authored in TypeScript; the framework provides a strongly-typed manifest and lifecycle interface (init, updateView, destroy).',
  'The PCF init() method receives the context with the bound field value; updateView() re-renders when the value or app state changes.',
  'The PCF lifecycle (init, updateView, destroy) is like a React component lifecycle (componentDidMount, componentDidUpdate, componentWillUnmount).',
@@ -412,7 +412,7 @@ VALUES
  ARRAY['pcf','typescript','development','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_reactpcf01', 'React Virtual PCF Control',
- 'software',
+ 'power platform',
  'A PCF control type that renders through a shared React root managed by Power Apps, improving performance by avoiding per-control React instances.',
  'A Virtual PCF control renders a React date-picker component inside the shared Power Apps React root, avoiding duplicate React instances.',
  'A Virtual PCF control is like a sub-component inside a parent React app — it shares the React root rather than spinning up its own isolated tree.',
@@ -420,7 +420,7 @@ VALUES
  ARRAY['pcf','react','virtual','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_pcfmanifest01', 'PCF Manifest',
- 'software',
+ 'power platform',
  'The ControlManifest.Input.xml file that declares a PCF component''s properties, resources, and feature usage to the Power Apps runtime.',
  'The manifest declares a property "primaryColor" of type SingleLine.Text, which the app maker binds to a Dataverse column or provides a static value.',
  'The PCF manifest is like the spec sheet for a component — it tells Power Apps what inputs the component accepts and what resources it needs.',
@@ -428,7 +428,7 @@ VALUES
  ARRAY['pcf','manifest','configuration','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_xrm01', 'Client API (Xrm)',
- 'software',
+ 'power platform',
  'The JavaScript object model (window.Xrm) available in Model-Driven Apps for manipulating forms, fields, tabs, and navigating records.',
  'formContext.getAttribute("priority").setValue(3) sets the Priority field value; formContext.ui.tabs.get("tab1").setVisible(false) hides a tab.',
  'The Xrm Client API is like the DOM for Model-Driven App forms — it gives JavaScript programmatic access to every form element.',
@@ -436,7 +436,7 @@ VALUES
  ARRAY['client-api','xrm','javascript','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_formevent01', 'Form Event',
- 'software',
+ 'power platform',
  'Events fired during the Model-Driven App form lifecycle: OnLoad, OnSave, and OnChange, to which JavaScript handlers can be registered.',
  'An OnLoad handler pre-fills a default Territory field; an OnSave handler validates that a required document is attached before allowing save.',
  'Form events are like hooks in a web framework — they fire at lifecycle points and let you inject custom logic without modifying the platform code.',
@@ -444,7 +444,7 @@ VALUES
  ARRAY['client-api','form','events','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_fieldevent01', 'Field (Column) Event',
- 'software',
+ 'power platform',
  'OnChange event on a Model-Driven App form field that fires when a user changes the field value, used for field-level business logic.',
  'An OnChange handler on the Country field filters the Region lookup to show only regions for the selected country.',
  'A field event is like an onChange listener on an HTML input — it fires whenever the user changes the value, allowing reactive field updates.',
@@ -452,7 +452,7 @@ VALUES
  ARRAY['client-api','field','events','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_jswebres01', 'JavaScript Web Resource',
- 'software',
+ 'power platform',
  'A .js file stored in Dataverse as a web resource and referenced by form event handlers or ribbon commands in Model-Driven Apps.',
  'A file myapp_formlogic.js registered as a web resource is attached to the Contact form OnLoad event to run business logic on form load.',
  'A JavaScript Web Resource is like a script tag included in a webpage — the file is stored in Dataverse and loaded when the form opens.',
@@ -460,7 +460,7 @@ VALUES
  ARRAY['web-resource','javascript','model-driven','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_htmlwebres01', 'HTML Web Resource',
- 'software',
+ 'power platform',
  'A .html file stored as a Dataverse web resource, embeddable as an iframe inside a Model-Driven App form for fully custom UI.',
  'An HTML web resource displays a custom status timeline iframe inside a form, pulling data from an external service via JavaScript.',
  'An HTML Web Resource embedded in a form is like an iframe pointing to a mini-website hosted inside Dataverse rather than an external server.',
@@ -468,7 +468,7 @@ VALUES
  ARRAY['web-resource','html','model-driven','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_commandbar01', 'Command Bar Customization',
- 'software',
+ 'power platform',
  'Customizing the ribbon/command bar buttons in Model-Driven Apps using the modern Command Designer or classic Ribbon Workbench.',
  'Adding a custom "Generate PDF" button to the Account form command bar using Command Designer, with a JavaScript action and an enable rule.',
  'Command bar customization is like configuring toolbar buttons in Word — you choose which actions appear and when they are enabled or visible.',
@@ -477,7 +477,7 @@ VALUES
 
 -- ── Group 5: Power Automate Fundamentals ─────────────────────────────────────
 ('concept_pp_cloudflow01', 'Cloud Flow',
- 'software',
+ 'power platform',
  'A Power Automate automation that runs in the cloud, connecting services via triggers and actions without requiring local infrastructure.',
  'A Cloud Flow triggers when a new Dataverse row is created for a Lead, sends a welcome email, and creates a follow-up Task record.',
  'A Cloud Flow is like an automated assembly line — events arrive at one end and are processed through a defined sequence of steps automatically.',
@@ -485,7 +485,7 @@ VALUES
  ARRAY['power-automate','flow','automation','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_flowtrigger01', 'Flow Trigger',
- 'software',
+ 'power platform',
  'The event that starts a Cloud Flow, such as when a Dataverse row is created, a schedule fires, or an HTTP request is received.',
  'A "When a row is added, modified or deleted" Dataverse trigger fires every time a new Opportunity is created with Status = Open.',
  'A trigger is like a motion sensor on a door — it detects that something happened and wakes up the flow to respond.',
@@ -493,7 +493,7 @@ VALUES
  ARRAY['power-automate','trigger','event','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_flowaction01', 'Flow Action',
- 'software',
+ 'power platform',
  'A unit of work in a Cloud Flow that performs an operation, such as sending an email, updating a Dataverse row, or calling an HTTP endpoint.',
  'A "Send an email (V2)" action sends a notification; a "Get a row by ID" action fetches Dataverse data for use in later steps.',
  'A flow action is like a single step in a recipe — each step does one thing (mix, bake, cool), and steps are chained to complete the dish.',
@@ -501,7 +501,7 @@ VALUES
  ARRAY['power-automate','action','step','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_condition01', 'Condition',
- 'software',
+ 'power platform',
  'A Power Automate control action that branches flow execution into "If yes" and "If no" paths based on a boolean expression.',
  'A Condition checks if Priority equals "High"; the "If yes" branch sends a Slack alert; the "If no" branch logs to a SharePoint list.',
  'A Condition is like a road fork with a signpost — depending on which way the condition points, the flow takes the left or right branch.',
@@ -509,7 +509,7 @@ VALUES
  ARRAY['power-automate','logic','branching','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_applytoeach01', 'Apply to Each',
- 'software',
+ 'power platform',
  'A Power Automate loop control that iterates over each item in an array, executing nested actions for every element.',
  'Apply to Each iterates over a list of new employee emails returned from a query, sending an onboarding email to each one.',
  'Apply to Each is like a for-each loop — for every item in a list, execute the same set of steps with that item as context.',
@@ -517,7 +517,7 @@ VALUES
  ARRAY['power-automate','loop','array','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_errorhandling01', 'Flow Error Handling',
- 'software',
+ 'power platform',
  'Using Scope actions with "Configure run after" settings (failed, skipped, timed out) to implement try/catch patterns in Cloud Flows.',
  'A Scope action wraps critical steps; a parallel branch with "Configure run after" set to "has failed" sends a Teams alert and logs the error.',
  'Scope with error handling is like a try/catch block in code — the Scope is the try, and the parallel failed-branch is the catch.',
@@ -525,7 +525,7 @@ VALUES
  ARRAY['power-automate','error-handling','resilience','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_envvar01', 'Environment Variable',
- 'software',
+ 'power platform',
  'A solution component that stores configuration values (strings, numbers, JSON, secrets) separately from flow logic, enabling environment-specific settings.',
  'A SharePoint Site URL Environment Variable is set to the DEV site in Development and the PROD site in Production, with no flow edits needed.',
  'An Environment Variable in Power Platform is like a .env file entry — it externalizes configuration so the same logic runs with different settings per environment.',
@@ -533,7 +533,7 @@ VALUES
  ARRAY['power-automate','alm','configuration','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_connref01', 'Connection Reference',
- 'software',
+ 'power platform',
  'A solution component that abstracts the connection used by a connector, allowing credentials to be swapped per environment without editing the flow.',
  'A Connection Reference named "Shared SharePoint Connection" points to different credentials in each environment, set during solution import.',
  'A Connection Reference is like a named database connection string in a config file — the logic refers to the name, and the actual credentials are swapped per environment.',
@@ -541,7 +541,7 @@ VALUES
  ARRAY['power-automate','alm','connector','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_approval01', 'Approval Flow',
- 'software',
+ 'power platform',
  'A Power Automate pattern using the Approvals connector to route items for human review, collecting approve/reject responses before continuing.',
  'A flow sends an Approval request to a manager when an expense report exceeds $1000; the flow resumes once the manager approves or rejects in Teams.',
  'An Approval Flow is like a digital signature workflow — work pauses, a human is notified, and the flow resumes only after a person acts.',
@@ -549,7 +549,7 @@ VALUES
  ARRAY['power-automate','approval','human-in-loop','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_childflow01', 'Child Flow',
- 'software',
+ 'power platform',
  'A Cloud Flow called from another flow using the "Run a Child Flow" action, enabling reusable flow logic shared across multiple parent flows.',
  'A "Send Notification" child flow is reused by an onboarding flow, an offboarding flow, and a contract renewal flow, all calling it with different messages.',
  'A child flow is like a function in programming — you write it once with parameters and call it from multiple parent flows instead of duplicating logic.',
@@ -558,7 +558,7 @@ VALUES
 
 -- ── Group 6: Business Process Automation ─────────────────────────────────────
 ('concept_pp_bpf01', 'Business Process Flow',
- 'software',
+ 'power platform',
  'A guided, stage-based process overlay in Model-Driven Apps that walks users through required steps to complete a business process.',
  'A "Sales Pipeline" BPF has stages: Qualify → Develop → Propose → Close, each with mandatory fields before the user can advance.',
  'A BPF is like a guided wizard in an application — it walks the user through required steps in order, preventing skipping ahead.',
@@ -566,7 +566,7 @@ VALUES
  ARRAY['power-automate','bpf','process','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_bpfstage01', 'BPF Stage',
- 'software',
+ 'power platform',
  'A named phase in a Business Process Flow containing data steps (fields) the user must complete before advancing to the next stage.',
  'The "Develop" stage in a sales BPF requires the user to fill in Budget Amount and Decision Maker before the Next Stage button becomes active.',
  'A BPF Stage is like a level in a video game — you must complete the objectives of the current level to unlock the next.',
@@ -574,7 +574,7 @@ VALUES
  ARRAY['bpf','stage','process','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_bizrule01', 'Business Rule',
- 'software',
+ 'power platform',
  'A no-code rule configured on a Dataverse table that enforces field requirements, visibility, or default values on forms and server-side.',
  'A business rule makes the Discount field required when Deal Size is "Enterprise" and sets a default 5% value when Deal Size is "SMB".',
  'A Business Rule is like a conditional formatting rule in Excel applied to a form — it shows, hides, or requires fields based on other field values.',
@@ -582,7 +582,7 @@ VALUES
  ARRAY['dataverse','business-rule','no-code','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_custaction01', 'Custom Process Action',
- 'software',
+ 'power platform',
  'A reusable, named Dataverse operation that can be called from flows, plugins, or client scripts, similar to a lightweight custom API.',
  'A "CalculateDiscount" Custom Process Action takes a Deal ID as input, runs pricing logic, and returns a Discount Percentage as output.',
  'A Custom Process Action is like a named stored procedure — it encapsulates reusable logic callable from flows, plugins, or client scripts by name.',
@@ -590,7 +590,7 @@ VALUES
  ARRAY['dataverse','process','reuse','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_customapi01', 'Custom API',
- 'software',
+ 'power platform',
  'A Dataverse extension point that exposes a custom message callable via the Web API, backed by a plugin, with defined request/response parameters.',
  'A "GenerateInvoice" Custom API exposes a message backed by a plugin, callable via POST /api/data/v9.2/GenerateInvoice with JSON parameters.',
  'A Custom API is like defining a new verb for Dataverse — instead of only Create/Update/Delete, you add your own named operation with typed parameters.',
@@ -598,7 +598,7 @@ VALUES
  ARRAY['dataverse','api','plugin','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_scheduledflow01', 'Scheduled Flow',
- 'software',
+ 'power platform',
  'A Cloud Flow triggered on a recurring schedule (every X minutes/hours/days), used for batch processing or periodic data synchronization.',
  'A Scheduled Flow runs every day at 2 AM, queries Dataverse for overdue tasks, and sends a daily digest email to each task owner.',
  'A Scheduled Flow is like a cron job — a clock fires it on a fixed schedule rather than waiting for an external event.',
@@ -606,7 +606,7 @@ VALUES
  ARRAY['power-automate','schedule','batch','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_automatedflow01', 'Automated Flow',
- 'software',
+ 'power platform',
  'A Cloud Flow triggered automatically by an event in a connected service, such as a new Dataverse row or an incoming email.',
  'An Automated Flow triggers on "When a new email arrives in a shared mailbox" and creates a Dataverse Case record from the email details.',
  'An Automated Flow is like a reactive event listener — it sits silently and springs into action the moment the watched event occurs.',
@@ -614,7 +614,7 @@ VALUES
  ARRAY['power-automate','automated','event','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_instantflow01', 'Instant Flow',
- 'software',
+ 'power platform',
  'A Cloud Flow triggered manually by a user from the Power Automate app, a Power Apps button, or a Teams message action.',
  'An Instant Flow is triggered by a button in a Canvas App, receives the selected record ID as input, and runs a PDF generation process.',
  'An Instant Flow is like a vending machine button — the user pushes it on demand and the automation runs immediately on request.',
@@ -622,7 +622,7 @@ VALUES
  ARRAY['power-automate','manual','button','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_desktopflow01', 'Desktop Flow (RPA)',
- 'software',
+ 'power platform',
  'A Power Automate automation that runs on a local machine to automate legacy or desktop applications through UI interaction (Robotic Process Automation).',
  'A Desktop Flow opens a legacy ERP application, reads order data from a screen, and pastes it into a web form — all through UI automation.',
  'A Desktop Flow is like a robot sitting at a computer — it moves the mouse, clicks buttons, and types data just as a human would.',
@@ -630,7 +630,7 @@ VALUES
  ARRAY['power-automate','rpa','desktop','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_classicwf01', 'Classic Workflow',
- 'software',
+ 'power platform',
  'A legacy Dataverse automation (background/real-time process) that predates Power Automate; still supported but recommended to migrate to Cloud Flows.',
  'A classic background workflow runs after an Opportunity is won, automatically creating a follow-up Task and updating the related Account stage.',
  'A Classic Workflow is like a veteran office worker who still uses paper forms — it gets the job done but the modern equivalent (Cloud Flow) is faster and more capable.',
@@ -639,7 +639,7 @@ VALUES
 
 -- ── Group 7: Plugin Development ───────────────────────────────────────────────
 ('concept_pp_plugin01', 'Plugin',
- 'software',
+ 'power platform',
  'A .NET assembly containing event-handler classes that execute synchronously or asynchronously in response to Dataverse data operations.',
  'A plugin registered on the Create message of the Order table calculates the total price and sets the TotalAmount field before the record is saved.',
  'A plugin is like a database trigger but for Dataverse — it intercepts a data operation and runs custom .NET code before or after it completes.',
@@ -647,7 +647,7 @@ VALUES
  ARRAY['plugin','dataverse','dotnet','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_pluginstep01', 'Plugin Step',
- 'software',
+ 'power platform',
  'The registration of a plugin class against a specific Dataverse message (e.g. Create, Update) and table at a chosen pipeline stage (Pre/Post-Operation).',
  'A Pre-Operation step on Update of the Contact table for attribute filter "Email" runs validation logic only when the Email field changes.',
  'A plugin step registration is like setting up an event listener — you specify exactly which event, table, stage, and attributes trigger the handler.',
@@ -655,7 +655,7 @@ VALUES
  ARRAY['plugin','registration','step','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_pluginimage01', 'Plugin Image',
- 'software',
+ 'power platform',
  'A snapshot of a Dataverse row''s column values captured before (Pre-Image) or after (Post-Image) an operation, available to the plugin for comparison.',
  'A Pre-Image on an Update step captures the old Email value before the update; the plugin compares it to the new value to detect changes.',
  'A plugin image is like a before-and-after photo — the Pre-Image is the "before" snapshot and the Post-Image is the "after" snapshot of the record.',
@@ -663,7 +663,7 @@ VALUES
  ARRAY['plugin','image','snapshot','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_iorgservice01', 'IOrganizationService',
- 'software',
+ 'power platform',
  'The primary Dataverse service interface in a plugin, used to execute CRUD operations, queries, and custom messages against Dataverse.',
  'service.Create(new Entity("task") { ["subject"] = "Follow up", ["regardingobjectid"] = accountRef }) creates a Task linked to an Account.',
  'IOrganizationService is like the Dataverse SDK client — it is the main handle for all CRUD and message operations inside a plugin or custom code.',
@@ -671,7 +671,7 @@ VALUES
  ARRAY['plugin','service','api','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_ipluginctx01', 'IPluginExecutionContext',
- 'software',
+ 'power platform',
  'The interface providing a plugin with information about the triggering event: input/output parameters, pre/post images, user IDs, and call depth.',
  'context.InputParameters["Target"] retrieves the Entity being created; context.UserId is the user whose action triggered the plugin.',
  'IPluginExecutionContext is like the HTTP request object in a web handler — it carries all the metadata about who triggered the event and what data is involved.',
@@ -679,7 +679,7 @@ VALUES
  ARRAY['plugin','context','execution','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_svccontext01', 'OrganizationServiceContext',
- 'software',
+ 'power platform',
  'A LINQ-enabled proxy that wraps IOrganizationService, enabling strongly-typed entity queries and change tracking in plugin or custom code.',
  'Using a LINQ query via OrganizationServiceContext: context.AccountSet.Where(a => a.StateCode == AccountState.Active).ToList().',
  'OrganizationServiceContext is like Entity Framework for Dataverse — it wraps the service with LINQ support and identity-mapped object tracking.',
@@ -687,7 +687,7 @@ VALUES
  ARRAY['plugin','linq','service','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_virtualtable01', 'Virtual Table Provider',
- 'software',
+ 'power platform',
  'A plugin-based provider that maps an external data source into a Dataverse virtual table, enabling CRUD operations on external data via the standard API.',
  'A Virtual Table Provider plugin handles Retrieve and RetrieveMultiple for an ExternalProduct table, fetching live data from a REST API.',
  'A Virtual Table Provider is like a database view backed by an API — Dataverse shows it as a table, but the data actually lives somewhere else.',
@@ -695,7 +695,7 @@ VALUES
  ARRAY['plugin','virtual-table','integration','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_asyncplugin01', 'Asynchronous Plugin',
- 'software',
+ 'power platform',
  'A plugin step registered to run asynchronously after the transaction commits via the Async Service, not blocking the synchronous user operation.',
  'A Post-Operation async plugin generates a PDF report after an Invoice is created, running in the background without blocking the user.',
  'An async plugin is like submitting a print job — the user''s action completes immediately, and the long-running task processes in the background.',
@@ -703,7 +703,7 @@ VALUES
  ARRAY['plugin','async','performance','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_plugintrace01', 'Plugin Trace Log',
- 'software',
+ 'power platform',
  'A Dataverse feature that captures ITracingService output from plugins, written to the PluginTraceLog table for debugging failures.',
  'tracingService.Trace("Processing order {0}", order.Id) writes a message viewable in the Plugin Trace Log table after a failure.',
  'Plugin Trace Logs are like server-side console.log for Dataverse plugins — you write messages and read them after the fact to diagnose problems.',
@@ -711,7 +711,7 @@ VALUES
  ARRAY['plugin','debugging','trace','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_sandbox01', 'Plugin Sandbox Mode',
- 'software',
+ 'power platform',
  'The isolated execution environment for plugins that restricts access to network, file system, and registry, enforcing security and stability.',
  'A sandboxed plugin cannot open a direct TCP socket or read from the file system; it can only call Dataverse via IOrganizationService or allowed HTTP endpoints.',
  'The plugin sandbox is like a containerized execution environment — it can do its job but cannot reach outside the approved set of system resources.',
@@ -720,7 +720,7 @@ VALUES
 
 -- ── Group 8: Integration and APIs ────────────────────────────────────────────
 ('concept_pp_webapi01', 'Dataverse Web API',
- 'software',
+ 'power platform',
  'A RESTful API following the OData v4 standard that provides full CRUD, query, and custom message access to Dataverse data and metadata.',
  'GET /api/data/v9.2/accounts?$select=name,revenue&$filter=statecode eq 0 returns active Account names and revenues as JSON.',
  'The Dataverse Web API is like a universal remote control for your data — any HTTP client (browser, Postman, Python) can read and write Dataverse via standard REST calls.',
@@ -728,7 +728,7 @@ VALUES
  ARRAY['web-api','rest','odata','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_odata01', 'OData Query Syntax',
- 'software',
+ 'power platform',
  'Standard URL query options ($filter, $select, $expand, $orderby, $top) used with the Dataverse Web API to retrieve and shape data.',
  'GET /accounts?$filter=revenue gt 1000000&$select=name,revenue&$top=10&$orderby=revenue desc returns the top 10 richest accounts.',
  'OData query options are like SQL clauses for URLs — $filter is WHERE, $select is SELECT, $orderby is ORDER BY, $top is LIMIT.',
@@ -736,7 +736,7 @@ VALUES
  ARRAY['odata','web-api','query','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_customconn01', 'Custom Connector',
- 'software',
+ 'power platform',
  'A user-defined connector built from an OpenAPI definition that wraps any HTTP API for use in Power Apps and Power Automate.',
  'A Custom Connector for a weather API defines operations GetCurrentWeather and GetForecast, then can be used in Canvas Apps and flows like any built-in connector.',
  'A Custom Connector is like writing a driver for a new device — once the driver is written, Power Platform can talk to that API through a familiar interface.',
@@ -744,7 +744,7 @@ VALUES
  ARRAY['connector','custom','openapi','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_openapi01', 'OpenAPI Definition',
- 'software',
+ 'power platform',
  'A machine-readable specification (Swagger/OpenAPI 2.0) that describes an API''s endpoints, parameters, and authentication for custom connectors.',
  'An OpenAPI 2.0 YAML file defines a /customers/{id} GET endpoint with an Authorization Bearer header and a 200 response schema for Custom Connector import.',
  'An OpenAPI definition is like a restaurant menu — it tells you exactly what dishes (endpoints) are available, what ingredients (parameters) you need, and what you get back.',
@@ -752,7 +752,7 @@ VALUES
  ARRAY['openapi','swagger','api','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_webhook01', 'Webhook',
- 'software',
+ 'power platform',
  'A Dataverse service endpoint type that sends an HTTP POST to an external URL when a registered Dataverse event occurs.',
  'A Dataverse webhook sends a POST with the ExecutionContext JSON to an Azure Function URL every time a new Case is created.',
  'A webhook is like a push notification subscription — Dataverse calls your endpoint the moment an event happens, instead of you polling repeatedly.',
@@ -760,7 +760,7 @@ VALUES
  ARRAY['webhook','integration','event','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_svcendpoint01', 'Service Endpoint',
- 'software',
+ 'power platform',
  'A Dataverse configuration that routes event messages to Azure Service Bus, Azure Event Hub, or a Webhook target for external integration.',
  'A Service Endpoint configured for an Azure Service Bus queue posts execution context messages for all Opportunity Create events to the bus.',
  'A Service Endpoint is like a post box address for Dataverse events — when an event fires, Dataverse delivers a message to that external address.',
@@ -768,7 +768,7 @@ VALUES
  ARRAY['service-endpoint','azure','integration','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_servicebus01', 'Azure Service Bus Integration',
- 'software',
+ 'power platform',
  'Dataverse can post event context messages to an Azure Service Bus queue or topic, enabling decoupled, async integration with external systems.',
  'A Service Bus-backed Service Endpoint sends order events to a queue; a separate Azure Function consumer processes them and writes to a data warehouse.',
  'Azure Service Bus integration is like a postal service between Dataverse and external systems — Dataverse drops messages in the mailbox and the consumer picks them up at its own pace.',
@@ -776,7 +776,7 @@ VALUES
  ARRAY['azure-service-bus','integration','async','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_oauth201', 'OAuth 2.0',
- 'software',
+ 'power platform',
  'The authorization protocol used by Power Platform to authenticate connectors and custom APIs, using client credentials or authorization code flows.',
  'A Custom Connector uses OAuth 2.0 Authorization Code flow; the user signs in once and the connector stores the token for subsequent API calls.',
  'OAuth 2.0 is like a hotel key card system — a central authority (Azure AD) issues a key (token) that grants access to specific rooms (APIs) without sharing your password.',
@@ -784,7 +784,7 @@ VALUES
  ARRAY['oauth','security','authentication','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_powerbi01', 'Power BI Embedded',
- 'software',
+ 'power platform',
  'Integration that embeds Power BI reports and dashboards inside Model-Driven App dashboards or forms for in-context analytics.',
  'A Model-Driven App dashboard shows a Power BI report filtered to the current user''s region, providing in-context analytics without leaving the app.',
  'Power BI Embedded in a Model-Driven App is like a live TV screen built into an office wall — the data visualization is part of the workspace, not a separate tool.',
@@ -792,7 +792,7 @@ VALUES
  ARRAY['power-bi','analytics','model-driven','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_powerpages01', 'Power Pages',
- 'software',
+ 'power platform',
  'A low-code platform for building externally-facing websites backed by Dataverse, with built-in authentication and Table Permissions.',
  'A Power Pages portal lets external suppliers log in to view and update their own Dataverse records, with Table Permissions controlling data access.',
  'Power Pages is like a customer-facing storefront window into Dataverse — external users see only what you choose to expose, secured by Table Permissions.',
@@ -801,7 +801,7 @@ VALUES
 
 -- ── Group 9: ALM and DevOps ───────────────────────────────────────────────────
 ('concept_pp_alm01', 'Application Lifecycle Management (ALM)',
- 'software',
+ 'power platform',
  'The practice of managing Power Platform solutions across Development, Test, and Production environments using automated pipelines and source control.',
  'A team maintains a Dev environment for development, a Sandbox for testing, and Production; pipelines automatically export from Dev and import to Sandbox.',
  'Power Platform ALM is like a software deployment pipeline — code (solutions) moves through stages (Dev → Test → Prod) with gates and automation at each step.',
@@ -809,7 +809,7 @@ VALUES
  ARRAY['alm','devops','deployment','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_solchecker01', 'Solution Checker',
- 'software',
+ 'power platform',
  'A Power Platform tool that performs static analysis of solution components against a ruleset to identify performance, reliability, and upgrade issues.',
  'Running Solution Checker before release flags a plugin that calls an external URL synchronously in Pre-Operation as a high severity issue.',
  'Solution Checker is like a linter or SonarQube scan for Power Platform — it finds code smells, anti-patterns, and compliance violations before deployment.',
@@ -817,7 +817,7 @@ VALUES
  ARRAY['alm','quality','static-analysis','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_ppcli01', 'Power Platform CLI (pac)',
- 'software',
+ 'power platform',
  'A cross-platform command-line tool for automating Power Platform tasks: exporting/importing solutions, managing environments, and scaffolding PCF projects.',
  'pac solution export --name MySolution --path ./solutions exports a solution zip; pac solution import --path ./solutions/MySolution.zip imports it.',
  'The pac CLI is like git for Power Platform solutions — it gives developers a command-line interface to manage environments and solutions in scripts and pipelines.',
@@ -825,7 +825,7 @@ VALUES
  ARRAY['cli','devops','pac','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_azdevops01', 'Azure DevOps for Power Platform',
- 'software',
+ 'power platform',
  'Using Azure DevOps pipelines with the Power Platform Build Tools extension to automate solution export, check, import, and release across environments.',
  'A YAML pipeline uses the "Power Platform Export Solution" task to pull the solution from Dev, commits it to Git, then deploys to Test.',
  'Azure DevOps pipelines for Power Platform are like a factory conveyor belt — the solution enters one end in Dev and emerges packaged and tested in Production.',
@@ -833,7 +833,7 @@ VALUES
  ARRAY['azure-devops','alm','pipeline','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_ghactions01', 'GitHub Actions for Power Platform',
- 'software',
+ 'power platform',
  'A set of GitHub Actions (microsoft/powerplatform-actions) that automate solution packaging, publishing, and environment management in GitHub CI/CD workflows.',
  'A GitHub Actions workflow uses microsoft/powerplatform-actions/export-solution@v1 to export on push to main and microsoft/powerplatform-actions/import-solution@v1 to deploy.',
  'GitHub Actions for Power Platform is like a CI/CD pipeline that treats Power Platform solutions the same as code — with automated build, test, and deploy steps.',
@@ -841,7 +841,7 @@ VALUES
  ARRAY['github-actions','alm','ci-cd','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_envstrategy01', 'Environment Strategy',
- 'software',
+ 'power platform',
  'Planning and structuring Power Platform environments (Development, Sandbox, UAT, Production) to support team collaboration and safe deployments.',
  'Small team: Developer Sandbox → Shared Test → Production. Enterprise: Individual Dev → Integration → UAT → Pre-prod → Production.',
  'An environment strategy is like lanes in a swimming pool — each lane has a purpose (practice, warm-up, race), and mixing them causes chaos.',
@@ -849,7 +849,7 @@ VALUES
  ARRAY['environment','alm','governance','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_managedenv01', 'Managed Environment',
- 'software',
+ 'power platform',
  'A premium Power Platform feature enabling enhanced governance: weekly digest, usage insights, solution checker enforcement, and sharing limits.',
  'Managed Environment is enabled on Production; makers receive a weekly digest of unused apps, and Solution Checker is automatically enforced on imports.',
  'A Managed Environment is like a city with zoning laws — extra guardrails that automatically enforce policies and provide visibility beyond a standard environment.',
@@ -857,7 +857,7 @@ VALUES
  ARRAY['environment','governance','admin','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_sollayers01', 'Solution Layers',
- 'software',
+ 'power platform',
  'The stacked customization model in Dataverse where each solution adds a layer on top of base components; the active layer is the merged result.',
  'An ISV installs a managed solution; a customer adds an unmanaged customization on top. Viewing the Account form shows two layers: the ISV base and the customer override.',
  'Solution layers are like CSS specificity — multiple rules can target the same element, and the most specific (top layer) wins.',
@@ -865,7 +865,7 @@ VALUES
  ARRAY['solution','layers','customization','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_depcheck01', 'Dependency Checker',
- 'software',
+ 'power platform',
  'A Dataverse tool that identifies components that depend on or are required by a given solution component, preventing accidental deletion.',
  'Dependency Checker shows that removing the Priority column will break a Cloud Flow, a Business Rule, and a Plugin Step that all reference it.',
  'The Dependency Checker is like a "what uses this" feature in an IDE — before deleting a component, you see all the places that depend on it.',
@@ -873,7 +873,7 @@ VALUES
  ARRAY['solution','dependency','alm','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_fieldsecp01', 'Field Security Profile',
- 'software',
+ 'power platform',
  'A Dataverse security construct that restricts which users or teams can read, create, or update specific sensitive columns on a table.',
  'A "Finance Only" Field Security Profile grants Read/Update on the Salary column to users in the Finance team and denies access to all others.',
  'A Field Security Profile is like column-level access control in a database — even if you can see the table, certain columns require an extra key.',
@@ -882,7 +882,7 @@ VALUES
 
 -- ── Group 10: Security and Governance ────────────────────────────────────────
 ('concept_pp_dlp01', 'Data Loss Prevention (DLP) Policy',
- 'software',
+ 'power platform',
  'An admin-configured policy that classifies connectors into Business, Non-Business, or Blocked tiers to prevent unauthorized data exfiltration in flows.',
  'A DLP policy places SharePoint and Dataverse in the Business tier and Dropbox in Non-Business, blocking flows that combine both tiers.',
  'A DLP policy is like a building security checkpoint — it blocks certain combinations of services from passing data between each other without approval.',
@@ -890,7 +890,7 @@ VALUES
  ARRAY['dlp','governance','security','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_admincenter01', 'Power Platform Admin Center',
- 'software',
+ 'power platform',
  'The web portal for managing environments, capacity, DLP policies, connectors, and tenant-level analytics across the Power Platform tenant.',
  'In Admin Center, an admin creates a new sandbox environment, applies a DLP policy, and monitors storage capacity across all environments.',
  'The Admin Center is like a control room for the entire Power Platform — all environments, policies, and tenant-level settings are managed from one place.',
@@ -898,7 +898,7 @@ VALUES
  ARRAY['admin','governance','portal','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_coe01', 'Center of Excellence (CoE) Toolkit',
- 'software',
+ 'power platform',
  'A reference implementation of governance tooling deployed to a Power Platform environment to gain visibility, drive adoption, and enforce standards.',
  'After deploying the CoE Toolkit, admins see a Power BI dashboard showing all Canvas Apps, Flows, and Connectors in use across the tenant.',
  'The CoE Toolkit is like a governance dashboard for a city government — it gives leaders visibility into what is being built and by whom, so they can guide and govern effectively.',
@@ -906,7 +906,7 @@ VALUES
  ARRAY['coe','governance','toolkit','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_tenantanalytics01', 'Tenant-level Analytics',
- 'software',
+ 'power platform',
  'Admin Center reports showing usage metrics across all environments: active users, flow runs, connector usage, and app launches at the tenant level.',
  'Tenant Analytics shows that 80% of active Cloud Flows in Production belong to three users, flagging a key-person dependency risk.',
  'Tenant Analytics is like a fitness tracker for your Power Platform tenant — it shows activity, usage patterns, and areas that need attention.',
@@ -914,7 +914,7 @@ VALUES
  ARRAY['analytics','governance','admin','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_managedid01', 'Managed Identity Authentication',
- 'software',
+ 'power platform',
  'Using Azure-managed identities (system-assigned or user-assigned) for Power Platform connectors and Azure resources to avoid storing credentials.',
  'An Azure Function triggered by Dataverse uses a system-assigned managed identity to authenticate to Azure Key Vault without any stored secrets.',
  'A managed identity is like an employee badge issued by the building (Azure) itself — the employee (service) does not need to carry a separate key (password).',
@@ -922,7 +922,7 @@ VALUES
  ARRAY['security','managed-identity','azure','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_apilimit01', 'API Request Limits',
- 'software',
+ 'power platform',
  'Per-user, per-day limits on Dataverse and connector API calls in Power Platform, with capacity add-ons available for high-volume workloads.',
  'A user with a per-user license gets 40,000 API requests per day; a flow that processes 50,000 rows daily requires a capacity add-on.',
  'API request limits are like a data plan on a phone — you get an allocation per period, and if you exceed it, performance is throttled or blocked.',
@@ -930,7 +930,7 @@ VALUES
  ARRAY['licensing','limits','capacity','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_licensing01', 'Power Platform Licensing',
- 'software',
+ 'power platform',
  'The licensing model covering per-app, per-user, and pay-as-you-go plans for Power Apps, plus premium connector and Dataverse capacity entitlements.',
  'A user with a Power Apps per-user plan can use all premium connectors and Dataverse; a user with Microsoft 365 only cannot use premium features.',
  'Power Platform licensing is like a tiered streaming service — the free tier gives basic features, the premium tier unlocks everything, and you pay per user or per app.',
@@ -938,7 +938,7 @@ VALUES
  ARRAY['licensing','admin','governance','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_dvteam01', 'Dataverse Team',
- 'software',
+ 'power platform',
  'A group of users in Dataverse (Owner, Access, or AAD Group team) that can be assigned security roles, simplifying bulk permission management.',
  'An "EMEA Sales" AAD Group Team is assigned the Sales Rep security role; all Azure AD group members automatically inherit the role in Dataverse.',
  'A Dataverse Team is like a user group in Active Directory mapped to Dataverse permissions — manage the group membership and the Dataverse access follows.',
@@ -946,7 +946,7 @@ VALUES
  ARRAY['security','team','dataverse','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_hierarchysec01', 'Hierarchy Security',
- 'software',
+ 'power platform',
  'A Dataverse security model (Manager or Position hierarchy) that grants managers read or write access to their direct and indirect reports'' records.',
  'With Manager Hierarchy enabled, a regional manager can read all records owned by their direct reports even if the records are in a different BU.',
  'Hierarchy Security is like a reporting chain in an org chart — managers automatically get visibility into their reports'' work without explicit sharing.',
@@ -954,7 +954,7 @@ VALUES
  ARRAY['security','hierarchy','dataverse','pl-400'], 'teacher_john', 'teacher_john'),
 
 ('concept_pp_pad01', 'Power Automate Desktop (PAD)',
- 'software',
+ 'power platform',
  'The desktop application for building and running Desktop Flows locally, with a drag-and-drop designer and hundreds of built-in UI automation actions.',
  'A PAD flow opens Internet Explorer, navigates to a legacy HR portal, scrapes employee data from a table, and saves it to a Dataverse table.',
  'PAD is like teaching a robot to do exactly what a human does on a PC screen — every mouse click, keyboard entry, and window switch can be recorded and replayed.',
@@ -1153,7 +1153,7 @@ VALUES
      'teacher', 'teacher_john', false,
      'Microsoft Certified: Power Platform Fundamentals (PL-900)',
      'Business value study material for the PL-900 exam: Power Platform overview, foundational components, Power Apps, Power Automate, Power BI, Power Pages, Power Virtual Agents / Copilot Studio, and Microsoft Cloud integration.',
-     'software', 'blue', 'star',
+     'power platform', 'blue', 'star',
      'teacher_john', 'teacher_john')
 ON CONFLICT (id) DO NOTHING;
 
@@ -1173,7 +1173,7 @@ VALUES
 
 -- ── Group 1: Power Platform Overview & Business Value ────────────────────────
 ('concept_pl9_pp01', 'Microsoft Power Platform',
- 'software',
+ 'power platform',
  'A suite of low-code tools — Power Apps, Power Automate, Power BI, and Copilot Studio — that enables organisations to analyse data, build apps, automate processes, and create chatbots.',
  'A retail company uses Power BI to track sales, Power Apps for store audits, and Power Automate to send restock alerts — all without writing traditional code.',
  'Power Platform is like a Swiss Army knife for business problems — a set of purpose-built tools that work individually but are most powerful when used together.',
@@ -1181,7 +1181,7 @@ VALUES
  ARRAY['power-platform','overview','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_lowcode01', 'Low-Code / No-Code Development',
- 'software',
+ 'power platform',
  'An approach to building applications and automations using visual designers and configuration rather than hand-written code, dramatically lowering the skill barrier.',
  'A HR manager builds a leave-request app in Power Apps using drag-and-drop in an afternoon — no developer needed.',
  'Low-code development is like flat-pack furniture — the components are pre-engineered, and you assemble them visually rather than crafting each piece from raw materials.',
@@ -1189,7 +1189,7 @@ VALUES
  ARRAY['low-code','citizen-dev','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_citizendev01', 'Citizen Developer',
- 'software',
+ 'power platform',
  'A business user who builds apps or automations using low-code tools without a traditional software development background, empowered by platforms like Power Platform.',
  'A finance analyst builds a Power Apps expense-approval tool and a Power Automate flow to route approvals — without IT involvement.',
  'A citizen developer is like a self-taught home cook — not a professional chef, but capable of producing great results with the right kitchen tools and recipes.',
@@ -1197,7 +1197,7 @@ VALUES
  ARRAY['citizen-dev','low-code','governance','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_digitaltx01', 'Digital Transformation',
- 'software',
+ 'power platform',
  'The process of using digital technology to fundamentally change how an organisation operates and delivers value, replacing manual or paper-based processes.',
  'A logistics company replaces paper delivery forms with a Power Apps mobile app and automatically updates Dataverse records in real time.',
  'Digital transformation is like replacing a paper filing cabinet with a searchable cloud database — the goal is the same but the speed, accuracy, and accessibility are transformed.',
@@ -1205,7 +1205,7 @@ VALUES
  ARRAY['digital-transformation','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_dataverse_bv01', 'Dataverse Business Value',
- 'software',
+ 'power platform',
  'Dataverse provides a secure, scalable, standards-based data store shared across Power Platform apps, reducing data silos and enabling consistent business logic.',
  'A company stores customer data once in Dataverse and uses it across a Canvas App for sales reps, a Model-Driven App for support, and a Power BI report for managers.',
  'Dataverse is like a single source of truth for your organisation — instead of data scattered across spreadsheets and siloed apps, everything connects to one governed store.',
@@ -1213,7 +1213,7 @@ VALUES
  ARRAY['dataverse','data','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_environment01', 'Power Platform Environment',
- 'software',
+ 'power platform',
  'A container that holds Power Platform apps, flows, and Dataverse data, used to separate Development, Test, and Production workloads and control access.',
  'An organisation has a Dev environment for makers to experiment, a Test environment for UAT, and a Production environment that business users access daily.',
  'An environment is like a separate office floor — the same company (tenant) owns all floors, but each floor has its own apps, data, and access rules.',
@@ -1221,7 +1221,7 @@ VALUES
  ARRAY['environment','governance','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_m365int01', 'Microsoft 365 Integration',
- 'software',
+ 'power platform',
  'Power Platform integrates natively with Microsoft 365 services (Teams, SharePoint, Outlook, Excel) enabling apps and automations to extend familiar workplace tools.',
  'A Power Automate flow triggers when a new file is added to SharePoint, extracts data using AI Builder, and posts a summary to a Teams channel.',
  'M365 integration is like having Power Platform built into your existing office tools — you do not replace Teams or SharePoint, you extend them with apps and automation.',
@@ -1229,7 +1229,7 @@ VALUES
  ARRAY['microsoft-365','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_azureint01', 'Azure Integration',
- 'software',
+ 'power platform',
  'Power Platform connects to Azure services (Azure SQL, Functions, Service Bus, Cognitive Services) enabling enterprise-grade capabilities within low-code solutions.',
  'A Canvas App connects to an Azure SQL database via a custom connector; a flow calls an Azure Function for heavy computation and returns the result.',
  'Azure integration is like a low-code app with a powerful engine under the hood — the Power Platform frontend is accessible to makers, while Azure handles the heavy lifting.',
@@ -1237,7 +1237,7 @@ VALUES
  ARRAY['azure','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_d365int01', 'Dynamics 365 Integration',
- 'software',
+ 'power platform',
  'Power Platform extends Dynamics 365 CRM and ERP applications by adding custom apps, automations, and dashboards built on the shared Dataverse data layer.',
  'A sales team uses Dynamics 365 Sales for CRM; a maker adds a custom Canvas App for a simplified mobile view and a Power Automate flow for deal notifications.',
  'Dynamics 365 and Power Platform are like a smartphone and its app store — Dynamics 365 is the built-in platform, and Power Platform lets you build tailored extensions on top.',
@@ -1245,7 +1245,7 @@ VALUES
  ARRAY['dynamics-365','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_tco01', 'Total Cost of Ownership (TCO)',
- 'software',
+ 'power platform',
  'The full cost of a technology solution including licences, development, maintenance, and training; Power Platform typically reduces TCO vs. custom-coded alternatives.',
  'A company estimates a custom app would cost £200k to build and £50k/year to maintain; the same solution on Power Platform costs £20k to build and £10k/year.',
  'TCO is like comparing the true cost of owning two cars — one cheaper to buy but expensive to service, one slightly pricier upfront but cheap to run long-term.',
@@ -1254,7 +1254,7 @@ VALUES
 
 -- ── Group 1B: Foundational Components ────────────────────────────────────────
 ('concept_pl9_found_dataverse01', 'Dataverse as a Foundation',
- 'software',
+ 'power platform',
  'Microsoft Dataverse is the foundational data platform for Power Platform, providing secure storage, relationships, business logic, and integration for apps, flows, analytics, and portals.',
  'An organisation stores customer, case, and booking data in Dataverse once and then uses the same records in Power Apps, Power Automate, Power BI, and Power Pages.',
  'Dataverse is like the central warehouse for the whole platform — every connected tool can draw from the same organised stock.',
@@ -1262,7 +1262,7 @@ VALUES
  ARRAY['dataverse','foundation','power-platform','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_tables01', 'Tables and Columns',
- 'software',
+ 'power platform',
  'Tables organise business data into records and columns, forming the core structure used by Dataverse-backed apps, flows, and reports.',
  'A service-management solution uses an Incident table with columns for Priority, Status, Assigned Technician, and Reported Date.',
  'Tables and columns are like labelled drawers and folders in a filing cabinet — each drawer groups one kind of information and each folder slot stores one property.',
@@ -1270,7 +1270,7 @@ VALUES
  ARRAY['dataverse','tables','columns','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_relationships01', 'Relationships Between Tables',
- 'software',
+ 'power platform',
  'Relationships connect Dataverse tables so related records can work together, such as one customer having many orders or one case belonging to one account.',
  'A university links Student records to Course Enrolment records so one student can have many enrolments while each enrolment belongs to one student.',
  'Relationships are like lines on an org chart or family tree — they show how separate records are connected and how information flows between them.',
@@ -1278,7 +1278,7 @@ VALUES
  ARRAY['dataverse','relationships','data-model','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_choices01', 'Choice Columns',
- 'software',
+ 'power platform',
  'Choice columns store standardised options such as status, priority, or department so users select from controlled values instead of typing free text.',
  'A Helpdesk table uses a Priority choice with Low, Medium, High, and Critical to keep reporting consistent across all tickets.',
  'Choice columns are like a set menu instead of an open text box — everyone picks from the same options, so the data stays clean.',
@@ -1286,7 +1286,7 @@ VALUES
  ARRAY['dataverse','choice','standardisation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_businessrules01', 'Business Rules',
- 'software',
+ 'power platform',
  'Business rules apply simple logic such as required fields, recommendations, and conditional visibility without needing custom code.',
  'A business rule makes Resolution Date required only when a support case status is changed to Closed.',
  'Business rules are like office policy signs posted at the point of work — they guide behaviour and enforce simple standards automatically.',
@@ -1294,7 +1294,7 @@ VALUES
  ARRAY['dataverse','business-rules','logic','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_securityroles01', 'Security Roles',
- 'software',
+ 'power platform',
  'Security roles determine what users can read, create, update, or delete in Dataverse so different jobs see and manage only the right data.',
  'A customer-service role can update cases and contacts, while an executive role can read dashboards and reports without editing operational records.',
  'Security roles are like job-specific access badges — each badge opens only the rooms needed for that role.',
@@ -1302,7 +1302,7 @@ VALUES
  ARRAY['security','roles','dataverse','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_connectors01', 'Connectors',
- 'software',
+ 'power platform',
  'Connectors are the reusable integration components that let Power Platform talk to services such as SharePoint, Outlook, Teams, SQL Server, Salesforce, and hundreds of others.',
  'A solution uses the Outlook connector to send emails, the Teams connector to post notifications, and the SharePoint connector to store documents.',
  'Connectors are like universal plugs that let Power Platform tools connect to many different systems without custom wiring each time.',
@@ -1310,7 +1310,7 @@ VALUES
  ARRAY['connectors','integration','power-platform','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_customconnectors01', 'Custom Connectors',
- 'software',
+ 'power platform',
  'Custom connectors package an organisation''s own API or a niche external service so makers can reuse it in apps and flows like any other connector.',
  'A logistics company wraps its internal shipment-tracking API in a custom connector so both Power Apps and Power Automate can use the same endpoints.',
  'A custom connector is like creating your own power adapter for a device that does not come with a standard plug.',
@@ -1318,7 +1318,7 @@ VALUES
  ARRAY['custom-connector','integration','api','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_powerfx01', 'Power Fx',
- 'software',
+ 'power platform',
  'Power Fx is the low-code formula language used in Power Platform to define behaviour, calculations, filtering, and logic in apps and other experiences.',
  'A canvas app uses Filter() to show only open tasks assigned to the current user and uses If() to highlight overdue records.',
  'Power Fx is like the spreadsheet formula language for the whole low-code platform — familiar functions drive smart behaviour without full application code.',
@@ -1326,7 +1326,7 @@ VALUES
  ARRAY['power-fx','formula','logic','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_canvas01', 'Canvas Apps',
- 'software',
+ 'power platform',
  'Canvas Apps give makers full control over the user interface, making them suitable when the experience must be tailored to a specific process, device, or audience.',
  'A field inspection app is designed as a mobile-first canvas app with large buttons, photo capture, and offline support for technicians in the field.',
  'Canvas Apps are like designing a custom poster from a blank page — you choose where every element goes and how users interact with it.',
@@ -1334,7 +1334,7 @@ VALUES
  ARRAY['power-apps','canvas-app','ui','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_modeldriven01', 'Model-Driven Apps',
- 'software',
+ 'power platform',
  'Model-driven apps generate much of the user experience from Dataverse structure, making them strong for process-heavy, data-centric business solutions.',
  'A case-management app uses model-driven forms, views, and dashboards so staff can work across large sets of records with minimal custom UI design.',
  'Model-driven apps are like furnishing a building from an architectural plan — once the structure is right, much of the layout comes automatically.',
@@ -1342,7 +1342,7 @@ VALUES
  ARRAY['power-apps','model-driven','dataverse','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_cloudflows01', 'Cloud Flows as a Component',
- 'software',
+ 'power platform',
  'Cloud Flows are a core automation component in Power Platform, used to connect systems, react to events, and move information through business processes.',
  'A cloud flow starts when a new support ticket is created, sends an acknowledgement email, creates a Teams notification, and updates a tracking list.',
  'Cloud Flows are like the conveyor belts between systems — once triggered, they carry work from one step to the next automatically.',
@@ -1350,7 +1350,7 @@ VALUES
  ARRAY['power-automate','cloud-flow','foundation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_desktopflows01', 'Desktop Flows as a Component',
- 'software',
+ 'power platform',
  'Desktop Flows extend Power Platform to legacy desktop and on-premises software by automating user-interface interactions where APIs are unavailable.',
  'A finance team uses a desktop flow to extract month-end data from a legacy accounting package and load it into a modern reporting process.',
  'Desktop Flows are like robotic hands operating an old machine that cannot be integrated any other way.',
@@ -1358,7 +1358,7 @@ VALUES
  ARRAY['power-automate','desktop-flow','rpa','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_reports01', 'Reports as a Foundational Insight Component',
- 'software',
+ 'power platform',
  'Power BI reports are a foundational analytics component that turns shared business data into interactive analysis for operational and strategic decision-making.',
  'An operations manager opens a report to compare service volumes, resolution times, and backlog by region and drill into underperforming teams.',
  'Reports are like interactive briefing packs — they present the facts and let the reader investigate the story behind them.',
@@ -1366,7 +1366,7 @@ VALUES
  ARRAY['power-bi','reports','analytics','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_dashboards01', 'Dashboards as a Monitoring Component',
- 'software',
+ 'power platform',
  'Dashboards provide at-a-glance visibility into important metrics and are often the first place leaders look to monitor business health.',
  'An executive dashboard shows revenue, backlog, customer satisfaction, and open risks from multiple underlying reports in one place.',
  'Dashboards are like the instrument panel in a vehicle — they surface the indicators you need to watch continuously.',
@@ -1374,7 +1374,7 @@ VALUES
  ARRAY['power-bi','dashboard','monitoring','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_pagesites01', 'Power Pages Sites',
- 'software',
+ 'power platform',
  'Power Pages is the foundational website component for securely exposing selected business processes and data to external users such as customers, partners, or citizens.',
  'A local authority publishes a permit portal where residents submit requests and track status without staff emailing PDFs back and forth.',
  'Power Pages sites are like controlled storefronts for your business data — the public sees only the services and information intentionally exposed.',
@@ -1382,7 +1382,7 @@ VALUES
  ARRAY['power-pages','portal','external-users','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_copilotstudio01', 'Copilot Studio Bots',
- 'software',
+ 'power platform',
  'Copilot Studio is the conversational component of Power Platform, letting organisations create bots and copilots that answer questions and trigger actions.',
  'A staff-support bot answers policy questions, creates IT tickets, and escalates unresolved issues to a human service desk.',
  'Copilot Studio bots are like digital receptionists who can speak, guide, and hand work off to back-office processes.',
@@ -1390,7 +1390,7 @@ VALUES
  ARRAY['copilot-studio','bot','conversation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_aibuilder01', 'AI Builder Models',
- 'software',
+ 'power platform',
  'AI Builder brings ready-to-use and custom AI capabilities into Power Platform so makers can classify, predict, detect, and extract information without becoming machine-learning specialists.',
  'A flow uses AI Builder to extract key fields from invoices and route them into an approval process.',
  'AI Builder is like adding a smart scanner and pattern recogniser to your low-code toolkit.',
@@ -1398,7 +1398,7 @@ VALUES
  ARRAY['ai-builder','ai','low-code','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_environmentstrategy01', 'Environment Strategy Basics',
- 'software',
+ 'power platform',
  'An environment strategy defines how Dev, Test, and Production are separated so solutions can be built safely, validated properly, and released with control.',
  'A council uses a development environment for experiments, a test environment for user acceptance, and a locked production environment for live services.',
  'Environment strategy is like using separate kitchens for recipe testing and restaurant service — you do not experiment in the room serving customers.',
@@ -1406,7 +1406,7 @@ VALUES
  ARRAY['environment','strategy','governance','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_defaultenv01', 'Default Environment',
- 'software',
+ 'power platform',
  'The default environment is the tenant''s shared starting space, but relying on it for important business solutions usually creates governance and lifecycle-management problems.',
  'A company discovers dozens of abandoned apps and flows in the default environment because makers built there without a managed environment strategy.',
  'The default environment is like the shared office lobby — useful for entry, but not the best place to run every important operation.',
@@ -1414,7 +1414,7 @@ VALUES
  ARRAY['default-environment','governance','power-platform','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_solutions01', 'Solutions',
- 'software',
+ 'power platform',
  'Solutions package apps, flows, tables, and other components together so they can be managed, moved, and governed across environments.',
  'A customer-service solution includes a model-driven app, automated flows, Dataverse tables, and security components deployed together to production.',
  'A solution is like a labelled moving crate — all the related pieces of a system travel together instead of being carried one by one.',
@@ -1422,7 +1422,7 @@ VALUES
  ARRAY['solutions','alm','power-platform','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_managed01', 'Managed vs Unmanaged Solutions',
- 'software',
+ 'power platform',
  'Unmanaged solutions are used during development, while managed solutions are controlled release packages intended for downstream environments such as test and production.',
  'A team develops in an unmanaged solution in Dev, then deploys a managed version into Production so users cannot accidentally alter shipped components.',
  'Managed vs unmanaged is like source files versus packaged software — one is built for editing, the other for controlled use.',
@@ -1430,7 +1430,7 @@ VALUES
  ARRAY['managed-solution','unmanaged-solution','alm','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_dlp01', 'Data Loss Prevention Policies',
- 'software',
+ 'power platform',
  'DLP policies classify and restrict connector combinations so sensitive organisational data cannot be moved into unsafe services through apps and flows.',
  'An organisation allows Dataverse and Office 365 connectors together but blocks business data from being sent to consumer file-sharing platforms.',
  'DLP policies are like traffic rules that stop sensitive data from taking unsafe roads out of the organisation.',
@@ -1438,7 +1438,7 @@ VALUES
  ARRAY['dlp','security','governance','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_admincenter01', 'Power Platform Administration Center',
- 'software',
+ 'power platform',
  'The Power Platform Admin Center is the management hub where administrators monitor environments, policies, capacity, analytics, and governance settings.',
  'An admin uses the Admin Center to create a new environment, review capacity, configure DLP, and inspect tenant-wide usage trends.',
  'The Admin Center is like the control tower for the platform — it gives administrators visibility and control over the whole estate.',
@@ -1446,7 +1446,7 @@ VALUES
  ARRAY['admin-center','governance','administration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_makerportal01', 'Maker Portal',
- 'software',
+ 'power platform',
  'The Maker Portal is the main workspace where makers create, edit, and manage apps, flows, tables, copilots, and other Power Platform assets.',
  'A business analyst opens the Maker Portal to build a canvas app, create a flow, inspect Dataverse tables, and share the solution with teammates.',
  'The Maker Portal is like a workshop where makers assemble and refine the building blocks of a business solution.',
@@ -1454,7 +1454,7 @@ VALUES
  ARRAY['maker-portal','maker','power-platform','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_templates01', 'Templates as Accelerators',
- 'software',
+ 'power platform',
  'Templates in Power Platform provide pre-built starting points for apps, flows, pages, and bots so teams can learn patterns quickly and deliver common scenarios faster.',
  'A department starts from a leave-request app template and a matching approval-flow template instead of building both from scratch.',
  'Templates are like training wheels and starter kits combined — they help teams begin with something proven and adapt it to local needs.',
@@ -1462,7 +1462,7 @@ VALUES
  ARRAY['templates','accelerator','low-code','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_found_licensing01', 'Licensing and Capacity Basics',
- 'software',
+ 'power platform',
  'Licensing and capacity determine which premium capabilities, environments, connectors, AI features, and data storage options an organisation can use at scale.',
  'A team plans a solution using premium connectors and Dataverse capacity, so licensing is reviewed before rollout to avoid surprise blockers later.',
  'Licensing and capacity are like the fuel and permit system for the platform — they affect how far you can go and which routes you are allowed to use.',
@@ -1471,7 +1471,7 @@ VALUES
 
 -- ── Group 2: Power Apps Business Value ───────────────────────────────────────
 ('concept_pl9_appsvalue01', 'Power Apps Business Value',
- 'software',
+ 'power platform',
  'Power Apps enables organisations to rapidly build custom business apps that replace paper forms, spreadsheets, and costly custom software with governed, mobile-ready solutions.',
  'A manufacturing firm replaces 12 paper-based inspection checklists with a single Canvas App, reducing data entry errors by 60% and eliminating manual data re-entry.',
  'Power Apps is like a DIY app store for your organisation — instead of waiting months for IT to build a solution, business teams can create and deploy their own in days.',
@@ -1479,7 +1479,7 @@ VALUES
  ARRAY['power-apps','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_appmodern01', 'App Modernisation',
- 'software',
+ 'power platform',
  'Replacing legacy desktop applications, Access databases, or paper forms with modern Power Apps solutions that are mobile-friendly, cloud-hosted, and integrated with live data.',
  'An Access database used by 10 staff for inventory tracking is replaced by a Model-Driven App connected to Dataverse, accessible on any device.',
  'App modernisation is like renovating an old building — you keep the business function but replace the crumbling infrastructure with something safe, efficient, and scalable.',
@@ -1487,7 +1487,7 @@ VALUES
  ARRAY['power-apps','modernisation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_mobile01', 'Mobile-First Apps',
- 'software',
+ 'power platform',
  'Power Apps Canvas Apps are designed to run on iOS and Android devices, enabling field workers to access and update data from anywhere without a laptop.',
  'A site inspector uses a Canvas App on an iPhone to photograph defects, record measurements, and submit reports from the field — all syncing to Dataverse in real time.',
  'Mobile-first apps are like taking your office with you in your pocket — field workers get the same data access and input capabilities as desk-bound colleagues.',
@@ -1495,7 +1495,7 @@ VALUES
  ARRAY['power-apps','mobile','field-worker','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_offline01', 'Offline Capability',
- 'software',
+ 'power platform',
  'Canvas Apps can store data locally when no internet connection is available, syncing changes back to the data source once connectivity is restored.',
  'A utility engineer uses a Canvas App in areas with no signal; completed inspection data is queued locally and uploaded automatically when the device reconnects.',
  'Offline capability is like a notepad that automatically emails your notes when you get back to the office — you capture data on the spot and sync happens later.',
@@ -1503,7 +1503,7 @@ VALUES
  ARRAY['power-apps','offline','canvas','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_fusionteam01', 'Fusion Development Teams',
- 'software',
+ 'power platform',
  'A collaboration model where citizen developers (business users) and professional developers work together, with pros building reusable components and citizens assembling solutions.',
  'A pro developer builds a custom PCF control and an Azure API; a business analyst assembles these into a Canvas App using Power Platform without writing backend code.',
  'Fusion teams are like a construction project — architects and engineers design the structural systems, while skilled workers assemble the building from pre-made components.',
@@ -1511,7 +1511,7 @@ VALUES
  ARRAY['fusion-team','pro-dev','citizen-dev','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_powerpages_bv01', 'Power Pages Business Value',
- 'software',
+ 'power platform',
  'Power Pages enables organisations to build secure, externally-facing websites backed by Dataverse without traditional web development skills, extending data to partners and customers.',
  'A charity builds a volunteer sign-up portal on Power Pages where external users register, view their assignments, and submit reports — all stored in Dataverse.',
  'Power Pages is like a self-service customer portal built on top of your internal database — external users interact with your data through a safe, governed website.',
@@ -1519,7 +1519,7 @@ VALUES
  ARRAY['power-pages','portal','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_rad01', 'Rapid Application Development (RAD)',
- 'software',
+ 'power platform',
  'The ability to build and deploy functional business apps in days or weeks rather than months, enabled by Power Apps'' visual development and pre-built templates.',
  'A project manager builds a risk-tracking app in one day using a Power Apps template, customises it over a week, and deploys it to the team the following Monday.',
  'RAD on Power Platform is like using LEGO blocks instead of raw bricks — the blocks are pre-shaped, so you spend time designing, not manufacturing.',
@@ -1527,7 +1527,7 @@ VALUES
  ARRAY['power-apps','rad','agile','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_aibuilder01', 'AI Builder',
- 'software',
+ 'power platform',
  'A Power Platform capability that brings pre-built and custom AI models (form processing, object detection, sentiment analysis) into apps and flows without data science expertise.',
  'A procurement team uses AI Builder''s invoice-processing model in a Power Automate flow to automatically extract line items from scanned PDF invoices.',
  'AI Builder is like a plug-in AI assistant for your apps and flows — you configure what you want to detect or extract, and the AI handles the complex model training.',
@@ -1535,7 +1535,7 @@ VALUES
  ARRAY['ai-builder','ai','automation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_template01', 'Power Apps Templates',
- 'software',
+ 'power platform',
  'Pre-built app templates in Power Apps (e.g. Expense Report, Issue Tracker, Asset Checkout) that give makers a working starting point to customise for their scenario.',
  'A facilities manager starts from the "Asset Checkout" template in Power Apps and customises it for their specific equipment categories and approval workflow in two days.',
  'Templates are like cookie-cutter moulds — they give you the right shape quickly, and you adapt the decoration (fields, logic, branding) to your needs.',
@@ -1543,7 +1543,7 @@ VALUES
  ARRAY['power-apps','templates','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_appsgovernance01', 'Power Apps Governance',
- 'software',
+ 'power platform',
  'The policies, processes, and tools (DLP, environment strategy, CoE Toolkit) used to ensure Power Apps are secure, compliant, and maintainable across an organisation.',
  'An IT admin uses the CoE Toolkit to identify 200 unused Canvas Apps across the tenant and runs a cleanup campaign, saving storage and reducing security risk.',
  'Power Apps governance is like city planning — without zoning rules and building codes, citizen developers build wherever they like, leading to an unmanageable sprawl.',
@@ -1552,7 +1552,7 @@ VALUES
 
 -- ── Group 3: Power Automate Business Value ────────────────────────────────────
 ('concept_pl9_autovalue01', 'Power Automate Business Value',
- 'software',
+ 'power platform',
  'Power Automate eliminates repetitive manual tasks, reduces human error, and frees employees to focus on higher-value work by automating business processes end-to-end.',
  'An HR team automates onboarding: when a new hire record is created in Dynamics 365, a flow sends welcome emails, creates accounts, and schedules orientation — saving 3 hours per hire.',
  'Power Automate is like a diligent office assistant who never sleeps — it handles routine tasks like sending emails, updating records, and routing approvals without being asked twice.',
@@ -1560,7 +1560,7 @@ VALUES
  ARRAY['power-automate','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_processauto01', 'Digital Process Automation (DPA)',
- 'software',
+ 'power platform',
  'Automating structured, rules-based business processes across digital systems using Cloud Flows, eliminating manual handoffs and reducing cycle times.',
  'A contract approval process that previously took 5 days of email chains is automated with a Power Automate approval flow, completing in hours with full audit trail.',
  'DPA is like replacing a relay race baton-pass with a conveyor belt — tasks move automatically to the next step without anyone needing to remember to hand off.',
@@ -1568,7 +1568,7 @@ VALUES
  ARRAY['power-automate','dpa','automation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_rpa_bv01', 'Robotic Process Automation (RPA) Business Value',
- 'software',
+ 'power platform',
  'RPA via Power Automate Desktop automates repetitive tasks on legacy desktop applications that lack APIs, bridging modern cloud workflows with older systems.',
  'A bank uses Desktop Flows to extract data from a 1990s mainframe terminal and populate a modern Dataverse table nightly — without modifying the mainframe.',
  'RPA is like a robotic arm bolted onto an old manual machine — the machine is not upgraded, but a robot now operates it automatically instead of a human.',
@@ -1576,7 +1576,7 @@ VALUES
  ARRAY['rpa','power-automate','desktop','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_approvalvalue01', 'Approval Automation Business Value',
- 'software',
+ 'power platform',
  'Automating approval workflows (expenses, leave, contracts) with Power Automate eliminates email chains, provides auditability, and accelerates decision-making.',
  'A company replaces a 7-day email approval chain for purchase orders with a Power Automate approval flow that managers action in Microsoft Teams, reducing cycle time to 4 hours.',
  'Approval automation is like replacing a paper signature chain with a digital counter that instantly alerts the next approver the moment the previous one signs.',
@@ -1584,7 +1584,7 @@ VALUES
  ARRAY['power-automate','approval','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_roiautomation01', 'Automation ROI',
- 'software',
+ 'power platform',
  'The measurable return on investment from automating a process, calculated by comparing time/cost saved against the cost of building and maintaining the automation.',
  'Automating a 30-minute daily data entry task for 10 employees saves 150 hours/month; at £30/hour that is £4,500/month saved against a one-time build cost of £2,000.',
  'Automation ROI is like compound interest — small time savings per task multiply across employees and months into significant financial returns.',
@@ -1592,7 +1592,7 @@ VALUES
  ARRAY['power-automate','roi','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_processadvisor01', 'Process Mining',
- 'software',
+ 'power platform',
  'Power Automate''s process mining capability analyses event logs from business systems to discover how processes actually run, identify bottlenecks, and prioritise automation targets.',
  'Process mining on a purchase order system reveals that 40% of orders get stuck at the same approval step for more than 3 days, making it the top candidate for automation.',
  'Process mining is like a GPS that shows you the actual roads people are taking, not the intended route — it reveals where the real delays and detours are happening.',
@@ -1600,7 +1600,7 @@ VALUES
  ARRAY['process-mining','power-automate','analytics','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_teamsauto01', 'Microsoft Teams Automation',
- 'software',
+ 'power platform',
  'Power Automate integrates with Microsoft Teams to send adaptive card notifications, trigger flows from messages, and post approvals directly inside the Teams interface.',
  'A Power Automate flow posts an adaptive card to a Teams channel when a high-priority support ticket is created, allowing the team to acknowledge it with one click.',
  'Teams automation is like adding a smart notification system to your team''s meeting room — important events surface automatically in the place where everyone already works.',
@@ -1608,7 +1608,7 @@ VALUES
  ARRAY['power-automate','teams','notification','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_errorreduce01', 'Error Reduction through Automation',
- 'software',
+ 'power platform',
  'Automating manual data entry and handoff tasks eliminates transcription errors, missed steps, and inconsistencies that are common in human-operated processes.',
  'Replacing manual copying of order data from emails into an ERP system with a Power Automate flow reduces data-entry errors from 5% to near zero.',
  'Automation for error reduction is like spell-check for business processes — it catches and prevents mistakes at the source rather than fixing them downstream.',
@@ -1616,7 +1616,7 @@ VALUES
  ARRAY['power-automate','quality','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_scheduledauto01', 'Scheduled Automation',
- 'software',
+ 'power platform',
  'Running automations on a fixed schedule (daily, weekly, monthly) to handle batch operations like report generation, data synchronisation, and reminder notifications.',
  'A Scheduled Flow runs every Monday at 8 AM, pulls last week''s sales data from Dataverse, and emails a formatted summary report to each regional manager.',
  'Scheduled automation is like setting a recurring alarm for your business process — the task runs reliably at the same time every cycle without anyone needing to remember.',
@@ -1624,7 +1624,7 @@ VALUES
  ARRAY['power-automate','schedule','batch','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_connectorvalue01', 'Pre-Built Connectors Value',
- 'software',
+ 'power platform',
  'Power Automate provides 1,000+ pre-built connectors to popular services (Salesforce, SAP, ServiceNow, Office 365) enabling instant integration without custom development.',
  'A flow connects Salesforce (where leads arrive) to Dataverse (where they are managed) and Outlook (where the sales rep is notified) using three pre-built connectors — no code written.',
  'Pre-built connectors are like pre-wired electrical sockets — you plug your appliance (service) in without needing to understand the wiring behind the wall.',
@@ -1632,7 +1632,7 @@ VALUES
  ARRAY['power-automate','connectors','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_cloudflow01', 'Cloud Flow Fundamentals',
- 'software',
+ 'power platform',
  'A Power Automate automation that runs in Microsoft''s cloud and connects services through triggers and actions, making it ideal for email, approvals, notifications, and cross-system integrations.',
  'When a new row is added to Dataverse, a Cloud Flow sends a Teams alert, creates a Planner task, and writes an audit entry to SharePoint.',
  'A Cloud Flow is like an office workflow coordinator in the cloud — it watches for events and moves work between systems automatically.',
@@ -1640,7 +1640,7 @@ VALUES
  ARRAY['power-automate','cloud-flow','automation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_automatedflow01', 'Automated Cloud Flow',
- 'software',
+ 'power platform',
  'A type of Cloud Flow that starts automatically when a specific event happens, such as a new email arriving, a SharePoint file being created, or a Dataverse record changing.',
  'A flow triggers automatically when a new Microsoft Form response is submitted, saves the data to Dataverse, and emails a confirmation to the requester.',
  'An Automated Cloud Flow is like a motion-activated light — it wakes up only when something happens and then performs its configured response.',
@@ -1648,7 +1648,7 @@ VALUES
  ARRAY['power-automate','automated-flow','event-driven','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_instantflow01', 'Instant Cloud Flow',
- 'software',
+ 'power platform',
  'A type of Cloud Flow started manually by a user from Power Automate, Power Apps, Teams, or a mobile device when they want an action to happen immediately.',
  'A sales rep taps a button in a Power Apps app to launch an Instant Flow that sends a quote for approval and posts a message in Teams.',
  'An Instant Flow is like a service bell at a hotel desk — nothing happens until someone presses it, and then the workflow starts immediately.',
@@ -1656,7 +1656,7 @@ VALUES
  ARRAY['power-automate','instant-flow','manual','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_desktopflow01', 'Desktop Flow',
- 'software',
+ 'power platform',
  'A Power Automate Desktop automation that records and replays UI steps on a Windows machine, enabling robotic process automation for legacy apps that do not expose APIs.',
  'A finance team uses a Desktop Flow to log into a legacy accounting app, copy invoice data into Excel, and upload the result to SharePoint each evening.',
  'A Desktop Flow is like teaching a robot to operate a keyboard and mouse the same way a human user would on a desktop computer.',
@@ -1664,7 +1664,7 @@ VALUES
  ARRAY['power-automate','desktop-flow','rpa','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_triggeraction01', 'Triggers and Actions',
- 'software',
+ 'power platform',
  'Power Automate flows are built from triggers, which start the flow, and actions, which perform the work such as sending email, creating records, or requesting approval.',
  'A flow uses the trigger "When an item is created" in SharePoint, then runs actions to send an Outlook email and create a task in Planner.',
  'Triggers and actions are like a doorbell and the steps that follow — the bell starts the process, and the actions are what everyone does next.',
@@ -1672,7 +1672,7 @@ VALUES
  ARRAY['power-automate','trigger','action','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_flowtemplate01', 'Power Automate Templates',
- 'software',
+ 'power platform',
  'Pre-built flow patterns that help makers start common automation scenarios quickly, such as approvals, file notifications, social posting, and data synchronisation.',
  'A department starts from the "Save Office 365 email attachments to OneDrive" template and customises it to route contract files into a governed SharePoint library.',
  'Templates are like recipe cards for automation — they give you the ingredients and steps, and you adapt them to your own kitchen and business rules.',
@@ -1680,7 +1680,7 @@ VALUES
  ARRAY['power-automate','templates','starter','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_stdpremium01', 'Standard vs Premium Connectors',
- 'software',
+ 'power platform',
  'Power Automate connectors are split into standard and premium tiers, which affects licensing, governance decisions, and which automations users can run in production.',
  'A maker builds a flow with Outlook and SharePoint using standard connectors, but adding Salesforce requires a premium licence before the flow can be used broadly.',
  'Standard vs premium connectors are like economy and business-class tickets — both move you forward, but some routes and features cost more.',
@@ -1688,7 +1688,7 @@ VALUES
  ARRAY['power-automate','connectors','licensing','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_approvalsconnector01', 'Approvals Connector',
- 'software',
+ 'power platform',
  'The built-in Power Automate approvals capability used to send approval requests, collect responses, track outcomes, and integrate approval actions with email and Teams.',
  'A leave-request flow uses Start and wait for an approval, notifies the manager in Teams, and updates Dataverse based on Approve or Reject.',
  'The Approvals connector is like a digital in-tray for managers — requests arrive in a standard format, can be actioned quickly, and leave an audit trail behind.',
@@ -1696,7 +1696,7 @@ VALUES
  ARRAY['power-automate','approvals','connector','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_condition01', 'Condition Control',
- 'software',
+ 'power platform',
  'A flow control that branches the automation into different paths based on whether a logical test evaluates to true or false.',
  'A flow checks whether an invoice amount is greater than 1000; if true it sends the item for manager approval, otherwise it posts directly to finance processing.',
  'A condition is like a fork in the road — the flow looks at the sign and chooses the right path based on the situation.',
@@ -1704,7 +1704,7 @@ VALUES
  ARRAY['power-automate','condition','logic','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_applytoeach01', 'Apply to Each Loop',
- 'software',
+ 'power platform',
  'A looping control in Power Automate that repeats a set of actions for every item in an array or collection returned by a previous step.',
  'A SharePoint query returns 20 overdue tasks and the flow uses Apply to each to send each task owner an individual reminder email.',
  'Apply to each is like working through a stack of forms one by one — the same steps are repeated for every item until the stack is finished.',
@@ -1712,7 +1712,7 @@ VALUES
  ARRAY['power-automate','loop','apply-to-each','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_expression01', 'Expressions',
- 'software',
+ 'power platform',
  'Inline formulas used in Power Automate to transform data, combine values, test conditions, and manipulate strings, dates, and arrays during a flow run.',
  'A flow uses concat() to build an email subject, formatDateTime() to display a due date, and coalesce() to handle missing values safely.',
  'Expressions are like mini calculator formulas inside a workflow — they let you reshape data without needing to write full application code.',
@@ -1720,7 +1720,7 @@ VALUES
  ARRAY['power-automate','expressions','formula','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_runhistory01', 'Run History',
- 'software',
+ 'power platform',
  'The monitoring view in Power Automate that shows each flow run, its trigger details, action outcomes, duration, inputs, outputs, and any failures for troubleshooting.',
  'A maker opens run history to see that a flow failed at the SQL action because the gateway connection had expired, then fixes the connection and reruns the flow.',
  'Run history is like a flight recorder for a workflow — it tells you exactly what happened, when it happened, and where things went wrong.',
@@ -1728,7 +1728,7 @@ VALUES
  ARRAY['power-automate','monitoring','run-history','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_errorhandling01', 'Error Handling',
- 'software',
+ 'power platform',
  'The design of flows to detect failures, take fallback actions, notify owners, and continue or stop safely instead of silently breaking when an action fails.',
  'If a record update fails, the flow writes the error to a log list, notifies support in Teams, and marks the item for manual follow-up rather than losing the transaction.',
  'Error handling is like a safety net under a tightrope — problems may still happen, but the process does not crash to the ground without recovery.',
@@ -1736,7 +1736,7 @@ VALUES
  ARRAY['power-automate','error-handling','resilience','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_dataverseauto01', 'Dataverse Automation',
- 'software',
+ 'power platform',
  'Power Automate works closely with Microsoft Dataverse to trigger flows from table events and create, update, or query business data as part of automated processes.',
  'When a new Case row is created in Dataverse, a flow assigns an owner, sets a priority, creates a follow-up task, and posts a notification to Teams.',
  'Dataverse automation is like wiring your workflow directly into the organisation''s system of record — when the data changes, the business process moves with it.',
@@ -1744,7 +1744,7 @@ VALUES
  ARRAY['power-automate','dataverse','automation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_mobileflow01', 'Power Automate Mobile App',
- 'software',
+ 'power platform',
  'The mobile app lets users receive approvals, trigger instant flows, monitor runs, and stay connected to business automations from a phone or tablet.',
  'A regional manager approves an urgent purchase request from the Power Automate mobile app while travelling, preventing a same-day order from being delayed.',
  'The mobile app is like carrying your workflow inbox in your pocket — you can respond to requests and launch actions without being at your desk.',
@@ -1753,7 +1753,7 @@ VALUES
 
 -- ── Group 4: Power BI Business Value ─────────────────────────────────────────
 ('concept_pl9_bivalue01', 'Power BI Business Value',
- 'software',
+ 'power platform',
  'Power BI transforms raw data into interactive visualisations and reports that enable faster, evidence-based decisions across all levels of an organisation.',
  'A retail chain replaces weekly Excel-based sales reports emailed to managers with a live Power BI dashboard, cutting report preparation time from 8 hours to zero.',
  'Power BI is like upgrading from a printed map to a live GPS — instead of a static snapshot of where you were, you see exactly where you are and where you are heading.',
@@ -1761,7 +1761,7 @@ VALUES
  ARRAY['power-bi','business-value','analytics','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_selfservicebi01', 'Self-Service BI',
- 'software',
+ 'power platform',
  'The ability for business users to create their own reports and dashboards from governed datasets without depending on IT or data analysts for every query.',
  'A marketing manager connects Power BI Desktop to a certified dataset and builds her own campaign-performance dashboard without raising an IT ticket.',
  'Self-service BI is like giving everyone in the office a key to the data filing cabinet — instead of asking IT to retrieve files, users find what they need themselves.',
@@ -1769,7 +1769,7 @@ VALUES
  ARRAY['power-bi','self-service','analytics','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pbidesktop01', 'Power BI Desktop',
- 'software',
+ 'power platform',
  'A free Windows application for connecting to data sources, transforming data with Power Query, building data models, and authoring reports before publishing to the Power BI Service.',
  'A data analyst uses Power BI Desktop to connect to Azure SQL, clean data with Power Query, build a star-schema model, and design a sales report before publishing it.',
  'Power BI Desktop is like a professional kitchen where you prepare the meal (data model and report) before serving it (publishing to the service for others to consume).',
@@ -1777,7 +1777,7 @@ VALUES
  ARRAY['power-bi','desktop','authoring','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pbiservice01', 'Power BI Service',
- 'software',
+ 'power platform',
  'A cloud-based platform where published Power BI reports are shared, scheduled for data refresh, embedded, and consumed by business users across the organisation.',
  'A finance analyst publishes a monthly close dashboard to the Power BI Service, sets a daily data refresh, and shares it with the CFO''s team via a workspace.',
  'The Power BI Service is like a digital newsstand — the analyst (journalist) creates and publishes the report, and subscribers read it in the cloud on any device.',
@@ -1785,7 +1785,7 @@ VALUES
  ARRAY['power-bi','service','sharing','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pbireport01', 'Power BI Report',
- 'software',
+ 'power platform',
  'A multi-page, interactive document created in Power BI Desktop containing visuals (charts, tables, maps) connected to a data model, enabling exploratory data analysis.',
  'A sales report contains a bar chart of revenue by region, a line chart of monthly trends, and a map of top customers — all filtering each other when clicked.',
  'A Power BI report is like an interactive magazine — instead of static printed charts, every visual is linked, and clicking one filters the others dynamically.',
@@ -1793,7 +1793,7 @@ VALUES
  ARRAY['power-bi','report','visualisation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pbidashboard01', 'Power BI Dashboard',
- 'software',
+ 'power platform',
  'A single-page canvas in the Power BI Service that displays pinned tiles from multiple reports, providing a high-level real-time overview for executives and decision-makers.',
  'A CEO''s Power BI dashboard shows revenue-to-target, headcount, customer NPS, and open support tickets — all pinned from four different underlying reports.',
  'A Power BI dashboard is like a cockpit instrument panel — it shows the critical gauges from multiple systems in one glance, alerting you when something needs attention.',
@@ -1801,7 +1801,7 @@ VALUES
  ARRAY['power-bi','dashboard','executive','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_datarefresh01', 'Data Refresh',
- 'software',
+ 'power platform',
  'The scheduled or on-demand process by which Power BI re-queries the data source and updates the report''s underlying dataset to reflect the latest information.',
  'A sales dashboard is configured with an 8x daily data refresh, so managers always see figures no more than 3 hours old without needing to manually update anything.',
  'Data refresh is like a newspaper printing a new edition — without it, readers see yesterday''s news; with a frequent schedule, the information stays current.',
@@ -1809,7 +1809,7 @@ VALUES
  ARRAY['power-bi','refresh','data','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pbimobile01', 'Power BI Mobile',
- 'software',
+ 'power platform',
  'iOS and Android apps that allow business users to access Power BI dashboards and reports from their phones, with touch-optimised layouts and push notifications for alerts.',
  'A regional manager receives a push notification on his phone when the daily sales target falls below 80%, then opens Power BI Mobile to drill into the underperforming stores.',
  'Power BI Mobile is like carrying a live business newspaper in your pocket — you get alerts for breaking news (data anomalies) and can dig into the story anywhere.',
@@ -1817,7 +1817,7 @@ VALUES
  ARRAY['power-bi','mobile','analytics','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_datadriven01', 'Data-Driven Decision Making',
- 'software',
+ 'power platform',
  'The practice of basing business decisions on data analysis and visualisation rather than gut instinct, enabled by accessible tools like Power BI.',
  'A marketing team reviews a Power BI report showing which channels drive the lowest cost-per-lead, then reallocates budget from TV to digital — increasing leads by 30%.',
  'Data-driven decision making is like navigating with a map instead of guessing — you see the evidence, choose the most promising route, and measure whether it worked.',
@@ -1825,7 +1825,7 @@ VALUES
  ARRAY['power-bi','analytics','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_datasharing01', 'Power BI Sharing and Workspaces',
- 'software',
+ 'power platform',
  'Power BI Workspaces enable teams to collaborate on reports, and sharing features let analysts publish content to specific users or broad organisational audiences.',
  'A finance team uses a Power BI Workspace to co-develop reports; once approved, the content is published to an App for the wider business to consume in read-only mode.',
  'Workspaces are like a shared project folder — the team edits inside the workspace, and publishing an App is like printing the finished document for everyone to read.',
@@ -1833,7 +1833,7 @@ VALUES
  ARRAY['power-bi','sharing','workspace','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_semanticmodel01', 'Power BI Semantic Model',
- 'software',
+ 'power platform',
  'A semantic model, formerly called a dataset, is the structured layer in Power BI that stores tables, relationships, calculations, and business logic used by reports.',
  'A finance team builds one semantic model for revenue and cost data, then creates separate executive, sales, and operations reports from that shared model.',
  'A semantic model is like the organised library behind a report — the shelves, labels, and cataloguing system make it easy for everyone to find the right insight.',
@@ -1841,7 +1841,7 @@ VALUES
  ARRAY['power-bi','semantic-model','dataset','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_powerquery01', 'Power Query',
- 'software',
+ 'power platform',
  'Power Query is the data preparation tool in Power BI used to connect to sources, clean data, combine tables, and shape information before it enters the model.',
  'An analyst uses Power Query to split full names, remove duplicate rows, merge sales files from multiple regions, and standardise date formats.',
  'Power Query is like a prep kitchen where raw ingredients are washed, chopped, and organised before they become the final meal.',
@@ -1849,7 +1849,7 @@ VALUES
  ARRAY['power-bi','power-query','data-prep','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_datasource01', 'Data Sources',
- 'software',
+ 'power platform',
  'Power BI connects to many data sources including Excel, SQL Server, SharePoint, Dataverse, Azure services, and SaaS platforms so organisations can analyse information from across the business.',
  'A report combines data from Excel budget files, SQL sales history, and Dataverse account records to give managers one consolidated view.',
  'Data sources are like rivers feeding a reservoir — Power BI gathers information from many places and brings it into one analysis environment.',
@@ -1857,7 +1857,7 @@ VALUES
  ARRAY['power-bi','data-sources','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_visuals01', 'Data Visualisations',
- 'software',
+ 'power platform',
  'Charts, tables, maps, cards, and other visuals in Power BI turn raw numbers into patterns and stories that business users can understand quickly.',
  'A sales report uses a line chart for monthly trends, a bar chart for top products, and a card visual for total revenue to summarise performance clearly.',
  'Visualisations are like turning a spreadsheet into a picture book — the same facts become much easier to scan and interpret.',
@@ -1865,7 +1865,7 @@ VALUES
  ARRAY['power-bi','visualisation','reporting','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_kpi01', 'Key Performance Indicators (KPIs)',
- 'software',
+ 'power platform',
  'KPIs are measurable business targets shown in Power BI to track whether performance is meeting expectations, such as revenue target, case resolution time, or customer satisfaction.',
  'A dashboard shows monthly revenue against target with a green indicator when performance exceeds plan and red when it falls behind.',
  'KPIs are like the scoreboards in a stadium — they show at a glance whether the team is winning, losing, or on target.',
@@ -1873,7 +1873,7 @@ VALUES
  ARRAY['power-bi','kpi','dashboard','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_slicers01', 'Filters and Slicers',
- 'software',
+ 'power platform',
  'Filters and slicers let users narrow a report to the data most relevant to them, such as a specific region, product line, date range, or department.',
  'A manager selects only the South Island region and Q1 in slicers to see the relevant sales figures update across all visuals instantly.',
  'Filters and slicers are like choosing which lenses to look through — the data stays the same, but you focus on the part that matters right now.',
@@ -1881,7 +1881,7 @@ VALUES
  ARRAY['power-bi','filters','slicers','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_drill01', 'Drill-Down and Drill-Through',
- 'software',
+ 'power platform',
  'Drill-down and drill-through features let users move from high-level summary data into more detailed views to investigate the drivers behind a result.',
  'A regional sales chart lets a director drill from country to region to store, then drill through to a page showing the detailed transactions behind one store''s drop in sales.',
  'Drill features are like moving from a city map to a street map and then to a specific address — each step gives more detail when you need it.',
@@ -1889,7 +1889,7 @@ VALUES
  ARRAY['power-bi','drill-down','drill-through','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_qna01', 'Q&A Natural Language Queries',
- 'software',
+ 'power platform',
  'Power BI Q&A lets users type business questions in natural language and receive suggested visuals or answers without building the report manually.',
  'A user asks "total sales by region this quarter" and Power BI generates a chart showing the answer directly from the model.',
  'Q&A is like asking a data analyst a plain-English question and getting a chart back immediately.',
@@ -1897,7 +1897,7 @@ VALUES
  ARRAY['power-bi','q-and-a','natural-language','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_alerts01', 'Data Alerts',
- 'software',
+ 'power platform',
  'Data alerts notify users when a dashboard metric crosses a threshold, helping them act quickly when business conditions change.',
  'A warehouse manager receives a Power BI alert when inventory for a critical product falls below the minimum stock threshold.',
  'Data alerts are like a smoke alarm for business metrics — they stay quiet when things are normal and get attention when a threshold is crossed.',
@@ -1905,7 +1905,7 @@ VALUES
  ARRAY['power-bi','alerts','monitoring','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_rls01', 'Row-Level Security (RLS)',
- 'software',
+ 'power platform',
  'Row-level security restricts which rows of data a user can see in a Power BI report, enabling one report to serve multiple audiences safely.',
  'A sales report uses RLS so each regional manager sees only their own territory''s customers and revenue while executives see all regions.',
  'RLS is like issuing the same report book to everyone but blacking out the pages each person is not allowed to read.',
@@ -1913,7 +1913,7 @@ VALUES
  ARRAY['power-bi','security','rls','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pbiapp01', 'Power BI Apps',
- 'software',
+ 'power platform',
  'A Power BI App is a packaged, curated way to distribute dashboards and reports from a workspace to a wider audience in a controlled read-only experience.',
  'The finance team publishes a monthly reporting app containing approved dashboards for executives, branch managers, and analysts.',
  'A Power BI App is like publishing a finished magazine from an editorial workspace — readers get a polished edition without seeing the draft material.',
@@ -1921,7 +1921,7 @@ VALUES
  ARRAY['power-bi','app','sharing','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_gateway01', 'On-Premises Data Gateway',
- 'software',
+ 'power platform',
  'The on-premises data gateway securely connects Power BI Service to data sources that remain inside an organisation''s local network, enabling refresh without moving the source system to the cloud.',
  'A company keeps SQL Server on-premises but uses a gateway so its Power BI sales dashboard refreshes every morning in the cloud service.',
  'A gateway is like a secure tunnel between your office server room and the Power BI cloud.',
@@ -1929,7 +1929,7 @@ VALUES
  ARRAY['power-bi','gateway','on-premises','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_importdirect01', 'Import vs DirectQuery',
- 'software',
+ 'power platform',
  'Power BI supports different storage modes: Import copies data into the model for speed, while DirectQuery leaves data in the source system and queries it live.',
  'A fast executive dashboard uses imported historical sales data, while an operational dashboard uses DirectQuery to show near-real-time warehouse activity.',
  'Import vs DirectQuery is like keeping a local copy of a book for faster reading versus checking the library shelf every time you need a page.',
@@ -1937,7 +1937,7 @@ VALUES
  ARRAY['power-bi','import','directquery','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_dax01', 'DAX Measures',
- 'software',
+ 'power platform',
  'DAX is the formula language used in Power BI to create measures and calculations such as totals, percentages, year-to-date values, and growth rates.',
  'A model includes a DAX measure for Gross Margin % and another for Year-to-Date Sales so executives see the most important business calculations consistently across reports.',
  'DAX measures are like custom formulas on a financial calculator — they define how Power BI should compute business answers from the underlying data.',
@@ -1945,7 +1945,7 @@ VALUES
  ARRAY['power-bi','dax','measures','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_dataflow01', 'Dataflows',
- 'software',
+ 'power platform',
  'Dataflows let organisations centralise reusable data preparation in the Power BI Service so multiple reports can consume the same cleaned and transformed data.',
  'A retail team builds one customer-cleaning dataflow and reuses it across sales, loyalty, and marketing reports instead of repeating the same steps three times.',
  'Dataflows are like a shared prep station in a restaurant — one team cleans and prepares the ingredients once, and many dishes can use them.',
@@ -1954,7 +1954,7 @@ VALUES
 
 -- ── Group 5: Copilot Studio Business Value ────────────────────────────────────
 ('concept_pl9_copilotstudio01', 'Copilot Studio',
- 'software',
+ 'power platform',
  'A low-code platform for building AI-powered chatbots and copilots that can answer questions, automate tasks, and integrate with business data — without writing AI code.',
  'A customer service team builds a Copilot Studio bot that answers common product questions, looks up order status in Dataverse, and escalates complex issues to a human agent.',
  'Copilot Studio is like a smart receptionist you train with your own knowledge — you define the topics it knows about, and it handles customer queries automatically.',
@@ -1962,7 +1962,7 @@ VALUES
  ARRAY['copilot-studio','chatbot','ai','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_chatbot01', 'Chatbot Business Value',
- 'software',
+ 'power platform',
  'Chatbots built in Copilot Studio handle repetitive customer or employee queries 24/7, reducing support ticket volume and improving response times without increasing headcount.',
  'A company deploys an HR chatbot that answers 70% of common questions (leave balance, payslip access, policy queries) without human involvement, freeing HR staff for complex cases.',
  'A chatbot is like an always-available FAQ page that talks back — users get instant answers at any hour without waiting for a human to respond.',
@@ -1970,7 +1970,7 @@ VALUES
  ARRAY['copilot-studio','chatbot','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_intent01', 'Intent Recognition',
- 'software',
+ 'power platform',
  'The AI capability in Copilot Studio that understands the meaning behind a user''s message — even if phrased differently each time — and routes it to the correct topic.',
  'A user types "I need a day off next Friday" or "how do I book leave" — different phrasings that both trigger the same Leave Request topic in the bot.',
  'Intent recognition is like a well-trained customer service rep who understands what you mean even if you do not use the exact right words.',
@@ -1978,7 +1978,7 @@ VALUES
  ARRAY['copilot-studio','nlp','ai','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_topics01', 'Copilot Studio Topics',
- 'software',
+ 'power platform',
  'A Topic in Copilot Studio defines a conversation path the bot follows when a user''s message matches its trigger phrases, containing questions, conditions, and actions.',
  'A "Track My Order" topic asks for the order number, calls a Power Automate flow to look up the status, and replies with the delivery date.',
  'Topics are like conversation scripts for the bot — when a user says the right trigger words, the bot follows the script for that scenario.',
@@ -1986,7 +1986,7 @@ VALUES
  ARRAY['copilot-studio','topics','conversation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_copilotactions01', 'Copilot Studio Actions',
- 'software',
+ 'power platform',
  'Actions in Copilot Studio connect a bot to real data and systems by calling Power Automate flows, HTTP APIs, or Dataverse queries within a conversation.',
  'During a conversation, the bot calls a Power Automate flow action to create a support ticket in Dataverse and returns the ticket number to the user.',
  'Actions are the bot''s hands — topics define what the bot says, while actions let it reach out and do things in connected systems on the user''s behalf.',
@@ -1994,7 +1994,7 @@ VALUES
  ARRAY['copilot-studio','actions','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_omnichannel01', 'Omnichannel Deployment',
- 'software',
+ 'power platform',
  'Copilot Studio bots can be published to multiple channels — Microsoft Teams, websites, mobile apps, Facebook, and more — from a single bot definition.',
  'A customer service bot is published to the company website and to Microsoft Teams simultaneously; employees and customers both use it but through their preferred channel.',
  'Omnichannel deployment is like broadcasting the same TV programme on multiple channels — the content is the same, but viewers choose their preferred screen.',
@@ -2002,7 +2002,7 @@ VALUES
  ARRAY['copilot-studio','omnichannel','deployment','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_escalation01', 'Handoff to Live Agent',
- 'software',
+ 'power platform',
  'Copilot Studio can transfer a conversation to a human agent when the bot cannot resolve the query, passing full conversation context to avoid the user repeating themselves.',
  'When a customer''s complaint exceeds the bot''s capability, the bot transfers the full chat transcript to an available agent in Dynamics 365 Customer Service.',
  'Handoff to a live agent is like a receptionist transferring a call — the caller does not have to explain everything again because the receptionist briefs the next person.',
@@ -2010,7 +2010,7 @@ VALUES
  ARRAY['copilot-studio','escalation','customer-service','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_botanalytics01', 'Bot Analytics',
- 'software',
+ 'power platform',
  'Copilot Studio provides built-in analytics showing session volumes, resolution rates, escalation rates, and abandoned topics to help makers improve bot performance over time.',
  'Analytics show that 35% of sessions end in escalation on the "Billing" topic; the maker adds more phrases and answers to that topic, dropping escalation to 15%.',
  'Bot analytics are like a feedback form for your chatbot — they show which conversations went well, which fell flat, and exactly where to focus improvement efforts.',
@@ -2018,7 +2018,7 @@ VALUES
  ARRAY['copilot-studio','analytics','improvement','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_knowledgebase01', 'Knowledge Base Integration',
- 'software',
+ 'power platform',
  'Copilot Studio can connect to SharePoint sites, public websites, or uploaded documents to automatically generate answers from existing organisational knowledge.',
  'A Copilot Studio bot is connected to the company''s SharePoint HR policy library; employees ask policy questions and the bot finds and summarises the relevant document.',
  'Knowledge base integration is like giving the bot a library card — instead of hand-crafting every answer, it reads from the organisation''s existing documents.',
@@ -2026,7 +2026,7 @@ VALUES
  ARRAY['copilot-studio','knowledge-base','ai','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_generativeai01', 'Generative AI in Copilot Studio',
- 'software',
+ 'power platform',
  'Copilot Studio integrates generative AI (powered by Azure OpenAI) to allow bots to answer questions from connected knowledge sources using natural language generation.',
  'Without hand-crafting every topic, the bot reads from a SharePoint knowledge base and generates fluent, contextually relevant answers to employee policy questions.',
  'Generative AI in Copilot Studio is like upgrading from a scripted call centre to a knowledgeable human agent — responses are natural and context-aware, not rigid scripts.',
@@ -2035,7 +2035,7 @@ VALUES
 
 -- ── Group 6: Power Pages & Power Virtual Agents ──────────────────────────────
 ('concept_pl9_pages01', 'Power Pages Fundamentals',
- 'software',
+ 'power platform',
  'A low-code platform for building secure, external-facing business websites connected to Dataverse, enabling organisations to share data and processes with customers, partners, and citizens.',
  'A local council uses Power Pages to publish a permit application portal where residents submit requests, upload documents, and track status online.',
  'Power Pages is like building a front desk for your Dataverse data — external users can interact with selected information without entering your internal apps.',
@@ -2043,7 +2043,7 @@ VALUES
  ARRAY['power-pages','portal','website','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesbiz01', 'Power Pages Value',
- 'software',
+ 'power platform',
  'Power Pages reduces the cost and time of delivering self-service websites by letting organisations create secure portals without building a custom web application from scratch.',
  'A university launches a scholarship application portal in weeks using Power Pages instead of commissioning a bespoke public website project that would take months.',
  'Power Pages business value is like opening an online service counter — customers help themselves online instead of relying on staff to process everything manually.',
@@ -2051,7 +2051,7 @@ VALUES
  ARRAY['power-pages','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesportal01', 'Self-Service Portal',
- 'software',
+ 'power platform',
  'A website pattern where external users can submit requests, update details, check case status, and access information on their own without needing staff intervention.',
  'An insurance company lets customers log into a Power Pages portal to update policy details, upload claim photos, and check claim progress.',
  'A self-service portal is like an online reception desk that stays open 24/7 and answers routine requests without a human receptionist.',
@@ -2059,7 +2059,7 @@ VALUES
  ARRAY['power-pages','self-service','portal','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagespartner01', 'Partner Portal',
- 'software',
+ 'power platform',
  'A Power Pages site designed for suppliers, resellers, distributors, or contractors to collaborate with the organisation through controlled access to shared data and processes.',
  'A manufacturer gives suppliers access to a partner portal where they confirm purchase orders, update delivery dates, and view payment status.',
  'A partner portal is like a shared project room for outside organisations — they can see only the documents and tasks relevant to their role.',
@@ -2067,7 +2067,7 @@ VALUES
  ARRAY['power-pages','partner-portal','external-users','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagestemplate01', 'Power Pages Templates',
- 'software',
+ 'power platform',
  'Pre-built website templates that provide a starting structure for common scenarios such as scheduling, registrations, community portals, and customer support sites.',
  'A nonprofit starts from a Power Pages event-registration template and customises branding, forms, and Dataverse tables for its volunteer programme.',
  'Templates are like pre-furnished show homes — the layout is already there, and you adapt it to fit your own needs and brand.',
@@ -2075,7 +2075,7 @@ VALUES
  ARRAY['power-pages','templates','website','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesdesign01', 'Power Pages Design Studio',
- 'software',
+ 'power platform',
  'The visual authoring experience used to create pages, forms, lists, navigation, styles, and site content for a Power Pages website.',
  'A maker uses Design Studio to add a new application form, reorder navigation links, and update the portal homepage banner without writing custom front-end code.',
  'Design Studio is like a website control room — you adjust the layout, content, and connected components from one visual workspace.',
@@ -2083,7 +2083,7 @@ VALUES
  ARRAY['power-pages','design-studio','maker','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesdataverse01', 'Dataverse Integration for Power Pages',
- 'software',
+ 'power platform',
  'Power Pages uses Dataverse as its primary data platform, allowing website forms, lists, and business processes to read and write governed data already used elsewhere in Power Platform.',
  'A student-application portal writes submissions to Dataverse, where a model-driven app used by admissions staff reviews and processes those same records.',
  'Dataverse integration is like connecting your public website directly to the same filing system your internal team already uses — one source of truth powers both.',
@@ -2091,7 +2091,7 @@ VALUES
  ARRAY['power-pages','dataverse','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesauth01', 'Authentication Providers',
- 'software',
+ 'power platform',
  'Authentication providers let external users sign in to Power Pages using identities such as Microsoft Entra ID, local accounts, or third-party identity providers.',
  'A partner portal uses Entra ID B2B so suppliers sign in with their own organisational accounts instead of separate usernames and passwords.',
  'Authentication providers are like the front gate of a building — they decide who is allowed in and how visitors prove their identity.',
@@ -2099,7 +2099,7 @@ VALUES
  ARRAY['power-pages','authentication','identity','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesanon01', 'Anonymous vs Authenticated Access',
- 'software',
+ 'power platform',
  'Power Pages can expose some pages publicly while restricting other pages to signed-in users, allowing organisations to balance open information with secure transactions.',
  'A city website publishes general permit guidance anonymously but requires sign-in before residents can submit an application or view its status.',
  'Anonymous vs authenticated access is like the public lobby versus staff-only offices in a building — some spaces are open to everyone, others require a badge.',
@@ -2107,7 +2107,7 @@ VALUES
  ARRAY['power-pages','security','access','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pageswebroles01', 'Web Roles',
- 'software',
+ 'power platform',
  'Web Roles group website users into access categories so that Power Pages can control which pages, content, and data each type of external user can see or use.',
  'A portal has separate web roles for Students, Lecturers, and Administrators, each seeing different pages and navigation options after sign-in.',
  'Web roles are like coloured wristbands at an event — each colour grants access to a different set of areas and activities.',
@@ -2115,7 +2115,7 @@ VALUES
  ARRAY['power-pages','web-roles','security','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagestableperm01', 'Table Permissions',
- 'software',
+ 'power platform',
  'Table Permissions define which Dataverse rows a Power Pages user can create, read, update, append, or delete when interacting with data through the website.',
  'A student can read and update only their own application record because the portal applies a self-scoped Table Permission on the Application table.',
  'Table Permissions are like row-level security guards for your website — they check each attempted data action and only allow access to the right records.',
@@ -2123,7 +2123,7 @@ VALUES
  ARRAY['power-pages','table-permissions','dataverse','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagessecurity01', 'Power Pages Security Model',
- 'software',
+ 'power platform',
  'The combination of authentication, web roles, page permissions, and table permissions that protects website content and underlying Dataverse data.',
  'A membership portal allows anonymous browsing of programme information, requires sign-in to apply, and restricts each member to their own records using layered permissions.',
  'The Power Pages security model is like a building security system with locks, badges, and room-level access rules all working together.',
@@ -2131,7 +2131,7 @@ VALUES
  ARRAY['power-pages','security','governance','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesformslists01', 'Forms and Lists in Power Pages',
- 'software',
+ 'power platform',
  'Forms and lists let website users submit, view, and update Dataverse data through browser-based experiences without building custom CRUD pages from scratch.',
  'A supplier portal shows a list of open orders and a form for updating shipping references directly against Dataverse records.',
  'Forms and lists are like ready-made service windows on a website — one lets users hand in information, and the other lets them review what is already on file.',
@@ -2139,7 +2139,7 @@ VALUES
  ARRAY['power-pages','forms','lists','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pagesusecase01', 'External Website Use Cases',
- 'software',
+ 'power platform',
  'Common Power Pages scenarios include customer service portals, permit applications, supplier onboarding, grant applications, volunteer registration, and service request tracking.',
  'A healthcare provider uses Power Pages for patient intake forms and appointment-request tracking before the patient ever enters the internal system.',
  'Power Pages use cases are like digital front counters for specific business journeys — each one gives outside users a direct route into a service.',
@@ -2147,7 +2147,7 @@ VALUES
  ARRAY['power-pages','use-cases','external-site','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pva01', 'Power Virtual Agents',
- 'software',
+ 'power platform',
  'Power Virtual Agents, now part of Copilot Studio, lets makers create conversational bots that answer questions, guide users, and automate simple tasks without traditional bot coding.',
  'An IT helpdesk bot built with Power Virtual Agents answers password-reset questions and launches a reset workflow when needed.',
  'Power Virtual Agents is like building a digital receptionist that can talk to users, follow a script, and hand off work to other systems.',
@@ -2155,7 +2155,7 @@ VALUES
  ARRAY['power-virtual-agents','copilot-studio','bot','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvabiz01', 'Virtual Agents Business Value',
- 'software',
+ 'power platform',
  'Virtual agents reduce repetitive support workload, improve response times, and make common information and actions available to users around the clock.',
  'A university chatbot handles routine timetable, campus-location, and enrolment-status questions 24/7, reducing first-line support calls by 40%.',
  'Virtual agents are like adding a first-line support desk that never closes and can resolve routine requests instantly.',
@@ -2163,7 +2163,7 @@ VALUES
  ARRAY['power-virtual-agents','business-value','chatbot','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvatrigger01', 'Trigger Phrases',
- 'software',
+ 'power platform',
  'Trigger phrases are sample user utterances that help a virtual agent recognise when a specific topic or conversation path should start.',
  'A Leave Request topic includes trigger phrases like "book leave", "take annual leave", and "request time off".',
  'Trigger phrases are like examples you give a receptionist so they recognise different ways people might ask for the same service.',
@@ -2171,7 +2171,7 @@ VALUES
  ARRAY['power-virtual-agents','trigger-phrases','nlp','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvatopicauthor01', 'Bot Topic Authoring',
- 'software',
+ 'power platform',
  'Topic authoring is the process of designing a bot conversation with messages, questions, branches, and actions so the bot can guide users through a defined scenario.',
  'A refund-request topic asks for an order number, checks eligibility, explains the policy, and offers to create a support ticket.',
  'Topic authoring is like writing an interactive script where the next line changes depending on how the user responds.',
@@ -2179,7 +2179,7 @@ VALUES
  ARRAY['power-virtual-agents','topics','conversation-design','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvavariables01', 'Entities and Variables',
- 'software',
+ 'power platform',
  'Bots use entities and variables to capture important values from a conversation, such as names, dates, case numbers, and selections, so later steps can act on them.',
  'A support bot captures the user''s ticket number and preferred callback time, then passes those values into a Power Automate flow.',
  'Entities and variables are like note cards a receptionist fills in during a conversation so the right details are available when the task is handed off.',
@@ -2187,7 +2187,7 @@ VALUES
  ARRAY['power-virtual-agents','variables','entities','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvasystemtopics01', 'System Topics',
- 'software',
+ 'power platform',
  'System topics are built-in bot behaviours for common conversational events such as greetings, escalation, fallback, and ending the conversation.',
  'When a user says "help" or the bot cannot understand the question, a system topic provides a fallback response and next-step options.',
  'System topics are like the house rules of a conversation — they make sure basic interactions work even when no custom topic is triggered.',
@@ -2195,7 +2195,7 @@ VALUES
  ARRAY['power-virtual-agents','system-topics','conversation','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvaflows01', 'Bot Integration with Power Automate',
- 'software',
+ 'power platform',
  'Virtual agents can call Power Automate flows to perform actions such as creating tickets, checking status, sending notifications, or updating records during a conversation.',
  'A facilities bot asks for a room number, calls a Power Automate flow to create a maintenance request, and returns the job reference instantly.',
  'Bot-to-flow integration is like giving the chatbot a back-office assistant — the bot speaks to the user while the flow does the operational work behind the scenes.',
@@ -2203,7 +2203,7 @@ VALUES
  ARRAY['power-virtual-agents','power-automate','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvachannels01', 'Virtual Agent Publishing Channels',
- 'software',
+ 'power platform',
  'Bots can be published to channels such as websites, Microsoft Teams, and other messaging surfaces so users can access the same service in familiar places.',
  'An employee-help bot is published both to Teams and to the company intranet website, serving staff wherever they start the conversation.',
  'Publishing channels are like different service desks using the same knowledge base — the location changes, but the bot logic stays the same.',
@@ -2211,7 +2211,7 @@ VALUES
  ARRAY['power-virtual-agents','channels','publishing','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvaescalation01', 'Bot Escalation',
- 'software',
+ 'power platform',
  'When a virtual agent cannot resolve a request, it should escalate smoothly to a human or a manual process while preserving useful context from the conversation.',
  'A payroll bot escalates a complex tax question to HR, passing the user''s identity and the chat summary so the employee does not need to start over.',
  'Bot escalation is like a receptionist transferring a complicated case to a specialist while handing over the notes from the first conversation.',
@@ -2219,7 +2219,7 @@ VALUES
  ARRAY['power-virtual-agents','escalation','support','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvaanalytics01', 'Virtual Agent Analytics',
- 'software',
+ 'power platform',
  'Analytics help makers understand how often the bot is used, where conversations fail, which topics work well, and what should be improved next.',
  'Analytics show that many users abandon the refund topic after the second question, leading the team to simplify the wording and reduce drop-off.',
  'Bot analytics are like reviewing call-centre recordings and dashboards — they reveal where the service is efficient and where users get stuck.',
@@ -2227,7 +2227,7 @@ VALUES
  ARRAY['power-virtual-agents','analytics','improvement','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvaknowledge01', 'Knowledge Source Integration',
- 'software',
+ 'power platform',
  'Virtual agents can use connected documents, websites, or SharePoint content to answer common questions from trusted organisational knowledge sources.',
  'A HR bot connects to policy documents in SharePoint so employees can ask about parental leave and receive answers grounded in the official handbook.',
  'Knowledge source integration is like giving the bot access to the company handbook so it can answer routine questions without a human searching manually.',
@@ -2235,7 +2235,7 @@ VALUES
  ARRAY['power-virtual-agents','knowledge','sharepoint','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvagenanswers01', 'Generative Answers',
- 'software',
+ 'power platform',
  'Generative answers allow a virtual agent to compose natural-language responses from connected knowledge rather than relying only on fully scripted conversation paths.',
  'Instead of a prewritten answer for every benefits question, the bot reads the benefits handbook and generates a contextual reply for the employee.',
  'Generative answers are like moving from a fixed FAQ card to a librarian who can read the source material and answer in natural language.',
@@ -2243,7 +2243,7 @@ VALUES
  ARRAY['power-virtual-agents','generative-ai','knowledge','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvateams01', 'Virtual Agents in Microsoft Teams',
- 'software',
+ 'power platform',
  'Publishing bots into Microsoft Teams lets organisations deliver conversational help and lightweight automation inside the collaboration tool employees already use every day.',
  'A sales-support bot in Teams answers pricing-policy questions and launches a discount-approval workflow without users leaving the chat window.',
  'Bots in Teams are like adding a knowledgeable assistant directly into the team room instead of asking staff to visit a separate help website.',
@@ -2251,7 +2251,7 @@ VALUES
  ARRAY['power-virtual-agents','teams','bot','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvausecases01', 'Virtual Agent Use Cases',
- 'software',
+ 'power platform',
  'Typical virtual agent scenarios include employee helpdesks, IT support, customer FAQs, order tracking, appointment booking, and triage for service requests.',
  'A healthcare provider uses a chatbot to answer clinic-hours questions, collect basic symptoms, and route patients to the right service channel.',
  'Virtual agent use cases are like repeatable front-desk conversations that happen so often they are worth standardising and automating.',
@@ -2259,7 +2259,7 @@ VALUES
  ARRAY['power-virtual-agents','use-cases','chatbot','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_pvagovernance01', 'Virtual Agent Governance',
- 'software',
+ 'power platform',
  'Governance for virtual agents covers content ownership, escalation design, analytics review, identity and access, and approval processes for changes to production bots.',
  'A company requires HR to approve policy-answer updates, IT to review connected actions, and support leads to monitor unresolved bot questions weekly.',
  'Virtual agent governance is like editorial control for a public help desk — someone must own accuracy, tone, and the consequences of the bot''s answers.',
@@ -2268,7 +2268,7 @@ VALUES
 
 -- ── Group 7: Microsoft Cloud Ecosystem & Governance ──────────────────────────
 ('concept_pl9_mscloud01', 'Microsoft Cloud Ecosystem',
- 'software',
+ 'power platform',
  'The integrated set of Microsoft cloud services — Microsoft 365, Azure, Dynamics 365, and Power Platform — that share identity (Azure AD), data (Dataverse), and governance.',
  'A company uses Azure AD for identity, Microsoft 365 for productivity, Dynamics 365 for CRM, and Power Platform to build custom extensions — all governed from one tenant.',
  'The Microsoft Cloud is like a city built on one common infrastructure — roads (Azure), buildings (M365, D365), and custom extensions (Power Platform) all connect seamlessly.',
@@ -2276,7 +2276,7 @@ VALUES
  ARRAY['microsoft-cloud','ecosystem','integration','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_cdm01', 'Common Data Model (CDM)',
- 'software',
+ 'power platform',
  'A standardised, extensible collection of data schemas (Account, Contact, Product, Order) shared across Microsoft cloud services, enabling consistent data interpretation.',
  'The Account entity in Dynamics 365 CRM and the Account table in a custom Power Apps both use the same CDM schema, so data shared between them needs no translation.',
  'The Common Data Model is like a shared language for data — instead of each system speaking its own dialect, CDM gives every service the same vocabulary for common business entities.',
@@ -2284,7 +2284,7 @@ VALUES
  ARRAY['cdm','data-model','interoperability','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_dvteams01', 'Dataverse for Teams',
- 'software',
+ 'power platform',
  'A lightweight version of Dataverse built into Microsoft Teams that lets users create simple apps and store data inside Teams without a full Power Platform licence.',
  'A team manager builds a simple meeting-action-tracker app inside Microsoft Teams using Dataverse for Teams — no additional licence needed beyond Microsoft 365.',
  'Dataverse for Teams is like a basic notebook built into Teams — enough for simple team-level apps, but you upgrade to full Dataverse when you need enterprise features.',
@@ -2292,7 +2292,7 @@ VALUES
  ARRAY['dataverse','teams','microsoft-365','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_security_bv01', 'Security and Compliance Value',
- 'software',
+ 'power platform',
  'Power Platform inherits Microsoft''s enterprise-grade security — Azure AD identity, role-based access, encryption at rest/transit, and compliance certifications (ISO, SOC, GDPR).',
  'A regulated financial firm adopts Power Platform knowing it meets FCA data residency requirements and integrates with their existing Azure AD conditional-access policies.',
  'Power Platform security is like renting office space in a Class A building — the core infrastructure (locks, fire systems, access control) is enterprise-grade from day one.',
@@ -2300,7 +2300,7 @@ VALUES
  ARRAY['security','compliance','governance','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_copilot_m365_01', 'Microsoft Copilot Integration',
- 'software',
+ 'power platform',
  'Microsoft Copilot (AI assistant powered by Azure OpenAI) is embedded across Microsoft 365, Dynamics 365, and Power Platform, enabling natural language interaction with business data.',
  'A sales manager asks Microsoft Copilot in Teams to summarise the last three customer calls and draft a follow-up email — Copilot pulls data from Dynamics 365 and M365.',
  'Microsoft Copilot is like a brilliant personal assistant who has read every document and email in your organisation and can find, summarise, and act on information instantly.',
@@ -2308,7 +2308,7 @@ VALUES
  ARRAY['copilot','ai','microsoft-365','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_adoption01', 'Power Platform Adoption',
- 'software',
+ 'power platform',
  'The process of rolling out Power Platform across an organisation including training, community building (champions), governance setup, and demonstrating quick wins to build momentum.',
  'A company launches a Power Platform Centre of Excellence, trains 50 citizen developer champions, runs monthly hackathons, and tracks adoption via CoE Toolkit dashboards.',
  'Platform adoption is like planting a garden — you prepare the soil (governance), plant seeds (training and champions), water regularly (community and support), and harvest results (apps and automations).',
@@ -2316,7 +2316,7 @@ VALUES
  ARRAY['adoption','governance','change-management','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_dlp_bv01', 'DLP Policy Business Value',
- 'software',
+ 'power platform',
  'Data Loss Prevention policies protect the organisation by preventing sensitive data from flowing to unauthorised external services via Power Apps or Power Automate connectors.',
  'A DLP policy blocks connectors that send data to consumer file-sharing services (Dropbox, Google Drive), ensuring corporate Dataverse data cannot be exfiltrated via flows.',
  'DLP policies are like a data customs officer — they inspect every flow''s connector connections and block packages from crossing the boundary to unapproved destinations.',
@@ -2324,7 +2324,7 @@ VALUES
  ARRAY['dlp','security','governance','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_sustainability01', 'Sustainability Value',
- 'software',
+ 'power platform',
  'Power Platform contributes to sustainability goals by replacing paper-based processes, reducing travel (digital approvals vs. in-person sign-offs), and running on Microsoft''s carbon-neutral cloud.',
  'Replacing 10,000 annual paper inspection forms with a Power Apps mobile solution eliminates paper waste and the associated printing, storage, and disposal costs.',
  'Digitalising processes on Power Platform is like switching from physical mail to email — the same information moves, but without the paper, printing, postage, and physical storage.',
@@ -2332,7 +2332,7 @@ VALUES
  ARRAY['sustainability','digital-transformation','business-value','pl-900'], 'teacher_john', 'teacher_john'),
 
 ('concept_pl9_community01', 'Power Platform Community',
- 'software',
+ 'power platform',
  'The global ecosystem of Power Platform users, MVPs, community forums, templates, and learning resources that accelerate skill development and problem-solving.',
  'A maker finds a community-built Power Apps template for project management on the Power Apps community gallery, saving two days of build time.',
  'The Power Platform community is like a global open-source library — millions of makers share templates, solutions, and answers so nobody has to solve the same problem twice.',
@@ -2549,3 +2549,167 @@ VALUES
     ('topic_pl9_ecosystem01', 'concept_pl9_community01'),
     ('topic_pl9_ecosystem01', 'concept_pl9_tco01')
 ON CONFLICT (topic_id, concept_id) DO NOTHING;
+
+-- =============================================================================
+-- Domains table + domain hierarchy for Power Platform
+-- Hierarchy:
+--   software
+--   microsoft cloud  → software
+--   power platform   → software, microsoft cloud
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS domains (
+    id           VARCHAR(64) PRIMARY KEY,
+    name         VARCHAR(200) NOT NULL,
+    description  TEXT NOT NULL DEFAULT '',
+    created_by   VARCHAR(64) NOT NULL DEFAULT '',
+    updated_by   VARCHAR(64) NOT NULL DEFAULT '',
+    created_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_domains_name UNIQUE (name)
+);
+
+CREATE TABLE IF NOT EXISTS domain_prerequisites (
+    domain         VARCHAR(200) NOT NULL,
+    prerequisite   VARCHAR(200) NOT NULL,
+    created_by     VARCHAR(64) NOT NULL DEFAULT '',
+    created_time   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (domain, prerequisite)
+);
+
+-- ── 1. Domains ────────────────────────────────────────────────────────────────
+
+INSERT INTO domains (id, name, description, created_by, updated_by) VALUES
+  ('dom_software',      'software',        'The broad domain of software development, engineering practices, and programming paradigms.', 'seed', 'seed'),
+  ('dom_mscloud',       'microsoft cloud', 'The integrated Microsoft cloud ecosystem — Azure, Microsoft 365, Dynamics 365, and Power Platform — built on shared identity, data, and APIs.', 'seed', 'seed'),
+  ('dom_powerplatform', 'power platform',  'Microsoft''s suite of low-code tools — Power Apps, Power Automate, Power BI, and Copilot Studio — for building apps, automating processes, and analysing data.', 'seed', 'seed')
+ON CONFLICT (name) DO NOTHING;
+
+-- ── 2. Domain prerequisites ───────────────────────────────────────────────────
+
+INSERT INTO domain_prerequisites (domain, prerequisite, created_by) VALUES
+  ('microsoft cloud', 'software',        'seed'),
+  ('power platform',  'software',        'seed'),
+  ('power platform',  'microsoft cloud', 'seed')
+ON CONFLICT DO NOTHING;
+
+-- =============================================================================
+-- Seed concepts for each domain
+-- Power Platform has two parent domains:
+--   1. microsoft cloud  — the broader Microsoft cloud ecosystem it belongs to
+--   2. software         — the general low-code / application-development domain
+-- =============================================================================
+
+-- ---------------------------------------------------------------------------
+-- Parent 1: Microsoft Cloud Platform  (domain: 'microsoft cloud')
+-- ---------------------------------------------------------------------------
+
+INSERT INTO concepts (id, canonical_name, domain, description, example,
+analogy, common_mistakes, tags, created_by, updated_by)
+VALUES
+
+('concept_mscloud_overview01', 'Microsoft Cloud Platform',
+ 'microsoft cloud',
+ 'The integrated set of Microsoft cloud services — Azure, Microsoft 365, Dynamics 365, and Power Platform — that together deliver infrastructure, productivity, business applications, and low-code tooling on a shared identity and data foundation.',
+ 'An enterprise runs its infrastructure on Azure, collaborates in Microsoft 365, manages customers in Dynamics 365, and builds internal tools with Power Platform — all connected via Entra ID and Microsoft Dataverse.',
+ 'Microsoft Cloud is like a city district where every building (Azure, M365, D365, Power Platform) is connected by shared roads (identity, APIs, data) so residents can move seamlessly between them.',
+ 'Treating the Microsoft Cloud products as independent silos rather than recognising the shared Entra ID, Dataverse, and Connectors fabric that links them.',
+ ARRAY['microsoft-cloud','azure','m365','dynamics365','power-platform','overview'], 'teacher_john', 'teacher_john'),
+
+('concept_mscloud_entraid01', 'Microsoft Entra ID (Azure AD)',
+ 'microsoft cloud',
+ 'Microsoft''s cloud-based identity and access management service that provides single sign-on, MFA, conditional access, and app registrations for all Microsoft Cloud products and third-party SaaS.',
+ 'A user signs in once to Microsoft 365; the same Entra ID token is accepted by Power Platform, Azure, and registered enterprise apps without re-entering credentials.',
+ 'Entra ID is like a master key-card system for the whole Microsoft building — one card opens every door you are authorised to enter.',
+ 'Confusing Entra ID with on-premises Active Directory; Entra ID is cloud-native and synchronises with AD via Entra Connect, but they are not the same service.',
+ ARRAY['entra-id','azure-ad','identity','sso','mfa','oauth','microsoft-cloud'], 'teacher_john', 'teacher_john'),
+
+('concept_mscloud_m36501', 'Microsoft 365',
+ 'microsoft cloud',
+ 'The subscription suite of Microsoft cloud productivity services — Teams, SharePoint, Exchange Online, OneDrive, Outlook, and Copilot — built on Entra ID and tightly integrated with Power Platform.',
+ 'A Power Automate flow triggers from a new SharePoint list item (M365), creates a Dataverse record, sends a Teams notification, and emails the requester via Exchange Online — all within the Microsoft 365 and Power Platform ecosystem.',
+ 'Microsoft 365 is like the office floor of the Microsoft Cloud building — where knowledge workers spend most of their day, and where Power Platform tools plug in as productivity add-ons.',
+ 'Assuming Microsoft 365 and Office 365 are identical; M365 includes security (Defender, Purview), device management (Intune), and Copilot capabilities that O365 did not have.',
+ ARRAY['microsoft-365','m365','teams','sharepoint','exchange','onedrive','microsoft-cloud'], 'teacher_john', 'teacher_john'),
+
+('concept_mscloud_azure01', 'Microsoft Azure',
+ 'microsoft cloud',
+ 'Microsoft''s public cloud platform providing 200+ services across compute, storage, networking, AI, security, and data — the underlying infrastructure on which Power Platform, Dynamics 365, and Microsoft 365 are built.',
+ 'Power Platform uses Azure Service Bus for event streaming, Azure Key Vault for secret management, Azure API Management for custom connectors, and Azure Functions for serverless backend logic that Canvas Apps call via connectors.',
+ 'Azure is like the utility infrastructure (electricity, water, broadband) beneath the Microsoft Cloud city — most services run on it without tenants noticing, but developers can also provision Azure resources directly.',
+ 'Thinking Azure and Power Platform serve the same audience; Azure targets pro-code developers and infrastructure engineers while Power Platform targets makers and citizen developers, though both are used together in hybrid solutions.',
+ ARRAY['azure','cloud-infrastructure','iaas','paas','faas','microsoft-cloud'], 'teacher_john', 'teacher_john'),
+
+('concept_mscloud_dynamics01', 'Dynamics 365',
+ 'microsoft cloud',
+ 'Microsoft''s suite of intelligent business applications — Sales, Customer Service, Finance, Supply Chain, Field Service, and more — built on Dataverse, making them natively extensible with Power Platform tools.',
+ 'A sales team uses Dynamics 365 Sales for CRM; a Power Apps Model-Driven App adds a custom screen; a Power Automate flow automates quote approvals; a Power BI dashboard visualises pipeline — all reading the same Dataverse data.',
+ 'Dynamics 365 is like the pre-furnished apartments in the Microsoft Cloud building — move-in-ready business applications that tenants (businesses) can rearrange with Power Platform furniture.',
+ 'Treating Dynamics 365 and Power Platform as the same product; Dynamics 365 delivers packaged business processes while Power Platform provides the tooling to extend, automate, and connect them.',
+ ARRAY['dynamics365','crm','erp','dataverse','microsoft-cloud'], 'teacher_john', 'teacher_john')
+
+ON CONFLICT (id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
+-- Parent 2: Low-Code Development  (domain: 'software')
+-- ---------------------------------------------------------------------------
+
+INSERT INTO concepts (id, canonical_name, domain, description, example,
+analogy, common_mistakes, tags, created_by, updated_by)
+VALUES
+
+('concept_sw_lowcode01', 'Low-Code Development',
+ 'software',
+ 'A software-development approach that uses visual designers, declarative configuration, and pre-built components to build applications with minimal hand-written code, making development accessible to non-professional developers.',
+ 'A business analyst builds a multi-step approval app in Power Apps using drag-and-drop forms and formula-based logic in Power Fx, without writing a single line of C# or JavaScript.',
+ 'Low-code development is like flat-pack furniture assembly — most of the hard manufacturing (infrastructure, UI framework, data connectors) is pre-built; you configure and connect pieces rather than crafting them from raw materials.',
+ 'Assuming low-code means no governance, no testing, or no architecture; production low-code solutions still require ALM, security design, performance testing, and maintainability practices.',
+ ARRAY['low-code','no-code','citizen-developer','rapid-application-development','software'], 'teacher_john', 'teacher_john'),
+
+('concept_sw_nocode01', 'No-Code Development',
+ 'software',
+ 'An extreme form of low-code where applications or automations are built entirely through visual configuration with zero programming, targeting business users with no technical background.',
+ 'A marketing manager uses Power Automate with pre-built templates to set up a Twitter-to-Teams notification flow by filling in a form — no expressions or formulas required.',
+ 'No-code is like a pre-programmed appliance — plug it in, press the right buttons, and it works; you cannot open it up and rewire it without leaving the no-code boundary.',
+ 'Confusing no-code with low-code; no-code is deliberately constrained for simplicity while low-code (e.g. Power Fx, custom connectors) allows controlled extensibility for more complex requirements.',
+ ARRAY['no-code','citizen-developer','automation','software'], 'teacher_john', 'teacher_john'),
+
+('concept_sw_rapidappdev01', 'Rapid Application Development (RAD)',
+ 'software',
+ 'A software development methodology that prioritises fast delivery through iterative prototyping, user feedback, and reusable components over lengthy upfront design and specification cycles.',
+ 'A Power Apps team delivers a working expense-submission prototype in two days, collects user feedback, and iterates to a production app in two weeks — far faster than a traditional waterfall project.',
+ 'RAD is like tailoring clothes on a live model — you fit and adjust repeatedly rather than designing a full pattern before cutting any fabric.',
+ 'Treating RAD as "no planning needed"; RAD still requires architecture decisions, data modelling, and security design — it just defers fine-grained UI specification in favour of working software.',
+ ARRAY['rad','agile','iterative','software-development','software'], 'teacher_john', 'teacher_john'),
+
+('concept_sw_citizendev01', 'Citizen Development (Platform)',
+ 'software',
+ 'An IT-governance strategy where organisations formally enable business users (citizen developers) to build their own solutions using approved low-code platforms, with guardrails such as DLP policies, CoE toolkits, and training programmes.',
+ 'A bank creates a citizen-developer programme: IT sets up Power Platform environments and DLP policies, HR runs a Power Apps training track, and business units build their own approved apps under IT review.',
+ 'Citizen development is like a managed community garden — the city (IT) provides the plots, tools, and rules; residents (business users) grow their own produce (apps) within defined boundaries.',
+ 'Equating citizen development with Shadow IT; a well-run citizen-development programme is IT-sanctioned, governed, and supported — the opposite of uncontrolled Shadow IT.',
+ ARRAY['citizen-developer','governance','low-code','coe','software'], 'teacher_john', 'teacher_john'),
+
+('concept_sw_fusiondev01', 'Fusion Development',
+ 'software',
+ 'A collaborative model where professional developers (pro-code) and citizen developers (low-code) work together on the same solution: pro-devs build reusable APIs, PCF controls, and custom connectors that makers consume in Power Platform.',
+ 'A pro-dev team publishes a secure Azure API Management endpoint and a PCF grid component; a citizen developer uses them as a custom connector and embedded control inside a Power Apps Canvas App.',
+ 'Fusion development is like a restaurant kitchen — professional chefs (pro-devs) prepare complex sauces and components; front-of-house staff (makers) assemble and serve the final dish (app) quickly.',
+ 'Assuming fusion development means pro-devs do all the real work and makers just click; the model is genuinely collaborative — makers own the user experience and business logic while pro-devs provide reusable foundations.',
+ ARRAY['fusion-development','pro-code','low-code','pcf','custom-connector','software'], 'teacher_john', 'teacher_john')
+
+ON CONFLICT (id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
+-- concept_relations — link Power Platform to its two parent domains
+-- relation_type 'parent-domain' means concept_b_id is the broader domain
+-- that contains / gave rise to concept_a_id
+-- ---------------------------------------------------------------------------
+
+INSERT INTO concept_relations (concept_a_id, concept_b_id, relation_type, created_by)
+VALUES
+    -- Power Platform IS-PART-OF Microsoft Cloud
+    ('concept_pl9_pp01', 'concept_mscloud_overview01', 'parent-domain', 'teacher_john'),
+    -- Power Platform IS-A Low-Code Development platform
+    ('concept_pl9_pp01', 'concept_sw_lowcode01',        'parent-domain', 'teacher_john')
+ON CONFLICT (concept_a_id, concept_b_id, relation_type) DO NOTHING;
