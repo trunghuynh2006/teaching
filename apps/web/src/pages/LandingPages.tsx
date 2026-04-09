@@ -1,5 +1,6 @@
 import AudioRecordList from '../components/AudioRecordList'
 import AudioRecorder from '../components/AudioRecorder'
+import ConceptBrowser from '../components/ConceptBrowser'
 import FolderManager from '../components/FolderManager'
 
 interface LandingProps {
@@ -29,6 +30,14 @@ export function LearnerLanding({ activeItem, token, onUnauthorized }: LandingPro
     return (
       <section className="panel">
         <FolderManager token={token!} onUnauthorized={onUnauthorized!} />
+      </section>
+    )
+  }
+
+  if (activeItem === 'Concepts') {
+    return (
+      <section className="panel">
+        <ConceptBrowser token={token!} onUnauthorized={onUnauthorized!} />
       </section>
     )
   }

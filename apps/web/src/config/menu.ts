@@ -35,7 +35,12 @@ export const SIDEBAR_BY_SECTION: Record<string, MenuItem[]> = {
 
 // Sidebar items for non-teacher roles
 export const MENU_BY_ROLE: Record<Role, MenuItem[]> = {
-  learner: [],
+  learner: [
+    { label: 'Folders',         path: '/learner/folders',       icon: '📁' },
+    { label: 'Concepts',        path: '/learner/concepts',       icon: '🧠' },
+    { label: 'Voice Recorder',  path: '/learner/recorder',       icon: '🎙️' },
+    { label: 'Audio Records',   path: '/learner/audio-records',  icon: '🔊' },
+  ],
   teacher: [],
   admin: [
     { label: 'User Management', path: '/admin/user-management', icon: '👥' },

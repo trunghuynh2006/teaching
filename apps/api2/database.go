@@ -157,6 +157,18 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitDomainPrerequisitesTable(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitLearningPathsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitLearningPathsDomainIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitLearningPathStepsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitLearningPathStepsPathIndex(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

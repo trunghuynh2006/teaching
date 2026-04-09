@@ -2752,3 +2752,95 @@ button.danger {
 }
 
 .concept-form-row .modal-field { flex: 1; }
+
+/* ── ConceptBrowser ──────────────────────────────────────────────────────── */
+
+.concept-browser {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.concept-browser-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.concept-browser-header h2 { margin: 0; font-size: 1.4rem; }
+
+.concept-browser-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.concept-browser-body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.concept-browser-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 8px 10px;
+  border-left: 3px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.concept-browser-group-count {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.concept-browser-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.concept-browser-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  min-height: 110px;
+  width: 100%;
+}
+
+.concept-browser-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-color: #a0b4c8;
+}
+
+.concept-browser-card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1a202c;
+  margin-bottom: 4px;
+}
+
+.concept-browser-card-domain {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.concept-browser-card-desc {
+  font-size: 0.82rem;
+  color: #4a5568;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

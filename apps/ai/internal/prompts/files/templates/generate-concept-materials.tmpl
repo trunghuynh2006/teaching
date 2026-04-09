@@ -1,0 +1,53 @@
+Generate study materials (flashcards and multiple-choice questions) for the following concept.
+
+Concept: {{.ConceptName}}
+Domain: {{.Domain}}
+Level: {{.Level}}
+Language: {{.Language}}
+{{- if .Prerequisites}}
+Prerequisites (concepts the learner already knows): {{range $i, $p := .Prerequisites}}{{if $i}}, {{end}}{{$p}}{{end}}
+{{- end}}
+
+Concept definition:
+- Description: {{.Description}}
+- Example: {{.Example}}
+- Analogy: {{.Analogy}}
+- Common mistakes: {{.CommonMistakes}}
+
+Flashcard rules:
+- Generate 3–6 cards covering different angles: definition, example recognition, analogy, common mistake avoidance
+- Each card tests exactly one thing — no compound questions
+- front_text is a question or cloze prompt; back_text is the direct answer
+- Cards must be self-contained (no reference to "the text above")
+- Assign a bloom_level: remember | understand | apply | analyze | evaluate | create
+
+Multiple-choice question rules:
+- Generate 3–5 questions
+- Each question has exactly 4 answer choices; exactly one is correct
+- Wrong answers must be plausible (exploit the listed common mistakes where possible)
+- Questions must be self-contained
+
+Respond with a JSON object in exactly this format (no extra keys):
+{
+  "flashcards": [
+    {
+      "front_text": "What is {{.ConceptName}}?",
+      "back_text": "...",
+      "bloom_level": "remember",
+      "tags": ["{{.Domain}}"]
+    }
+  ],
+  "questions": [
+    {
+      "body": "Which of the following best describes {{.ConceptName}}?",
+      "answers": [
+        {"text": "Correct answer", "is_correct": true},
+        {"text": "Wrong 1", "is_correct": false},
+        {"text": "Wrong 2", "is_correct": false},
+        {"text": "Wrong 3", "is_correct": false}
+      ]
+    }
+  ]
+}
+
+Respond with valid JSON only. No markdown fences. No extra text.

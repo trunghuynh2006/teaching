@@ -169,6 +169,16 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     } catch (_) {}
   }, [token])
 
+  const fetchTopicsCount = useCallback(async (folderId: string) => {
+    try {
+      const res = await fetch(`${API_URL}/folders/${folderId}/topics`, { headers })
+      if (res.ok) {
+        const data = await res.json()
+        setTopicsCount(Array.isArray(data) ? data.length : 0)
+      }
+    } catch (_) {}
+  }, [token])
+
   const openCreateForm = () => {
     setEditingId('')
     setForm(DEFAULT_FORM)
@@ -245,6 +255,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
     setError('')
     setNotice('')
     fetchSidebarSpaces(folder.id)
+    fetchTopicsCount(folder.id)
   }
 
   // Keep sidebar spaces in sync when spaces are added/removed

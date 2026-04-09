@@ -357,6 +357,63 @@ func (s Service) MatchParentConcepts(ctx context.Context, input MatchParentConce
 	return s.Generator.MatchParentConcepts(ctx, normalized)
 }
 
+// GenerateConceptMaterialsInput is the application-layer input.
+type GenerateConceptMaterialsInput struct {
+	ConceptName    string
+	Description    string
+	Example        string
+	Analogy        string
+	CommonMistakes string
+	Level          string
+	Domain         string
+	Prerequisites  []string
+	Language       string
+}
+
+// GenerateConceptMaterials generates flashcards and MC questions for a specific concept.
+func (s Service) GenerateConceptMaterials(ctx context.Context, input GenerateConceptMaterialsInput) (domaincontent.GeneratedConceptMaterials, error) {
+	if strings.TrimSpace(input.ConceptName) == "" {
+		return domaincontent.GeneratedConceptMaterials{}, errors.New("concept name is required")
+	}
+	if s.Generator == nil {
+		return domaincontent.GeneratedConceptMaterials{}, ErrGeneratorUnavailable
+	}
+
+	normalized := domaincontent.ConceptMaterialsInput{
+		ConceptName:    strings.TrimSpace(input.ConceptName),
+		Description:    strings.TrimSpace(input.Description),
+		Example:        strings.TrimSpace(input.Example),
+		Analogy:        strings.TrimSpace(input.Analogy),
+		CommonMistakes: strings.TrimSpace(input.CommonMistakes),
+		Level:          strings.TrimSpace(input.Level),
+		Domain:         strings.TrimSpace(input.Domain),
+		Prerequisites:  input.Prerequisites,
+		Language:       fallback(input.Language, "English"),
+	}
+
+	cacheKey := hashKey("generate-concept-materials", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var result domaincontent.GeneratedConceptMaterials
+			if err := json.Unmarshal(raw, &result); err == nil {
+				return result, nil
+			}
+		}
+	}
+
+	result, err := s.Generator.GenerateConceptMaterials(ctx, normalized)
+	if err != nil {
+		return domaincontent.GeneratedConceptMaterials{}, err
+	}
+
+	if s.Cache != nil {
+		if raw, err := json.Marshal(result); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return result, nil
+}
+
 func hashKey(prefix string, v any) string {
 	payload, err := json.Marshal(v)
 	if err != nil {

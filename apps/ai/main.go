@@ -79,6 +79,7 @@ func main() {
 	mux.HandleFunc("POST /content/seed-concepts", handler.Auth(handler.SeedConcepts))
 	mux.HandleFunc("POST /content/discover-parent-domains", handler.Auth(handler.DiscoverParentDomains))
 	mux.HandleFunc("POST /content/match-parent-concepts", handler.Auth(handler.MatchParentConcepts))
+	mux.HandleFunc("POST /content/concept-materials", handler.Auth(handler.GenerateConceptMaterials))
 
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("ai listening on %s", addr)

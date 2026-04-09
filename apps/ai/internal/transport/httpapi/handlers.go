@@ -344,6 +344,57 @@ func (h *Handler) MatchParentConcepts(w http.ResponseWriter, r *http.Request, cl
 	writeJSON(w, http.StatusOK, map[string]any{"matches": matches})
 }
 
+// GenerateConceptMaterialsRequest is the body for POST /content/concept-materials.
+type GenerateConceptMaterialsRequest struct {
+	ConceptName    string   `json:"concept_name"`
+	Description    string   `json:"description"`
+	Example        string   `json:"example"`
+	Analogy        string   `json:"analogy"`
+	CommonMistakes string   `json:"common_mistakes"`
+	Level          string   `json:"level"`
+	Domain         string   `json:"domain"`
+	Prerequisites  []string `json:"prerequisites"`
+	Language       string   `json:"language"`
+}
+
+// GenerateConceptMaterials handles POST /content/concept-materials (teacher/admin only).
+func (h *Handler) GenerateConceptMaterials(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+
+	var payload GenerateConceptMaterialsRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil || strings.TrimSpace(payload.ConceptName) == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "concept_name is required"})
+		return
+	}
+
+	result, err := h.ContentService.GenerateConceptMaterials(r.Context(), appcontent.GenerateConceptMaterialsInput{
+		ConceptName:    payload.ConceptName,
+		Description:    payload.Description,
+		Example:        payload.Example,
+		Analogy:        payload.Analogy,
+		CommonMistakes: payload.CommonMistakes,
+		Level:          payload.Level,
+		Domain:         payload.Domain,
+		Prerequisites:  payload.Prerequisites,
+		Language:       payload.Language,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
+			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
+		default:
+			log.Printf("generate concept materials error: %v", err)
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		}
+		return
+	}
+
+	writeJSON(w, http.StatusOK, result)
+}
+
 func isContentEditor(role string) bool {
 	return role == "teacher" || role == "admin"
 }

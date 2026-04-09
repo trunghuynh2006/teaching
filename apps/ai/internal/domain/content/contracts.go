@@ -128,6 +128,27 @@ type Generator interface {
 	DiscoverParentDomains(ctx context.Context, input DiscoverParentDomainsInput) ([]string, error)
 	// MatchParentConcepts returns pairs linking child concepts to parent domain concepts.
 	MatchParentConcepts(ctx context.Context, input MatchParentConceptsInput) ([]ConceptParentMatch, error)
+	// GenerateConceptMaterials returns flashcards and MC questions for a specific concept.
+	GenerateConceptMaterials(ctx context.Context, input ConceptMaterialsInput) (GeneratedConceptMaterials, error)
+}
+
+// ConceptMaterialsInput describes a request to generate study materials for a concept.
+type ConceptMaterialsInput struct {
+	ConceptName    string
+	Description    string
+	Example        string
+	Analogy        string
+	CommonMistakes string
+	Level          string
+	Domain         string
+	Prerequisites  []string // canonical names of prerequisite concepts
+	Language       string
+}
+
+// GeneratedConceptMaterials holds both flashcards and MC questions for a concept.
+type GeneratedConceptMaterials struct {
+	Flashcards []GeneratedAnkiCard   `json:"flashcards"`
+	Questions  []GeneratedMCQuestion `json:"questions"`
 }
 
 // Cache stores and retrieves serialised generation results keyed by a prompt hash.

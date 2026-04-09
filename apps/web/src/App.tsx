@@ -141,6 +141,7 @@ export default function App() {
           ) : role === 'learner' ? (
             <>
               <Route path="/learner/folders" element={<LearnerLanding activeItem="Folders" token={token} onUnauthorized={handleLogout} />} />
+              <Route path="/learner/concepts" element={<LearnerLanding activeItem="Concepts" token={token} onUnauthorized={handleLogout} />} />
               <Route path="/learner/recorder" element={<LearnerLanding activeItem="Voice Recorder" token={token} onUnauthorized={handleLogout} />} />
               <Route path="/learner/audio-records" element={<LearnerLanding activeItem="Audio Records" token={token} onUnauthorized={handleLogout} />} />
               <Route path="*" element={<Navigate to="/learner/folders" replace />} />

@@ -261,6 +261,38 @@ func (c Client) MatchParentConcepts(ctx context.Context, input domaincontent.Mat
 	return result.Matches, nil
 }
 
+// GenerateConceptMaterials calls the LLM to generate flashcards and MC questions for a concept.
+func (c Client) GenerateConceptMaterials(ctx context.Context, input domaincontent.ConceptMaterialsInput) (domaincontent.GeneratedConceptMaterials, error) {
+	userPrompt, err := c.Prompts.RenderGenerateConceptMaterials(prompts.ConceptMaterialsData{
+		ConceptName:    input.ConceptName,
+		Description:    input.Description,
+		Example:        input.Example,
+		Analogy:        input.Analogy,
+		CommonMistakes: input.CommonMistakes,
+		Level:          input.Level,
+		Domain:         input.Domain,
+		Prerequisites:  input.Prerequisites,
+		Language:       input.Language,
+	})
+	if err != nil {
+		return domaincontent.GeneratedConceptMaterials{}, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return domaincontent.GeneratedConceptMaterials{}, err
+	}
+
+	var result domaincontent.GeneratedConceptMaterials
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return domaincontent.GeneratedConceptMaterials{}, fmt.Errorf("parse concept materials response: %w", err)
+	}
+	if len(result.Flashcards) == 0 && len(result.Questions) == 0 {
+		return domaincontent.GeneratedConceptMaterials{}, ErrUnexpectedResponse
+	}
+	return result, nil
+}
+
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	return c.LLM.Complete(ctx, llm.Request{
 		SystemPrompt: c.Prompts.SystemPrompt(),

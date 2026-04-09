@@ -329,6 +329,65 @@ func (c *Client) MatchParentConcepts(ctx context.Context, bearerToken string, re
 	return result.Matches, nil
 }
 
+// GenerateConceptMaterialsRequest is the body for POST /content/concept-materials.
+type GenerateConceptMaterialsRequest struct {
+	ConceptName    string   `json:"concept_name"`
+	Description    string   `json:"description"`
+	Example        string   `json:"example"`
+	Analogy        string   `json:"analogy"`
+	CommonMistakes string   `json:"common_mistakes"`
+	Level          string   `json:"level"`
+	Domain         string   `json:"domain"`
+	Prerequisites  []string `json:"prerequisites"`
+	Language       string   `json:"language"`
+}
+
+// GeneratedConceptMaterials holds the flashcards and questions returned by the ai service.
+type GeneratedConceptMaterials struct {
+	Flashcards []GeneratedCard      `json:"flashcards"`
+	Questions  []GeneratedMCQuestion `json:"questions"`
+}
+
+// GenerateConceptMaterials calls POST /content/concept-materials on the ai service.
+func (c *Client) GenerateConceptMaterials(ctx context.Context, bearerToken string, req GenerateConceptMaterialsRequest) (GeneratedConceptMaterials, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return GeneratedConceptMaterials{}, err
+	}
+	httpClient := c.HTTPClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 90 * time.Second}
+	}
+	url := strings.TrimSuffix(c.BaseURL, "/") + "/content/concept-materials"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		return GeneratedConceptMaterials{}, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+bearerToken)
+	resp, err := httpClient.Do(httpReq)
+	if err != nil {
+		return GeneratedConceptMaterials{}, fmt.Errorf("ai service unavailable: %w", err)
+	}
+	defer resp.Body.Close()
+	rawBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return GeneratedConceptMaterials{}, err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		var errBody struct{ Detail string `json:"detail"` }
+		if jsonErr := json.Unmarshal(rawBody, &errBody); jsonErr == nil && errBody.Detail != "" {
+			return GeneratedConceptMaterials{}, fmt.Errorf("ai service error: %s", errBody.Detail)
+		}
+		return GeneratedConceptMaterials{}, fmt.Errorf("ai service returned %d", resp.StatusCode)
+	}
+	var result GeneratedConceptMaterials
+	if err := json.Unmarshal(rawBody, &result); err != nil {
+		return GeneratedConceptMaterials{}, fmt.Errorf("ai service: parse response: %w", err)
+	}
+	return result, nil
+}
+
 // GenerateAnkiCards calls POST /content/anki-cards on the ai service.
 // The bearerToken is forwarded as-is (same JWT secret is shared).
 func (c *Client) GenerateAnkiCards(ctx context.Context, bearerToken string, req GenerateAnkiCardsRequest) ([]GeneratedCard, error) {

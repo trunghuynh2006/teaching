@@ -33,7 +33,8 @@ type Registry struct {
 	generateMCQuestionsTmpl        *template.Template
 	seedFoundationConceptsTmpl     *template.Template
 	discoverParentDomainsTmpl      *template.Template
-	matchParentConceptsTmpl        *template.Template
+	matchParentConceptsTmpl          *template.Template
+	generateConceptMaterialsTmpl     *template.Template
 }
 
 // New loads all prompt files from the embedded filesystem and compiles templates.
@@ -122,6 +123,10 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	generateConceptMaterialsTmpl, err := parse("generate-concept-materials", "files/templates/generate-concept-materials.tmpl")
+	if err != nil {
+		return nil, err
+	}
 
 	return &Registry{
 		systemPrompt:              systemPrompt,
@@ -139,7 +144,8 @@ func New() (*Registry, error) {
 		generateMCQuestionsTmpl:        generateMCQuestionsTmpl,
 		seedFoundationConceptsTmpl:     seedFoundationConceptsTmpl,
 		discoverParentDomainsTmpl:      discoverParentDomainsTmpl,
-		matchParentConceptsTmpl:        matchParentConceptsTmpl,
+		matchParentConceptsTmpl:          matchParentConceptsTmpl,
+		generateConceptMaterialsTmpl:     generateConceptMaterialsTmpl,
 	}, nil
 }
 
@@ -287,6 +293,28 @@ func (r *Registry) RenderExtractConcepts(data ExtractConceptsData) (string, erro
 		ConceptsSchema:      r.conceptsSchema,
 	}); err != nil {
 		return "", fmt.Errorf("render extract-concepts: %w", err)
+	}
+	return buf.String(), nil
+}
+
+// ConceptMaterialsData is the input data for the generate-concept-materials template.
+type ConceptMaterialsData struct {
+	ConceptName    string
+	Description    string
+	Example        string
+	Analogy        string
+	CommonMistakes string
+	Level          string
+	Domain         string
+	Prerequisites  []string
+	Language       string
+}
+
+// RenderGenerateConceptMaterials renders the user prompt for generating concept study materials.
+func (r *Registry) RenderGenerateConceptMaterials(data ConceptMaterialsData) (string, error) {
+	var buf bytes.Buffer
+	if err := r.generateConceptMaterialsTmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("render generate-concept-materials: %w", err)
 	}
 	return buf.String(), nil
 }

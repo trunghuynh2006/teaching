@@ -309,6 +309,174 @@ func (h *Handler) SeedDomainConcepts(w http.ResponseWriter, r *http.Request, cur
 	writeJSON(w, http.StatusCreated, map[string]any{"concepts": created, "domain": domain})
 }
 
+// ─── Generate study materials from a concept ─────────────────────────────────
+
+// GenerateConceptMaterials handles POST /concepts/{id}/generate-materials.
+// It calls the AI service to produce flashcards and MC questions for the concept,
+// then persists them into the space_id supplied in the request body.
+func (h *Handler) GenerateConceptMaterials(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+	conceptID := strings.TrimSpace(r.PathValue("id"))
+	if conceptID == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Concept id is required"})
+		return
+	}
+
+	var body struct {
+		SpaceID  string `json:"space_id"`
+		Language string `json:"language"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Invalid request body"})
+		return
+	}
+	if strings.TrimSpace(body.SpaceID) == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "space_id is required"})
+		return
+	}
+
+	concept, err := h.Queries.GetConceptByID(r.Context(), conceptID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Concept not found"})
+			return
+		}
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	if _, err := h.Queries.GetSpaceByID(r.Context(), body.SpaceID); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, ErrorResponse{Detail: "Space not found"})
+			return
+		}
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	if h.AIClient == nil {
+		writeJSON(w, http.StatusServiceUnavailable, ErrorResponse{Detail: "AI service not configured"})
+		return
+	}
+
+	// Collect prerequisite names for richer prompt context.
+	prereqs, _ := h.Queries.ListConceptPrerequisites(r.Context(), conceptID)
+	prereqNames := make([]string, 0, len(prereqs))
+	for _, p := range prereqs {
+		prereqNames = append(prereqNames, p.CanonicalName)
+	}
+
+	serviceToken, err := h.AuthService.Tokens.CreateAccessToken("api2-service", "teacher")
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
+	defer cancel()
+
+	lang := strings.TrimSpace(body.Language)
+	if lang == "" {
+		lang = "English"
+	}
+
+	generated, err := h.AIClient.GenerateConceptMaterials(ctx, serviceToken, infra_ai.GenerateConceptMaterialsRequest{
+		ConceptName:    concept.CanonicalName,
+		Description:    concept.Description,
+		Example:        concept.Example,
+		Analogy:        concept.Analogy,
+		CommonMistakes: concept.CommonMistakes,
+		Level:          concept.Level,
+		Domain:         concept.Domain,
+		Prerequisites:  prereqNames,
+		Language:       lang,
+	})
+	if err != nil {
+		writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		return
+	}
+
+	// Persist flashcards.
+	type savedFlashcard struct {
+		ID         string `json:"id"`
+		Front      string `json:"front"`
+		Back       string `json:"back"`
+		BloomLevel string `json:"bloom_level"`
+	}
+	savedFlashcards := make([]savedFlashcard, 0, len(generated.Flashcards))
+	for _, gf := range generated.Flashcards {
+		row, err := h.Queries.CreateFlashCard(r.Context(), store.CreateFlashCardParams{
+			ID:        newFlashCardID(),
+			SpaceID:   body.SpaceID,
+			Front:     gf.FrontText,
+			Back:      gf.BackText,
+			CreatedBy: currentUser.Username,
+			UpdatedBy: currentUser.Username,
+		})
+		if err != nil {
+			continue
+		}
+		savedFlashcards = append(savedFlashcards, savedFlashcard{
+			ID:         row.ID,
+			Front:      row.Front,
+			Back:       row.Back,
+			BloomLevel: gf.BloomLevel,
+		})
+	}
+
+	// Persist MC questions.
+	type savedAnswer struct {
+		ID        string `json:"id"`
+		Text      string `json:"text"`
+		IsCorrect bool   `json:"is_correct"`
+		Position  int    `json:"position"`
+	}
+	type savedQuestion struct {
+		ID      string        `json:"id"`
+		Body    string        `json:"body"`
+		Answers []savedAnswer `json:"answers"`
+	}
+	savedQuestions := make([]savedQuestion, 0, len(generated.Questions))
+	for _, gq := range generated.Questions {
+		qRow, err := h.Queries.CreateQuestion(r.Context(), store.CreateQuestionParams{
+			ID:           newQuestionID(),
+			SpaceID:      body.SpaceID,
+			QuestionType: "multiple_choice",
+			Body:         gq.Body,
+			CreatedBy:    currentUser.Username,
+			UpdatedBy:    currentUser.Username,
+		})
+		if err != nil {
+			continue
+		}
+		answers := make([]savedAnswer, 0, len(gq.Answers))
+		for i, ga := range gq.Answers {
+			aRow, err := h.Queries.CreateAnswer(r.Context(), store.CreateAnswerParams{
+				ID:         newAnswerID(),
+				QuestionID: qRow.ID,
+				Text:       ga.Text,
+				IsCorrect:  ga.IsCorrect,
+				Position:   int32(i),
+				CreatedBy:  currentUser.Username,
+				UpdatedBy:  currentUser.Username,
+			})
+			if err != nil {
+				continue
+			}
+			answers = append(answers, savedAnswer{
+				ID: aRow.ID, Text: aRow.Text, IsCorrect: aRow.IsCorrect, Position: int(aRow.Position),
+			})
+		}
+		savedQuestions = append(savedQuestions, savedQuestion{ID: qRow.ID, Body: qRow.Body, Answers: answers})
+	}
+
+	writeJSON(w, http.StatusCreated, map[string]any{
+		"concept_id": conceptID,
+		"space_id":   body.SpaceID,
+		"flashcards": savedFlashcards,
+		"questions":  savedQuestions,
+	})
+}
+
 // ─── Source ↔ Concept ────────────────────────────────────────────────────────
 
 func (h *Handler) ListSourceConcepts(w http.ResponseWriter, r *http.Request, _ user.User) {

@@ -2713,3 +2713,570 @@ VALUES
     -- Power Platform IS-A Low-Code Development platform
     ('concept_pl9_pp01', 'concept_sw_lowcode01',        'parent-domain', 'teacher_john')
 ON CONFLICT (concept_a_id, concept_b_id, relation_type) DO NOTHING;
+
+-- =============================================================================
+-- Anki Spaces + Flashcards for PL-400 concepts (one space per topic group)
+-- Each concept gets at least one flashcard. Safe to re-run (ON CONFLICT DO NOTHING).
+-- =============================================================================
+
+-- ---------------------------------------------------------------------------
+-- 10 Anki Spaces (one per topic group, under folder_powerplatform01)
+-- ---------------------------------------------------------------------------
+
+INSERT INTO spaces (id, folder_id, name, space_type, description, created_by, updated_by)
+VALUES
+    ('space_pp_dvfund01',    'folder_powerplatform01', 'Dataverse Fundamentals – Flashcards',       'Anki', 'Flashcards for Dataverse core concepts.',           'teacher_john', 'teacher_john'),
+    ('space_pp_dvadv01',     'folder_powerplatform01', 'Dataverse Advanced Features – Flashcards',  'Anki', 'Flashcards for advanced Dataverse features.',       'teacher_john', 'teacher_john'),
+    ('space_pp_powerapps01', 'folder_powerplatform01', 'Power Apps Development – Flashcards',       'Anki', 'Flashcards for Canvas and Model-Driven Apps.',      'teacher_john', 'teacher_john'),
+    ('space_pp_pcfclient01', 'folder_powerplatform01', 'PCF and Client Scripting – Flashcards',     'Anki', 'Flashcards for PCF controls and client scripting.', 'teacher_john', 'teacher_john'),
+    ('space_pp_autofund01',  'folder_powerplatform01', 'Power Automate Fundamentals – Flashcards',  'Anki', 'Flashcards for Cloud Flow core concepts.',           'teacher_john', 'teacher_john'),
+    ('space_pp_bizauto01',   'folder_powerplatform01', 'Business Process Automation – Flashcards',  'Anki', 'Flashcards for BPF, business rules, and flow types.','teacher_john', 'teacher_john'),
+    ('space_pp_plugindev01', 'folder_powerplatform01', 'Plugin Development – Flashcards',           'Anki', 'Flashcards for Dataverse plugin development.',       'teacher_john', 'teacher_john'),
+    ('space_pp_intapi01',    'folder_powerplatform01', 'Integration and APIs – Flashcards',         'Anki', 'Flashcards for Web API, connectors, and integration.','teacher_john', 'teacher_john'),
+    ('space_pp_alm01',       'folder_powerplatform01', 'ALM and DevOps – Flashcards',               'Anki', 'Flashcards for ALM, pipelines, and environment management.','teacher_john','teacher_john'),
+    ('space_pp_secgov01',    'folder_powerplatform01', 'Security and Governance – Flashcards',      'Anki', 'Flashcards for DLP, admin, licensing, and security.','teacher_john', 'teacher_john')
+ON CONFLICT (id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
+-- Flashcards — Group 1: Dataverse Fundamentals (space_pp_dvfund01)
+-- ---------------------------------------------------------------------------
+
+INSERT INTO flash_cards (id, space_id, front, back, created_by, updated_by) VALUES
+
+('fc_pp_dataverse01',   'space_pp_dvfund01',
+ 'What is Microsoft Dataverse?',
+ 'A cloud-based data storage platform built into Power Platform that securely stores and manages business data, providing a built-in API, security model, and auditing — similar to SQL Server but managed.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_table01',       'space_pp_dvfund01',
+ 'What is a Dataverse Table (formerly called what)?',
+ 'A structured container of rows and columns in Dataverse equivalent to a database table. Formerly called an Entity.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_columntype01',  'space_pp_dvfund01',
+ 'Name four column data types available in Dataverse.',
+ 'Text, Number (including Currency), Date/Time, Choice (Option Set), Lookup, File, and Image.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_onetomany01',   'space_pp_dvfund01',
+ 'In a Dataverse One-to-Many relationship, which table holds the Lookup column?',
+ 'The child (many) table holds the Lookup column that points back to the parent (one) table.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_manytomany01',  'space_pp_dvfund01',
+ 'What backs a native Many-to-Many relationship in Dataverse?',
+ 'An intersect table automatically created by Dataverse to store the association between the two tables.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_solution01',    'space_pp_dvfund01',
+ 'What is a Power Platform Solution?',
+ 'A container that packages customizations (tables, flows, apps, security roles) so they can be transported across environments as a single unit.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_publisher01',   'space_pp_dvfund01',
+ 'What does the Solution Publisher define?',
+ 'The customization prefix (e.g. "contoso_") applied to all solution components, identifying the vendor and preventing naming collisions.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_managed01',     'space_pp_dvfund01',
+ 'What is the key difference between a Managed and an Unmanaged solution?',
+ 'Managed solutions are locked distributable packages used in UAT/Production. Unmanaged solutions allow direct editing and are used during development.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_securityrole01','space_pp_dvfund01',
+ 'What does a Dataverse Security Role define?',
+ 'A set of privileges specifying what CRUD operations a user can perform on each table, at what scope (user, business unit, organization).',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_businessunit01','space_pp_dvfund01',
+ 'What is the purpose of a Business Unit in Dataverse?',
+ 'A hierarchical organizational unit that groups users to control data access scope — users in the same BU share data access governed by security roles.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 2: Dataverse Advanced Features (space_pp_dvadv01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_calculated01',  'space_pp_dvadv01',
+ 'What is a Calculated Column in Dataverse?',
+ 'A column whose value is automatically computed from a formula referencing other columns in the same row, like a formula cell in Excel.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_rollup01',      'space_pp_dvadv01',
+ 'How does a Rollup Column differ from a Calculated Column?',
+ 'A Rollup Column aggregates (sum/count/min/max/avg) values from related child rows on a scheduled basis (~every 12 hours), not in real time.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_altkey01',      'space_pp_dvadv01',
+ 'What is an Alternate Key used for in Dataverse?',
+ 'To uniquely identify a row using a meaningful column (e.g. OrderNumber) instead of the primary GUID, enabling upsert operations via the Web API.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_elastictable01','space_pp_dvadv01',
+ 'What underlying technology powers Dataverse Elastic Tables, and what are they designed for?',
+ 'Azure Cosmos DB. Elastic Tables are designed for high-volume, high-velocity data with flexible schemas — e.g. IoT telemetry. They do not support plugins.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_auditlog01',    'space_pp_dvadv01',
+ 'What does enabling Dataverse Audit capture?',
+ 'Who created, modified, or deleted a record and when, including old and new field values, for compliance and troubleshooting.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_dvsearch01',    'space_pp_dvadv01',
+ 'How does Dataverse Search differ from Quick Find?',
+ 'Dataverse Search is a full-text, relevance-based search across multiple tables powered by Azure Cognitive Search. Quick Find searches a single table by keyword.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_virtualcol01',  'space_pp_dvadv01',
+ 'What is a Virtual Column in Dataverse and what limitation does it have?',
+ 'A column that retrieves its value from an external data source at query time without storing data. It cannot be filtered or sorted server-side.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_choice01',      'space_pp_dvadv01',
+ 'In a Dataverse Choice column, what is stored in the database versus what the user sees?',
+ 'An integer value is stored in the database. The UI displays the corresponding text label defined in the choice list.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_polylookup01',  'space_pp_dvadv01',
+ 'What makes a Lookup column "polymorphic"?',
+ 'It can reference rows from more than one table type — for example, the Regarding column on Activities can point to Account, Contact, or Lead.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_tableperm01',   'space_pp_dvadv01',
+ 'What are Table Permissions in Power Pages and what scope controls access to only the current user''s own records?',
+ 'Table Permissions control which Dataverse records website users can access. "Self" scope grants access only to the user''s own record.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 3: Power Apps Development (space_pp_powerapps01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_canvasapp01',   'space_pp_powerapps01',
+ 'What distinguishes a Canvas App from a Model-Driven App?',
+ 'A Canvas App gives full control over UI layout and logic using Power Fx formulas. A Model-Driven App auto-generates UI from Dataverse metadata.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_mdapp01',       'space_pp_powerapps01',
+ 'What drives the layout of a Model-Driven App?',
+ 'Dataverse metadata — the app automatically renders forms, views, charts, and dashboards based on the tables and columns configured.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_powerfx01',     'space_pp_powerapps01',
+ 'What is Power Fx and what language inspired it?',
+ 'Power Fx is the low-code formula language used in Canvas Apps for logic, data operations, and navigation. It is inspired by Excel formulas.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_connector01',   'space_pp_powerapps01',
+ 'What is a Power Platform Connector?',
+ 'A proxy wrapper around an external API that standardises how Power Apps and Power Automate communicate with services like SharePoint, SQL, or custom APIs.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_delegation01',  'space_pp_powerapps01',
+ 'What problem does Delegation solve in Canvas Apps?',
+ 'It pushes query processing to the data source server-side, avoiding the 500/2000-row local limit by only returning matching records.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_collection01',  'space_pp_powerapps01',
+ 'What is a Canvas App Collection and how is it created?',
+ 'An in-memory local table for caching or staging data within the app session, created with Collect() or ClearCollect(). It is cleared when the app closes.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_gallery01',     'space_pp_powerapps01',
+ 'What does a Gallery control display and how is it structured?',
+ 'A scrollable list of records from a data source. All items share the same repeating template — you design the template once and data fills in automatically.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_appform01',     'space_pp_powerapps01',
+ 'Which function saves data from a Form control to Dataverse, and which resets it afterwards?',
+ 'SubmitForm() saves the data. ResetForm() clears the form after a successful submit.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_custompage01',  'space_pp_powerapps01',
+ 'What is a Custom Page in Power Apps?',
+ 'A Canvas App page embedded inside a Model-Driven App, enabling rich custom UI while retaining access to the MDA navigation and Dataverse context.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_appdesigner01', 'space_pp_powerapps01',
+ 'What does the App Designer configure in a Model-Driven App?',
+ 'The navigation sitemap, which tables/forms/views/dashboards are included, and how users move between them.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 4: PCF and Client Scripting (space_pp_pcfclient01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_pcf01',         'space_pp_pcfclient01',
+ 'What is the Power Apps Component Framework (PCF)?',
+ 'A framework for building reusable code components in TypeScript that run inside Canvas or Model-Driven Apps, replacing default field renderings with custom HTML/CSS/JS.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_typescript01',  'space_pp_pcfclient01',
+ 'What are the three lifecycle methods of a PCF control?',
+ 'init() — called once on load; updateView() — called when bound data or app state changes; destroy() — called on cleanup.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_reactpcf01',    'space_pp_pcfclient01',
+ 'What is the advantage of a React Virtual PCF control over a Standard PCF control?',
+ 'It renders inside the shared Power Apps React root rather than spinning up its own, avoiding multiple conflicting React instances per page.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_pcfmanifest01', 'space_pp_pcfclient01',
+ 'What is the PCF manifest file and what does it declare?',
+ 'ControlManifest.Input.xml — it declares the component''s properties (inputs), resources (JS/CSS), and feature usage to the Power Apps runtime.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_xrm01',         'space_pp_pcfclient01',
+ 'What JavaScript object provides programmatic access to Model-Driven App forms?',
+ 'window.Xrm (the Client API). Use formContext.getAttribute(), formContext.ui.tabs.get(), etc. Never use direct DOM access.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_formevent01',   'space_pp_pcfclient01',
+ 'What are the three Model-Driven App form lifecycle events?',
+ 'OnLoad (form opens), OnSave (user saves the record), OnChange (a field value changes).',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_fieldevent01',  'space_pp_pcfclient01',
+ 'What fires the OnChange event on a form field, and what common mistake causes an infinite loop?',
+ 'The user changing the field value fires OnChange. Setting that same field''s value in code inside its own handler causes an infinite loop — pass fireOnChange: false.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_jswebres01',    'space_pp_pcfclient01',
+ 'What is a JavaScript Web Resource in Dataverse?',
+ 'A .js file stored in Dataverse that is loaded by Model-Driven App forms for event handler logic. Must use a namespace to avoid naming collisions.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_htmlwebres01',  'space_pp_pcfclient01',
+ 'How is an HTML Web Resource surfaced inside a Model-Driven App form?',
+ 'As an iframe inside the form. To access the parent form''s context from inside the iframe, use the getContentWindow API.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_commandbar01',  'space_pp_pcfclient01',
+ 'What tool is recommended for modern command bar customization in Model-Driven Apps?',
+ 'The Command Designer in the Power Apps maker portal. Use the legacy Ribbon Workbench only when Command Designer does not support the requirement.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 5: Power Automate Fundamentals (space_pp_autofund01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_cloudflow01',   'space_pp_autofund01',
+ 'What is a Cloud Flow in Power Automate?',
+ 'An automation that runs in the cloud, connecting services via triggers and actions without requiring local infrastructure.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_flowtrigger01', 'space_pp_autofund01',
+ 'What is a Flow Trigger and give one example?',
+ 'The event that starts a Cloud Flow. Example: "When a Dataverse row is added, modified or deleted" fires when a new Opportunity is created.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_flowaction01',  'space_pp_autofund01',
+ 'What is a Flow Action?',
+ 'A unit of work in a Cloud Flow that performs one operation, such as sending an email, updating a Dataverse row, or calling an HTTP endpoint.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_condition01',   'space_pp_autofund01',
+ 'What does a Condition action do in a Cloud Flow?',
+ 'It branches execution into "If yes" and "If no" paths based on a boolean expression. Use Switch for multiple discrete values instead of nested Conditions.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_applytoeach01', 'space_pp_autofund01',
+ 'What does the Apply to Each control do in Power Automate?',
+ 'It iterates over every item in an array, executing the nested actions once for each element — equivalent to a for-each loop.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_errorhandling01','space_pp_autofund01',
+ 'How do you implement try/catch error handling in a Cloud Flow?',
+ 'Wrap critical steps in a Scope action. Add a parallel branch with "Configure run after" set to "has failed" to catch and handle errors.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_envvar01',      'space_pp_autofund01',
+ 'What is an Environment Variable in Power Platform and why use it?',
+ 'A solution component that stores configuration values (strings, numbers, secrets) separately from flow logic, enabling environment-specific settings without editing flows.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_connref01',     'space_pp_autofund01',
+ 'What is a Connection Reference and what problem does it solve?',
+ 'A solution component that abstracts the connector credentials from the flow, allowing credentials to be swapped per environment without editing the flow.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_approval01',    'space_pp_autofund01',
+ 'What connector powers Approval Flows and what happens when an approval times out?',
+ 'The Approvals connector. Approvals time out after 30 days by default if the approver does not respond.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_childflow01',   'space_pp_autofund01',
+ 'What is a Child Flow and what is its main benefit?',
+ 'A Cloud Flow called from other flows using "Run a Child Flow", enabling reusable logic shared across multiple parent flows — like a function in programming.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 6: Business Process Automation (space_pp_bizauto01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_bpf01',         'space_pp_bizauto01',
+ 'What is a Business Process Flow (BPF)?',
+ 'A stage-based guided process overlay in Model-Driven Apps that walks users through required steps, preventing them from skipping stages.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_bpfstage01',    'space_pp_bizauto01',
+ 'What is a BPF Stage and what must happen before a user can advance?',
+ 'A named phase containing required data steps (fields). The user must complete all required fields in the current stage before moving to the next.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_bizrule01',     'space_pp_bizauto01',
+ 'What can a Dataverse Business Rule do, and what can it NOT do?',
+ 'It can set field visibility, requirements, and default values on forms and server-side. It cannot operate on related table rows — only the current row.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_custaction01',  'space_pp_bizauto01',
+ 'What is a Custom Process Action in Dataverse?',
+ 'A reusable named Dataverse operation (like a stored procedure) with defined inputs/outputs, callable from flows, plugins, or client scripts.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_customapi01',   'space_pp_bizauto01',
+ 'How does a Custom API differ from a Custom Process Action?',
+ 'A Custom API exposes a typed Web API message backed by a plugin with request/response parameters. It is the modern preferred approach over Custom Process Actions.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_scheduledflow01','space_pp_bizauto01',
+ 'What triggers a Scheduled Flow?',
+ 'A recurring time-based schedule (e.g. every day at 2 AM), like a cron job — not an event.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_automatedflow01','space_pp_bizauto01',
+ 'What triggers an Automated Flow?',
+ 'An event in a connected service, such as a new Dataverse row creation or an incoming email — it runs reactively without user interaction.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_instantflow01', 'space_pp_bizauto01',
+ 'How is an Instant Flow started?',
+ 'Manually by a user — via a button in Power Automate, a Canvas App button, or a Teams message action.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_desktopflow01', 'space_pp_bizauto01',
+ 'What is a Desktop Flow (RPA) and when should you use it?',
+ 'A Power Automate automation that controls desktop or legacy applications via UI interaction. Use it only as a last resort when no API is available.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_classicwf01',   'space_pp_bizauto01',
+ 'What is a Classic Workflow in Dataverse and what is the recommended migration path?',
+ 'A legacy background/real-time automation predating Power Automate. New automations should use Cloud Flows; existing Classic Workflows should be migrated.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 7: Plugin Development (space_pp_plugindev01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_plugin01',      'space_pp_plugindev01',
+ 'What is a Dataverse Plugin?',
+ 'A .NET assembly with event-handler classes that execute synchronously or asynchronously when a Dataverse data operation (Create, Update, Delete, etc.) occurs.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_pluginstep01',  'space_pp_plugindev01',
+ 'What does a Plugin Step registration define?',
+ 'The message (e.g. Create), table, pipeline stage (Pre/Post-Operation), and optional attribute filter that determine when the plugin class executes.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_pluginimage01', 'space_pp_plugindev01',
+ 'What is a Pre-Image vs a Post-Image in a Plugin?',
+ 'Pre-Image: snapshot of the row before the operation. Post-Image: snapshot after. Pre-Images do not exist on Create steps; Post-Images do not exist on Delete steps.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_iorgservice01', 'space_pp_plugindev01',
+ 'What is IOrganizationService used for in a plugin?',
+ 'The primary SDK interface for performing CRUD, queries, and custom messages against Dataverse from within plugin or custom code.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_ipluginctx01',  'space_pp_plugindev01',
+ 'What information does IPluginExecutionContext provide?',
+ 'Triggering event details: input/output parameters (e.g. the Target entity), pre/post images, the triggering user ID, depth, and business unit context.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_svccontext01',  'space_pp_plugindev01',
+ 'What does OrganizationServiceContext add over IOrganizationService?',
+ 'LINQ query support and identity-mapped change tracking (like Entity Framework), enabling strongly-typed queries with .Where() and .ToList().',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_virtualtable01','space_pp_plugindev01',
+ 'What is a Virtual Table Provider?',
+ 'A plugin that handles Retrieve/RetrieveMultiple for a virtual table, fetching data live from an external source and surfacing it as a standard Dataverse table.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_asyncplugin01', 'space_pp_plugindev01',
+ 'When does an Asynchronous Plugin execute relative to the Dataverse transaction?',
+ 'After the transaction commits, via the Async Service — it does not block the user''s save operation. Use it for non-time-critical background work.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_plugintrace01', 'space_pp_plugindev01',
+ 'How do you write diagnostic messages from a plugin and where can you read them?',
+ 'Use ITracingService.Trace(). Messages are written to the Plugin Trace Log table, readable in the maker portal when tracing is enabled.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_sandbox01',     'space_pp_plugindev01',
+ 'What restrictions does Plugin Sandbox Mode impose?',
+ 'No file system, registry, or arbitrary network access. Plugins can only call Dataverse via IOrganizationService or explicitly allowed HTTP endpoints.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 8: Integration and APIs (space_pp_intapi01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_webapi01',      'space_pp_intapi01',
+ 'What standard does the Dataverse Web API follow?',
+ 'OData v4. It provides RESTful CRUD, query, and custom message access — any HTTP client can read/write Dataverse data.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_odata01',       'space_pp_intapi01',
+ 'Match these OData query options to their SQL equivalents: $filter, $select, $orderby, $top.',
+ '$filter = WHERE, $select = SELECT, $orderby = ORDER BY, $top = LIMIT.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_customconn01',  'space_pp_intapi01',
+ 'What is a Custom Connector in Power Platform?',
+ 'A user-defined connector built from an OpenAPI definition that wraps any HTTP API for use in Canvas Apps and flows like a built-in connector.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_openapi01',     'space_pp_intapi01',
+ 'What OpenAPI version do Custom Connectors require?',
+ 'OpenAPI 2.0 (Swagger). OpenAPI 3.0 is not supported for Custom Connectors.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_webhook01',     'space_pp_intapi01',
+ 'How does a Dataverse Webhook notify an external system?',
+ 'It sends an HTTP POST with the ExecutionContext payload to a registered external URL whenever the configured Dataverse event fires.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_svcendpoint01', 'space_pp_intapi01',
+ 'What is a Dataverse Service Endpoint?',
+ 'A configuration that routes event messages to an Azure Service Bus queue/topic, Azure Event Hub, or Webhook target for external integration.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_servicebus01',  'space_pp_intapi01',
+ 'What integration pattern does Azure Service Bus provide for Dataverse?',
+ 'Decoupled async messaging — Dataverse posts event context to a queue/topic and the consumer processes messages at its own pace.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_oauth201',      'space_pp_intapi01',
+ 'Which OAuth 2.0 flow is used when a user signs in interactively to a Custom Connector?',
+ 'Authorization Code flow — the user authenticates once and the connector stores the resulting access token for subsequent API calls.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_powerbi01',     'space_pp_intapi01',
+ 'How is Power BI surfaced inside a Model-Driven App?',
+ 'Via Power BI Embedded — reports and dashboards are embedded in MDA system dashboards or forms, providing in-context analytics.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_powerpages01',  'space_pp_intapi01',
+ 'What security mechanism controls which Dataverse records external Power Pages users can access?',
+ 'Table Permissions — without them all Dataverse data is inaccessible to portal users by default.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 9: ALM and DevOps (space_pp_alm01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_alm01',         'space_pp_alm01',
+ 'What is Power Platform ALM and what is the typical environment promotion order?',
+ 'Managing solutions across environments with automated pipelines and source control. Typical order: Development → Test/Sandbox → Production.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_solchecker01',  'space_pp_alm01',
+ 'What does Solution Checker do?',
+ 'Performs static analysis of solution components to identify performance, reliability, and upgrade issues — like a linter for Power Platform.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_ppcli01',       'space_pp_alm01',
+ 'What command exports a solution using the Power Platform CLI?',
+ 'pac solution export --name <SolutionName> --path ./solutions',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_azdevops01',    'space_pp_alm01',
+ 'What Azure DevOps extension enables Power Platform pipeline tasks?',
+ 'Power Platform Build Tools — provides tasks for export, import, publish, check, and environment management.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_ghactions01',   'space_pp_alm01',
+ 'Which GitHub Actions repository provides official Power Platform actions?',
+ 'microsoft/powerplatform-actions — includes export-solution, import-solution, publish-solution, and environment management actions.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_envstrategy01', 'space_pp_alm01',
+ 'What is a minimal environment strategy for a small Power Platform team?',
+ 'Developer Sandbox → Shared Test → Production. Each stage uses managed solutions promoted by automated pipelines.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_managedenv01',  'space_pp_alm01',
+ 'What is a Managed Environment and name two features it enables?',
+ 'A premium Power Platform feature providing enhanced governance. Features include: weekly digest, Solution Checker enforcement on import, and sharing limits.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_sollayers01',   'space_pp_alm01',
+ 'What are Solution Layers in Dataverse?',
+ 'Stacked customizations where each solution adds a layer on a component. The top (active) layer wins — like CSS specificity for Dataverse components.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_depcheck01',    'space_pp_alm01',
+ 'What does the Dependency Checker help prevent?',
+ 'Accidental deletion of components that other solution components depend on — it shows all places that reference a given component before you remove it.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_fieldsecp01',   'space_pp_alm01',
+ 'What is a Field Security Profile in Dataverse?',
+ 'A security construct that restricts read/create/update access to specific sensitive columns, independently of the table-level security role.',
+ 'teacher_john', 'teacher_john'),
+
+-- ---------------------------------------------------------------------------
+-- Group 10: Security and Governance (space_pp_secgov01)
+-- ---------------------------------------------------------------------------
+
+('fc_pp_dlp01',         'space_pp_secgov01',
+ 'What is a DLP Policy in Power Platform?',
+ 'An admin policy that classifies connectors into Business, Non-Business, or Blocked tiers to prevent flows from combining incompatible data sources.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_admincenter01', 'space_pp_secgov01',
+ 'What is managed from the Power Platform Admin Center?',
+ 'Environments, capacity, DLP policies, connector management, and tenant-level analytics across the entire Power Platform tenant.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_coe01',         'space_pp_secgov01',
+ 'What is the CoE Toolkit and what is it not?',
+ 'A reference implementation of governance tooling (Power BI dashboard, flows, apps) for tenant visibility and standards enforcement. It is not a finished product — it requires customization.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_tenantanalytics01','space_pp_secgov01',
+ 'What does Tenant-level Analytics in Admin Center show?',
+ 'Usage metrics across all environments: active users, flow run counts, connector usage, and app launches. Data has up to a 28-day lag.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_managedid01',   'space_pp_secgov01',
+ 'What is a Managed Identity and why is it preferred over client secrets?',
+ 'An Azure-managed identity (system or user-assigned) that authenticates services without stored credentials. Preferred because it never expires and does not require secret rotation.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_apilimit01',    'space_pp_secgov01',
+ 'What happens when a Power Platform user exceeds their daily API request limit?',
+ 'Performance is throttled or requests are blocked. High-volume workloads require capacity add-ons beyond the per-user daily allocation.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_licensing01',   'space_pp_secgov01',
+ 'Can a Microsoft 365 license user use premium Dataverse connectors in Power Apps?',
+ 'No. Premium connectors and Dataverse require a Power Apps per-user or per-app plan. Microsoft 365 only covers standard connectors.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_dvteam01',      'space_pp_secgov01',
+ 'What types of Dataverse Teams exist and what is an AAD Group Team?',
+ 'Owner, Access, and AAD Group teams. An AAD Group Team maps an Azure AD group to a Dataverse team — group membership automatically grants the assigned security roles.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_hierarchysec01','space_pp_secgov01',
+ 'What two hierarchy models does Dataverse Hierarchy Security support?',
+ 'Manager hierarchy (based on the Manager field on users) and Position hierarchy (based on a Position table). Both grant managers access to reports'' records.',
+ 'teacher_john', 'teacher_john'),
+
+('fc_pp_pad01',         'space_pp_secgov01',
+ 'What is Power Automate Desktop (PAD) and what is the key difference between attended and unattended runs?',
+ 'A desktop app for building Desktop Flows (RPA). Attended: a human is present at the machine. Unattended: runs without a logged-in user, requires an unattended add-on.',
+ 'teacher_john', 'teacher_john')
+
+ON CONFLICT (id) DO NOTHING;
