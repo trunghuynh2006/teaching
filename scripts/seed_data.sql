@@ -3558,3 +3558,644 @@ VALUES
     ('a_pl900_50_2', 'q_pl900_50', 'Create a new personal view.', FALSE, 2, 'teacher_john', 'teacher_john'),
     ('a_pl900_50_3', 'q_pl900_50', 'Create a new public view.', TRUE, 3, 'teacher_john', 'teacher_john')
 ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- PL-900 Additional 100 Practice Questions (Q51–Q150)
+-- Topics: Power BI, Power Automate, Dataverse, Copilot Studio, AI Builder, General
+-- =============================================================================
+
+INSERT INTO questions (id, space_id, question_type, body, created_by, updated_by)
+VALUES
+    -- Power BI (Q51–Q65)
+    ('q_pl900_51', 'space_pl900_q01', 'single', 'A team needs to collaborate on Power BI reports and dashboards. Which Power BI feature provides a shared space for the team to create and manage content?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_52', 'space_pl900_q01', 'single', 'You need to build Power BI reports and connect them to multiple data sources before publishing. Which tool should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_53', 'space_pl900_q01', 'single', 'You have several Power BI reports in a workspace. You need to create a single-page overview that combines key visuals from multiple reports. What should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_54', 'space_pl900_q01', 'single', 'A company needs to share Power BI reports with users outside their organization. Which feature should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_55', 'space_pl900_q01', 'single', 'You need to create a Power BI visualization that shows sales trends over a 12-month period. Which visualization type should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_56', 'space_pl900_q01', 'single', 'You have a Power BI report connected to an on-premises SQL Server database. The report data must be updated daily. What should you configure?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_57', 'space_pl900_q01', 'single', 'A business user wants to explore Power BI data by typing questions in plain English and receiving instant visual answers. Which Power BI feature should they use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_58', 'space_pl900_q01', 'single', 'You need to add an interactive filter to a Power BI report page so that users can filter all visuals by selecting a date range. Which visualization type should you add?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_59', 'space_pl900_q01', 'multiple', 'You need to identify two Power BI visualization types best suited for comparing values across multiple categories. Which two should you select? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_60', 'space_pl900_q01', 'single', 'A user needs to share a Power BI report with colleagues in the same organization. Which license is required for both the creator and the viewer to share and access the report?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_61', 'space_pl900_q01', 'single', 'A company wants to embed Power BI reports into a public-facing website for anonymous users. Which Power BI offering should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_62', 'space_pl900_q01', 'single', 'Your Power BI reports use an on-premises SQL Server database. You need the Power BI service to access this database for scheduled refreshes. What should you install?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_63', 'space_pl900_q01', 'single', 'You want to receive an email notification when a KPI tile on a Power BI dashboard exceeds a specific threshold. Which Power BI feature should you configure?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_64', 'space_pl900_q01', 'single', 'A company wants to distribute a curated set of Power BI dashboards and reports to a large group of users within the organization. What should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_65', 'space_pl900_q01', 'single', 'A company needs to produce highly formatted, printable financial statements using Power BI. Which tool should you use?', 'teacher_john', 'teacher_john'),
+    -- Power Automate (Q66–Q75)
+    ('q_pl900_66', 'space_pl900_q01', 'single', 'You need to create a Power Automate flow that starts automatically when a new email arrives in an Outlook inbox. Which type of trigger should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_67', 'space_pl900_q01', 'single', 'A company needs an expense approval process where a manager must approve or reject before the flow continues. Which Power Automate action should you add?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_68', 'space_pl900_q01', 'single', 'You have a cloud flow that retrieves a record value. You need to perform different actions depending on whether the value is greater than 100. What should you add to the flow?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_69', 'space_pl900_q01', 'single', 'A company uses Power Automate for desktop to automate tasks on a user workstation. The automation requires the user to be signed in and present during execution. Which type of desktop flow should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_70', 'space_pl900_q01', 'single', 'You need to connect a Power Automate flow to a third-party REST API that has no built-in Power Platform connector. What should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_71', 'space_pl900_q01', 'single', 'A company wants to use the Salesforce connector in Power Automate. Which connector category does the Salesforce connector belong to?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_72', 'space_pl900_q01', 'single', 'You have a Power Automate cloud flow that returns a list of Dataverse records. You need to send an email for each record in the list. What should you add to the flow?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_73', 'space_pl900_q01', 'multiple', 'You need to identify which two components are defined by a Power Platform connector. Which two components should you identify? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_74', 'space_pl900_q01', 'single', 'A company wants to run Power Automate desktop flows overnight on a virtual machine without any user being signed in. Which type of desktop flow should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_75', 'space_pl900_q01', 'single', 'An action in a Power Automate cloud flow sometimes fails. You need to add a notification step that runs only when that action fails. What should you configure on the notification action?', 'teacher_john', 'teacher_john'),
+    -- Dataverse (Q76–Q85)
+    ('q_pl900_76', 'space_pl900_q01', 'single', 'What is the primary purpose of a security role in Microsoft Dataverse?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_77', 'space_pl900_q01', 'single', 'You have a Dataverse table named Orders with related order line items. You need a column on the Orders table that automatically sums the quantity from all related line item records. Which type of column should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_78', 'space_pl900_q01', 'single', 'A company must track all changes made to Dataverse records for compliance. What should you enable on the table?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_79', 'space_pl900_q01', 'single', 'What best describes a Microsoft Dataverse environment?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_80', 'space_pl900_q01', 'single', 'You need to enforce a rule in a Dataverse table that makes a column required based on the value of another column, without writing code. Which feature should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_81', 'space_pl900_q01', 'single', 'You have built Power Apps, flows, and Dataverse customizations in a development environment. You need to package and deploy all components to a production environment. What should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_82', 'space_pl900_q01', 'multiple', 'You need to store numeric values in a Dataverse table column. Which two column data types can store numeric values? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_83', 'space_pl900_q01', 'single', 'What is the primary purpose of the Dataverse audit log?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_84', 'space_pl900_q01', 'single', 'A company needs to import data from an Excel file into a Dataverse table. Which tool should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_85', 'space_pl900_q01', 'single', 'You need to restrict access to a specific column in a Dataverse table so only authorized users can view or edit it. Which Dataverse feature should you use?', 'teacher_john', 'teacher_john'),
+    -- Copilot Studio (Q86–Q95)
+    ('q_pl900_86', 'space_pl900_q01', 'single', 'What is the primary purpose of Microsoft Copilot Studio?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_87', 'space_pl900_q01', 'single', 'In Microsoft Copilot Studio, what is a topic?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_88', 'space_pl900_q01', 'multiple', 'You have built a copilot in Microsoft Copilot Studio. Which two channels can you publish the copilot to? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_89', 'space_pl900_q01', 'single', 'In Microsoft Copilot Studio, what is the purpose of entities?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_90', 'space_pl900_q01', 'single', 'A company wants to create a chatbot that answers frequently asked HR policy questions from employees. Which Microsoft Power Platform component should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_91', 'space_pl900_q01', 'single', 'In Microsoft Copilot Studio, what happens when a user sends a message that does not match any defined topic trigger phrases?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_92', 'space_pl900_q01', 'single', 'You have a Microsoft Copilot Studio copilot. You need the copilot to retrieve live data from an external system in response to user questions. Which feature should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_93', 'space_pl900_q01', 'single', 'What is the purpose of the test pane in Microsoft Copilot Studio?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_94', 'space_pl900_q01', 'single', 'A company uses a Copilot Studio copilot for customer support. Some complex inquiries need to be handed off to a human agent. Which node should you add to the copilot topic?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_95', 'space_pl900_q01', 'multiple', 'In Microsoft Copilot Studio, which two types of entities are available? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    -- AI Builder (Q96–Q100)
+    ('q_pl900_96', 'space_pl900_q01', 'single', 'What is AI Builder in Microsoft Power Platform?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_97', 'space_pl900_q01', 'single', 'A company receives invoices as PDF files and needs to automatically extract fields such as invoice number, vendor name, and total amount. Which AI Builder model type should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_98', 'space_pl900_q01', 'single', 'A company needs to automatically classify customer feedback as positive, negative, or neutral. Which AI Builder model should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_99', 'space_pl900_q01', 'multiple', 'A company wants to use AI Builder without training a custom model. Which two prebuilt AI Builder models are available? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_100', 'space_pl900_q01', 'single', 'You create a custom AI Builder model. What must you do before you can use the model in a Power Apps app or Power Automate flow?', 'teacher_john', 'teacher_john')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO answers (id, question_id, text, is_correct, position, created_by, updated_by)
+VALUES
+    -- Q51: Workspace
+    ('a_pl900_51_0', 'q_pl900_51', 'Dataset', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_51_1', 'q_pl900_51', 'Workspace', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_51_2', 'q_pl900_51', 'Gateway', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_51_3', 'q_pl900_51', 'Power BI App', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q52: Power BI Desktop
+    ('a_pl900_52_0', 'q_pl900_52', 'Power BI Desktop', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_52_1', 'q_pl900_52', 'Power BI service', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_52_2', 'q_pl900_52', 'Power BI Mobile', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_52_3', 'q_pl900_52', 'Power BI Embedded', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q53: Dashboard
+    ('a_pl900_53_0', 'q_pl900_53', 'A report', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_53_1', 'q_pl900_53', 'A dashboard', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_53_2', 'q_pl900_53', 'A dataset', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_53_3', 'q_pl900_53', 'A dataflow', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q54: Azure AD B2B guest access
+    ('a_pl900_54_0', 'q_pl900_54', 'Power BI Embedded', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_54_1', 'q_pl900_54', 'Power BI Premium only', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_54_2', 'q_pl900_54', 'Azure Active Directory B2B guest access', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_54_3', 'q_pl900_54', 'Publish to web (public)', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q55: Line chart
+    ('a_pl900_55_0', 'q_pl900_55', 'Bar chart', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_55_1', 'q_pl900_55', 'Pie chart', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_55_2', 'q_pl900_55', 'Line chart', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_55_3', 'q_pl900_55', 'Scatter chart', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q56: Scheduled refresh (requires on-premises data gateway)
+    ('a_pl900_56_0', 'q_pl900_56', 'Install an on-premises data gateway and configure a scheduled refresh in the Power BI service', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_56_1', 'q_pl900_56', 'Enable live connection mode in Power BI Desktop', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_56_2', 'q_pl900_56', 'Publish the report to Power BI Embedded', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_56_3', 'q_pl900_56', 'Configure a DLP policy in the Power Platform admin center', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q57: Q&A
+    ('a_pl900_57_0', 'q_pl900_57', 'Insights', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_57_1', 'q_pl900_57', 'Q&A', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_57_2', 'q_pl900_57', 'Bookmarks', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_57_3', 'q_pl900_57', 'Dataflows', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q58: Slicer
+    ('a_pl900_58_0', 'q_pl900_58', 'Card', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_58_1', 'q_pl900_58', 'Gauge', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_58_2', 'q_pl900_58', 'Slicer', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_58_3', 'q_pl900_58', 'KPI', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q59: Bar chart + Column chart (multiple)
+    ('a_pl900_59_0', 'q_pl900_59', 'Line chart', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_59_1', 'q_pl900_59', 'Bar chart', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_59_2', 'q_pl900_59', 'Pie chart', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_59_3', 'q_pl900_59', 'Column chart', TRUE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_59_4', 'q_pl900_59', 'Waterfall chart', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q60: Power BI Pro
+    ('a_pl900_60_0', 'q_pl900_60', 'Power BI Free', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_60_1', 'q_pl900_60', 'Power BI Pro', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_60_2', 'q_pl900_60', 'Microsoft 365 Basic', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_60_3', 'q_pl900_60', 'Power BI Desktop license', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q61: Power BI Embedded
+    ('a_pl900_61_0', 'q_pl900_61', 'Power BI App', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_61_1', 'q_pl900_61', 'Power BI Embedded', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_61_2', 'q_pl900_61', 'Power BI Premium', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_61_3', 'q_pl900_61', 'Power BI Mobile', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q62: On-premises data gateway
+    ('a_pl900_62_0', 'q_pl900_62', 'A Power BI Embedded license', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_62_1', 'q_pl900_62', 'An on-premises data gateway', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_62_2', 'q_pl900_62', 'A DLP policy', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_62_3', 'q_pl900_62', 'A Power BI Pro license on the server', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q63: Data alerts
+    ('a_pl900_63_0', 'q_pl900_63', 'Scheduled refresh', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_63_1', 'q_pl900_63', 'Data alerts', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_63_2', 'q_pl900_63', 'Report subscriptions', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_63_3', 'q_pl900_63', 'Q&A', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q64: Power BI App
+    ('a_pl900_64_0', 'q_pl900_64', 'A shared workspace', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_64_1', 'q_pl900_64', 'A Power BI App', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_64_2', 'q_pl900_64', 'A Power BI Embedded solution', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_64_3', 'q_pl900_64', 'A dataflow', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q65: Power BI Report Builder
+    ('a_pl900_65_0', 'q_pl900_65', 'Power BI Desktop', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_65_1', 'q_pl900_65', 'Power BI Report Builder', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_65_2', 'q_pl900_65', 'Power BI Mobile', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_65_3', 'q_pl900_65', 'Power BI service', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q66: Automated trigger
+    ('a_pl900_66_0', 'q_pl900_66', 'Scheduled trigger', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_66_1', 'q_pl900_66', 'Automated trigger', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_66_2', 'q_pl900_66', 'Manual trigger', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_66_3', 'q_pl900_66', 'Instant trigger', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q67: Start and wait for an approval
+    ('a_pl900_67_0', 'q_pl900_67', 'Send an email (V2)', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_67_1', 'q_pl900_67', 'Start and wait for an approval', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_67_2', 'q_pl900_67', 'Create a Dataverse record', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_67_3', 'q_pl900_67', 'Post a message to Teams', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q68: Condition
+    ('a_pl900_68_0', 'q_pl900_68', 'An Apply to each loop', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_68_1', 'q_pl900_68', 'A condition', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_68_2', 'q_pl900_68', 'A parallel branch', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_68_3', 'q_pl900_68', 'A trigger', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q69: Attended desktop flow
+    ('a_pl900_69_0', 'q_pl900_69', 'Unattended', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_69_1', 'q_pl900_69', 'Attended', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_69_2', 'q_pl900_69', 'Scheduled cloud flow', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_69_3', 'q_pl900_69', 'Automated cloud flow', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q70: Custom connector
+    ('a_pl900_70_0', 'q_pl900_70', 'A premium connector', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_70_1', 'q_pl900_70', 'A custom connector', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_70_2', 'q_pl900_70', 'An on-premises data gateway', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_70_3', 'q_pl900_70', 'A standard connector', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q71: Premium connector
+    ('a_pl900_71_0', 'q_pl900_71', 'Standard', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_71_1', 'q_pl900_71', 'Custom', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_71_2', 'q_pl900_71', 'Premium', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_71_3', 'q_pl900_71', 'Free', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q72: Apply to each
+    ('a_pl900_72_0', 'q_pl900_72', 'A condition', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_72_1', 'q_pl900_72', 'An Apply to each loop', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_72_2', 'q_pl900_72', 'A parallel branch', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_72_3', 'q_pl900_72', 'A Do until loop', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q73: Triggers + Actions (multiple)
+    ('a_pl900_73_0', 'q_pl900_73', 'Triggers', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_73_1', 'q_pl900_73', 'Security roles', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_73_2', 'q_pl900_73', 'Actions', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_73_3', 'q_pl900_73', 'Formulas', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_73_4', 'q_pl900_73', 'Environments', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q74: Unattended desktop flow
+    ('a_pl900_74_0', 'q_pl900_74', 'Attended', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_74_1', 'q_pl900_74', 'Unattended', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_74_2', 'q_pl900_74', 'Instant cloud flow', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_74_3', 'q_pl900_74', 'Scheduled cloud flow', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q75: Run after
+    ('a_pl900_75_0', 'q_pl900_75', 'Concurrency control', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_75_1', 'q_pl900_75', 'Run after settings', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_75_2', 'q_pl900_75', 'Retry policy', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_75_3', 'q_pl900_75', 'Timeout settings', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q76: Security role
+    ('a_pl900_76_0', 'q_pl900_76', 'To define the columns in a Dataverse table', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_76_1', 'q_pl900_76', 'To control user access to tables and records in Dataverse', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_76_2', 'q_pl900_76', 'To automate data entry in a canvas app', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_76_3', 'q_pl900_76', 'To create relationships between Dataverse tables', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q77: Rollup column
+    ('a_pl900_77_0', 'q_pl900_77', 'Calculated column', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_77_1', 'q_pl900_77', 'Rollup column', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_77_2', 'q_pl900_77', 'Lookup column', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_77_3', 'q_pl900_77', 'Choice column', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q78: Auditing
+    ('a_pl900_78_0', 'q_pl900_78', 'Change tracking', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_78_1', 'q_pl900_78', 'Auditing', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_78_2', 'q_pl900_78', 'Business rules', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_78_3', 'q_pl900_78', 'Duplicate detection', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q79: Container for resources
+    ('a_pl900_79_0', 'q_pl900_79', 'A type of Power Apps canvas app', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_79_1', 'q_pl900_79', 'A container that stores apps, flows, data, and other Power Platform resources', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_79_2', 'q_pl900_79', 'A type of Power BI report', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_79_3', 'q_pl900_79', 'A security role for Dataverse tables', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q80: Business rule
+    ('a_pl900_80_0', 'q_pl900_80', 'A server-side plug-in', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_80_1', 'q_pl900_80', 'A business rule', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_80_2', 'q_pl900_80', 'A Power Automate cloud flow', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_80_3', 'q_pl900_80', 'A calculated column', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q81: Solution
+    ('a_pl900_81_0', 'q_pl900_81', 'A Power BI app', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_81_1', 'q_pl900_81', 'A Dataverse table export', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_81_2', 'q_pl900_81', 'A Power Platform solution', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_81_3', 'q_pl900_81', 'A Power Pages site', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q82: Whole Number + Currency (multiple)
+    ('a_pl900_82_0', 'q_pl900_82', 'Whole Number', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_82_1', 'q_pl900_82', 'Text', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_82_2', 'q_pl900_82', 'Currency', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_82_3', 'q_pl900_82', 'Choice', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_82_4', 'q_pl900_82', 'File', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q83: Audit log purpose
+    ('a_pl900_83_0', 'q_pl900_83', 'To store user passwords securely', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_83_1', 'q_pl900_83', 'To track changes to records for compliance and security purposes', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_83_2', 'q_pl900_83', 'To define business rules on tables', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_83_3', 'q_pl900_83', 'To create table relationships', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q84: Data import wizard
+    ('a_pl900_84_0', 'q_pl900_84', 'Power BI Desktop', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_84_1', 'q_pl900_84', 'The data import wizard in the Power Apps maker portal', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_84_2', 'q_pl900_84', 'Power Automate desktop flow', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_84_3', 'q_pl900_84', 'Power Pages', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q85: Field security profiles
+    ('a_pl900_85_0', 'q_pl900_85', 'Security roles', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_85_1', 'q_pl900_85', 'Field security profiles', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_85_2', 'q_pl900_85', 'Business rules', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_85_3', 'q_pl900_85', 'Managed properties', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q86: Copilot Studio purpose
+    ('a_pl900_86_0', 'q_pl900_86', 'To create Power BI reports', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_86_1', 'q_pl900_86', 'To build and deploy conversational AI chatbots and copilots', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_86_2', 'q_pl900_86', 'To automate desktop applications', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_86_3', 'q_pl900_86', 'To create canvas apps', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q87: Topic
+    ('a_pl900_87_0', 'q_pl900_87', 'A data source for a copilot', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_87_1', 'q_pl900_87', 'A set of conversation nodes that define how the copilot responds to specific user input', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_87_2', 'q_pl900_87', 'A type of connector', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_87_3', 'q_pl900_87', 'A security role for copilots', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q88: Publish channels (multiple) - Teams + custom website
+    ('a_pl900_88_0', 'q_pl900_88', 'Microsoft Teams', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_88_1', 'q_pl900_88', 'Power BI', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_88_2', 'q_pl900_88', 'A custom website', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_88_3', 'q_pl900_88', 'Microsoft Dataverse', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_88_4', 'q_pl900_88', 'Azure DevOps', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q89: Entities
+    ('a_pl900_89_0', 'q_pl900_89', 'To define the visual appearance of the copilot', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_89_1', 'q_pl900_89', 'To identify and extract specific types of information from user input', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_89_2', 'q_pl900_89', 'To authenticate users in the copilot', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_89_3', 'q_pl900_89', 'To store conversation history', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q90: HR chatbot = Copilot Studio
+    ('a_pl900_90_0', 'q_pl900_90', 'Power Apps', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_90_1', 'q_pl900_90', 'Power Automate', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_90_2', 'q_pl900_90', 'Power BI', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_90_3', 'q_pl900_90', 'Microsoft Copilot Studio', TRUE, 3, 'teacher_john', 'teacher_john'),
+    -- Q91: Fallback topic
+    ('a_pl900_91_0', 'q_pl900_91', 'The copilot ends the conversation', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_91_1', 'q_pl900_91', 'The copilot triggers the system fallback topic', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_91_2', 'q_pl900_91', 'The copilot redirects to Power Automate', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_91_3', 'q_pl900_91', 'The copilot creates a new topic automatically', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q92: Power Automate flow action in copilot
+    ('a_pl900_92_0', 'q_pl900_92', 'A topic', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_92_1', 'q_pl900_92', 'An entity', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_92_2', 'q_pl900_92', 'A Power Automate flow action', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_92_3', 'q_pl900_92', 'A variable', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q93: Test pane
+    ('a_pl900_93_0', 'q_pl900_93', 'To publish the copilot to all configured channels', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_93_1', 'q_pl900_93', 'To test the copilot''s conversation flow interactively before publishing', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_93_2', 'q_pl900_93', 'To manage security roles for the copilot', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_93_3', 'q_pl900_93', 'To configure Power Automate flow integrations', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q94: Transfer to agent node
+    ('a_pl900_94_0', 'q_pl900_94', 'A fallback topic', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_94_1', 'q_pl900_94', 'The Transfer to agent node in an escalation topic', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_94_2', 'q_pl900_94', 'A Power Automate cloud flow', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_94_3', 'q_pl900_94', 'An entity', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q95: Prebuilt + Custom entities (multiple)
+    ('a_pl900_95_0', 'q_pl900_95', 'Prebuilt entities', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_95_1', 'q_pl900_95', 'Flow entities', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_95_2', 'q_pl900_95', 'Custom entities', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_95_3', 'q_pl900_95', 'Connector entities', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_95_4', 'q_pl900_95', 'Table entities', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q96: AI Builder purpose
+    ('a_pl900_96_0', 'q_pl900_96', 'A tool for building canvas apps without code', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_96_1', 'q_pl900_96', 'A feature that adds AI capabilities to Power Apps and Power Automate', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_96_2', 'q_pl900_96', 'A type of Dataverse standard table', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_96_3', 'q_pl900_96', 'A Power BI visualization type', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q97: Document processing
+    ('a_pl900_97_0', 'q_pl900_97', 'Text classification', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_97_1', 'q_pl900_97', 'Object detection', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_97_2', 'q_pl900_97', 'Document processing', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_97_3', 'q_pl900_97', 'Prediction', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q98: Text classification
+    ('a_pl900_98_0', 'q_pl900_98', 'Object detection', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_98_1', 'q_pl900_98', 'Text classification', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_98_2', 'q_pl900_98', 'Document processing', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_98_3', 'q_pl900_98', 'Prediction', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q99: Prebuilt models (multiple) - Sentiment analysis + Business card reader
+    ('a_pl900_99_0', 'q_pl900_99', 'Sentiment analysis', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_99_1', 'q_pl900_99', 'Object detection (custom)', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_99_2', 'q_pl900_99', 'Business card reader', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_99_3', 'q_pl900_99', 'Prediction (custom)', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_99_4', 'q_pl900_99', 'Text classification (custom)', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q100: Train and publish
+    ('a_pl900_100_0', 'q_pl900_100', 'Deploy the model to Azure Machine Learning', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_100_1', 'q_pl900_100', 'Publish the model without training', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_100_2', 'q_pl900_100', 'Train and publish the model', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_100_3', 'q_pl900_100', 'Export the model to Power BI', FALSE, 3, 'teacher_john', 'teacher_john')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO questions (id, space_id, question_type, body, created_by, updated_by)
+VALUES
+    -- Power Platform general (Q101–Q110)
+    ('q_pl900_101', 'space_pl900_q01', 'single', 'What is the purpose of a Data Loss Prevention (DLP) policy in Microsoft Power Platform?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_102', 'space_pl900_q01', 'single', 'A company wants to create a Power Platform environment for user acceptance testing that can be reset or deleted without affecting production. Which environment type should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_103', 'space_pl900_q01', 'single', 'A company''s IT team wants greater control over Power Platform adoption including enforced solution checker, weekly digest emails, and usage insights. Which feature should they enable?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_104', 'space_pl900_q01', 'single', 'In Microsoft Power Platform, what is a connector?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_105', 'space_pl900_q01', 'multiple', 'Which two categories of Microsoft-provided connectors exist in Power Platform? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_106', 'space_pl900_q01', 'single', 'Which tool provides Power Platform administrators with a central location to manage environments, DLP policies, capacity, and licensing?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_107', 'space_pl900_q01', 'single', 'What is the Microsoft Power Platform Center of Excellence (CoE) Starter Kit?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_108', 'space_pl900_q01', 'single', 'A Power Platform administrator needs to view and manage all Power Automate flows across the entire organization, not just their own flows. Where should the administrator go?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_109', 'space_pl900_q01', 'single', 'You need to move Power Platform components from a development environment to a production environment. What should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_110', 'space_pl900_q01', 'single', 'A company wants to analyze the impact of a Power Platform solution on existing components before deploying. What should you run?', 'teacher_john', 'teacher_john'),
+    -- Scenario-based mixed (Q111–Q120)
+    ('q_pl900_111', 'space_pl900_q01', 'single', 'A user reports that a canvas app shows no data from a Dataverse table, even though the table contains records. What is the most likely cause?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_112', 'space_pl900_q01', 'single', 'You need to create a Power BI visualization that shows total sales distributed across geographic regions on a map. Which visualization type should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_113', 'space_pl900_q01', 'single', 'A company needs to automatically classify incoming documents into categories such as invoices, contracts, and purchase orders. Which Power Platform component should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_114', 'space_pl900_q01', 'single', 'You have a canvas app with two screens. You need to navigate from Screen1 to Screen2 when a button is tapped. Which formula should you use in the button''s OnSelect property?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_115', 'space_pl900_q01', 'single', 'A company needs to export data from a Dataverse table to a SharePoint list automatically every weekday at 8 AM. Which approach should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_116', 'space_pl900_q01', 'single', 'You need to create a Microsoft Copilot Studio copilot that answers questions about company policies by searching content stored in SharePoint. Which Copilot Studio feature should you enable?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_117', 'space_pl900_q01', 'single', 'A company needs to prevent users from combining SharePoint connectors with social media connectors in Power Automate flows. What should you configure?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_118', 'space_pl900_q01', 'single', 'You have a Dataverse table named Projects. You need a column that automatically computes a value using a formula based on other columns in the same record. Which column type should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_119', 'space_pl900_q01', 'single', 'A company has a Power Pages site. They need external users to sign in using their Microsoft accounts. What should you configure?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_120', 'space_pl900_q01', 'single', 'You have a Power Platform solution and need to analyze it for potential issues and best practice violations before deploying to production. What should you run?', 'teacher_john', 'teacher_john'),
+    -- Power Apps deeper (Q121–Q130)
+    ('q_pl900_121', 'space_pl900_q01', 'single', 'What is the key difference between a canvas app and a model-driven app in Power Apps?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_122', 'space_pl900_q01', 'single', 'You are building a model-driven app. Which component defines the layout of fields displayed when a user opens a Dataverse record?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_123', 'space_pl900_q01', 'single', 'You are building a canvas app that needs to display a scrollable list of products from a Dataverse table. Which canvas app control should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_124', 'space_pl900_q01', 'single', 'A developer needs to execute custom server-side business logic automatically when a Dataverse record is created or updated. Which Dataverse feature should they use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_125', 'space_pl900_q01', 'single', 'You need to create a Power Automate flow that starts when an item in a SharePoint list is modified. Which trigger should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_126', 'space_pl900_q01', 'single', 'What is the purpose of a Power BI App?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_127', 'space_pl900_q01', 'single', 'A company needs to track customer service cases and agent interactions, with a guided process for agents. Which Power Platform solution is most appropriate?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_128', 'space_pl900_q01', 'single', 'What is a managed solution in Microsoft Power Platform?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_129', 'space_pl900_q01', 'multiple', 'A company receives PDF invoices by email and needs to extract data and store it in Dataverse automatically. Which two Power Platform components should you use? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_130', 'space_pl900_q01', 'single', 'You have multiple Power BI reports in a workspace. You need a single-page view that combines key visuals from all of them. What should you do?', 'teacher_john', 'teacher_john'),
+    -- Mixed advanced (Q131–Q140)
+    ('q_pl900_131', 'space_pl900_q01', 'single', 'In a model-driven Power App, what is the purpose of a view?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_132', 'space_pl900_q01', 'single', 'You need to connect a canvas app to a third-party service that has a REST API but no existing Power Platform connector. What should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_133', 'space_pl900_q01', 'single', 'You are creating a Power BI report from an Azure SQL database. What is the first step you should perform in Power BI Desktop?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_134', 'space_pl900_q01', 'single', 'You need to create a Power Automate flow that runs every Monday at 9 AM. Which trigger type should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_135', 'space_pl900_q01', 'single', 'You have a Microsoft Copilot Studio copilot published to a custom website. You need to add the copilot to a Microsoft Teams channel as well. What should you configure in Copilot Studio?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_136', 'space_pl900_q01', 'single', 'A company needs to ensure that users can only see Dataverse records that they own and not records owned by others. Which mechanism controls this?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_137', 'space_pl900_q01', 'single', 'You need to create a Power Automate flow that starts whenever a new record is added to a Dataverse table. Which type of flow should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_138', 'space_pl900_q01', 'single', 'A Power Pages site needs to support authentication via social identity providers such as LinkedIn and Facebook. Which Power Pages feature enables this?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_139', 'space_pl900_q01', 'single', 'What is the purpose of the Microsoft Dataverse Web API?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_140', 'space_pl900_q01', 'multiple', 'You need to identify two Power Platform components that can use Microsoft Dataverse as a data source. Which two should you identify? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    -- Final batch (Q141–Q150)
+    ('q_pl900_141', 'space_pl900_q01', 'single', 'Which type of Power Platform environment cannot be deleted and is automatically created for every tenant?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_142', 'space_pl900_q01', 'single', 'You need to add an AI Builder document processing model to a Power Automate flow. What must you do before the model is available for use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_143', 'space_pl900_q01', 'single', 'Which Power Platform feature allows makers to create apps with minimal coding by using a browser-based visual designer?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_144', 'space_pl900_q01', 'single', 'You have a Power Automate cloud flow that calls an external API. The API occasionally returns transient errors. You need the flow to automatically retry the call up to three times. What should you configure on the action?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_145', 'space_pl900_q01', 'single', 'A company wants to create a sandbox Power Platform environment for developers to test preview features. The environment must not affect the production environment. Which environment type should you create?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_146', 'space_pl900_q01', 'single', 'You have a canvas app. You need to format a numeric value as currency with two decimal places. Which Power Apps function should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_147', 'space_pl900_q01', 'single', 'A company uses Power Pages for a customer portal. Customers must be able to sign in and view their own Dataverse records but not other customers'' records. Which Power Pages feature controls record-level access?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_148', 'space_pl900_q01', 'multiple', 'You are building a canvas app and need to allow users to select one or more items from a list. Which two controls support multi-selection? Each correct answer presents a complete solution.', 'teacher_john', 'teacher_john'),
+    ('q_pl900_149', 'space_pl900_q01', 'single', 'A company needs to monitor Power Platform storage capacity and user activity across all environments from a single location. Which tool should you use?', 'teacher_john', 'teacher_john'),
+    ('q_pl900_150', 'space_pl900_q01', 'single', 'You have a Power Apps model-driven app connected to Dataverse. You need to enable all users in the organization to access the app. What should you do?', 'teacher_john', 'teacher_john')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO answers (id, question_id, text, is_correct, position, created_by, updated_by)
+VALUES
+    -- Q101: DLP policy
+    ('a_pl900_101_0', 'q_pl900_101', 'To prevent unauthorized users from accessing Power Platform environments', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_101_1', 'q_pl900_101', 'To classify connectors into groups to prevent data from flowing between them inappropriately', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_101_2', 'q_pl900_101', 'To encrypt data stored in Microsoft Dataverse', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_101_3', 'q_pl900_101', 'To manage Power Apps per-user licensing', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q102: Sandbox environment
+    ('a_pl900_102_0', 'q_pl900_102', 'Default', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_102_1', 'q_pl900_102', 'Sandbox', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_102_2', 'q_pl900_102', 'Trial', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_102_3', 'q_pl900_102', 'Developer', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q103: Managed environment
+    ('a_pl900_103_0', 'q_pl900_103', 'Developer environment', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_103_1', 'q_pl900_103', 'Managed environment', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_103_2', 'q_pl900_103', 'Default environment', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_103_3', 'q_pl900_103', 'Trial environment', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q104: Connector definition
+    ('a_pl900_104_0', 'q_pl900_104', 'A type of Dataverse virtual table', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_104_1', 'q_pl900_104', 'A proxy that allows Power Apps and Power Automate to communicate with external services and APIs', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_104_2', 'q_pl900_104', 'A canvas app control for displaying data', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_104_3', 'q_pl900_104', 'A Dataverse security role', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q105: Standard + Premium connectors (multiple)
+    ('a_pl900_105_0', 'q_pl900_105', 'Standard', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_105_1', 'q_pl900_105', 'Legacy', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_105_2', 'q_pl900_105', 'Premium', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_105_3', 'q_pl900_105', 'Enterprise', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_105_4', 'q_pl900_105', 'Professional', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q106: Power Platform admin center
+    ('a_pl900_106_0', 'q_pl900_106', 'Power Apps Studio', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_106_1', 'q_pl900_106', 'Power BI Desktop', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_106_2', 'q_pl900_106', 'Power Platform admin center', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_106_3', 'q_pl900_106', 'Microsoft 365 admin center', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q107: CoE Starter Kit
+    ('a_pl900_107_0', 'q_pl900_107', 'A set of Power BI templates for financial reporting', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_107_1', 'q_pl900_107', 'A collection of components and tools that help organizations govern and manage their Power Platform adoption', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_107_2', 'q_pl900_107', 'A premium Power Apps license tier', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_107_3', 'q_pl900_107', 'A set of Dataverse templates for HR management', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q108: Admin center for org-wide flows
+    ('a_pl900_108_0', 'q_pl900_108', 'Power Apps maker portal under My flows', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_108_1', 'q_pl900_108', 'Power Automate > My flows', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_108_2', 'q_pl900_108', 'The Power Platform admin center', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_108_3', 'q_pl900_108', 'Power BI service', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q109: Export/import solution
+    ('a_pl900_109_0', 'q_pl900_109', 'Copy the development environment to production', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_109_1', 'q_pl900_109', 'Export the solution from development and import it into production', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_109_2', 'q_pl900_109', 'Manually recreate all components in the production environment', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_109_3', 'q_pl900_109', 'Use Power BI to migrate the data', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q110: Solution checker
+    ('a_pl900_110_0', 'q_pl900_110', 'Dependency checker', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_110_1', 'q_pl900_110', 'Solution checker', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_110_2', 'q_pl900_110', 'Environment comparison tool', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_110_3', 'q_pl900_110', 'Managed properties validator', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q111: Security role missing
+    ('a_pl900_111_0', 'q_pl900_111', 'The canvas app has not been published', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_111_1', 'q_pl900_111', 'The user does not have the required Dataverse security role to access the table', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_111_2', 'q_pl900_111', 'The Dataverse table has no primary key', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_111_3', 'q_pl900_111', 'The canvas app is not connected to the internet', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q112: Filled map
+    ('a_pl900_112_0', 'q_pl900_112', 'Line chart', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_112_1', 'q_pl900_112', 'Pie chart', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_112_2', 'q_pl900_112', 'Filled map', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_112_3', 'q_pl900_112', 'Scatter chart', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q113: AI Builder
+    ('a_pl900_113_0', 'q_pl900_113', 'Power BI', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_113_1', 'q_pl900_113', 'AI Builder', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_113_2', 'q_pl900_113', 'Power Pages', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_113_3', 'q_pl900_113', 'Microsoft Copilot Studio', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q114: Navigate function
+    ('a_pl900_114_0', 'q_pl900_114', 'Go(Screen2)', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_114_1', 'q_pl900_114', 'Navigate(Screen2)', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_114_2', 'q_pl900_114', 'Load(Screen2)', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_114_3', 'q_pl900_114', 'Back(Screen2)', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q115: Scheduled cloud flow
+    ('a_pl900_115_0', 'q_pl900_115', 'A manual export from the Power Apps maker portal each weekday', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_115_1', 'q_pl900_115', 'A scheduled Power Automate cloud flow', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_115_2', 'q_pl900_115', 'A Power BI dataset scheduled refresh', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_115_3', 'q_pl900_115', 'A Dataverse business rule', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q116: Generative answers
+    ('a_pl900_116_0', 'q_pl900_116', 'Entities', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_116_1', 'q_pl900_116', 'Generative answers', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_116_2', 'q_pl900_116', 'Test pane', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_116_3', 'q_pl900_116', 'Power Automate integration', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q117: DLP policy
+    ('a_pl900_117_0', 'q_pl900_117', 'A Dataverse security role', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_117_1', 'q_pl900_117', 'A Data Loss Prevention (DLP) policy', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_117_2', 'q_pl900_117', 'A managed environment', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_117_3', 'q_pl900_117', 'A Conditional Access policy', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q118: Calculated column
+    ('a_pl900_118_0', 'q_pl900_118', 'Rollup column', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_118_1', 'q_pl900_118', 'Lookup column', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_118_2', 'q_pl900_118', 'Calculated column', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_118_3', 'q_pl900_118', 'Choice column', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q119: Identity provider
+    ('a_pl900_119_0', 'q_pl900_119', 'A Dataverse security role', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_119_1', 'q_pl900_119', 'An identity provider with Microsoft as the provider', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_119_2', 'q_pl900_119', 'A canvas app authentication rule', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_119_3', 'q_pl900_119', 'A DLP policy', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q120: Solution checker
+    ('a_pl900_120_0', 'q_pl900_120', 'Environment diff tool', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_120_1', 'q_pl900_120', 'Solution checker', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_120_2', 'q_pl900_120', 'Managed properties validator', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_120_3', 'q_pl900_120', 'Dependency checker', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q121: Canvas vs model-driven
+    ('a_pl900_121_0', 'q_pl900_121', 'Canvas apps can only connect to Dataverse; model-driven apps can connect to any data source', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_121_1', 'q_pl900_121', 'Canvas apps give full control over the UI layout; model-driven apps generate the UI automatically based on the data model', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_121_2', 'q_pl900_121', 'Canvas apps require professional coding experience; model-driven apps are no-code', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_121_3', 'q_pl900_121', 'Canvas apps only run on mobile devices; model-driven apps only run on desktop', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q122: Form component in model-driven app
+    ('a_pl900_122_0', 'q_pl900_122', 'View', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_122_1', 'q_pl900_122', 'Chart', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_122_2', 'q_pl900_122', 'Form', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_122_3', 'q_pl900_122', 'Dashboard', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q123: Gallery control
+    ('a_pl900_123_0', 'q_pl900_123', 'Form', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_123_1', 'q_pl900_123', 'Label', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_123_2', 'q_pl900_123', 'Gallery', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_123_3', 'q_pl900_123', 'Button', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q124: Plug-in
+    ('a_pl900_124_0', 'q_pl900_124', 'Business rule', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_124_1', 'q_pl900_124', 'Power Automate cloud flow', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_124_2', 'q_pl900_124', 'Plug-in', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_124_3', 'q_pl900_124', 'Calculated column', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q125: SharePoint modified trigger
+    ('a_pl900_125_0', 'q_pl900_125', 'When a new file is created in SharePoint', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_125_1', 'q_pl900_125', 'When an item is created or modified in SharePoint', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_125_2', 'q_pl900_125', 'When a new email arrives in Outlook', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_125_3', 'q_pl900_125', 'When a new record is created in Dataverse', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q126: Power BI App purpose
+    ('a_pl900_126_0', 'q_pl900_126', 'To create new data models in Power BI', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_126_1', 'q_pl900_126', 'To provide a bundled collection of dashboards and reports for distribution to users in an organization', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_126_2', 'q_pl900_126', 'To connect to on-premises data sources', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_126_3', 'q_pl900_126', 'To embed reports in external websites', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q127: Model-driven app for customer service
+    ('a_pl900_127_0', 'q_pl900_127', 'A Power BI report', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_127_1', 'q_pl900_127', 'A model-driven app built on Dataverse', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_127_2', 'q_pl900_127', 'A canvas app connecting to SharePoint', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_127_3', 'q_pl900_127', 'A Power Pages site', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q128: Managed solution
+    ('a_pl900_128_0', 'q_pl900_128', 'A solution that can be freely modified in the target environment', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_128_1', 'q_pl900_128', 'A solution that is locked for editing once imported, ensuring version control and preventing unintended changes', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_128_2', 'q_pl900_128', 'A solution that only contains Power Automate flows', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_128_3', 'q_pl900_128', 'A solution that requires premium licensing to import', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q129: AI Builder + Power Automate for invoices (multiple)
+    ('a_pl900_129_0', 'q_pl900_129', 'AI Builder document processing', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_129_1', 'q_pl900_129', 'Power Pages', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_129_2', 'q_pl900_129', 'Power Automate cloud flow', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_129_3', 'q_pl900_129', 'Power BI', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_129_4', 'q_pl900_129', 'Microsoft Copilot Studio', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q130: Pin visuals to dashboard
+    ('a_pl900_130_0', 'q_pl900_130', 'Create a new report that imports all other reports', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_130_1', 'q_pl900_130', 'Pin visuals from each report to a dashboard', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_130_2', 'q_pl900_130', 'Export all reports to PDF and combine them', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_130_3', 'q_pl900_130', 'Create a new workspace for each report', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q131: Model-driven app view purpose
+    ('a_pl900_131_0', 'q_pl900_131', 'To define the layout of fields when opening a record', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_131_1', 'q_pl900_131', 'To display a filtered and sorted list of records from a Dataverse table', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_131_2', 'q_pl900_131', 'To automate a business process across stages', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_131_3', 'q_pl900_131', 'To add visualizations to an app dashboard', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q132: Custom connector
+    ('a_pl900_132_0', 'q_pl900_132', 'A premium connector', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_132_1', 'q_pl900_132', 'A custom connector', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_132_2', 'q_pl900_132', 'An on-premises data gateway', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_132_3', 'q_pl900_132', 'A virtual table', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q133: Connect to data source first
+    ('a_pl900_133_0', 'q_pl900_133', 'Create visualizations', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_133_1', 'q_pl900_133', 'Publish the report to the Power BI service', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_133_2', 'q_pl900_133', 'Connect to the data source', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_133_3', 'q_pl900_133', 'Configure row-level security', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q134: Scheduled trigger
+    ('a_pl900_134_0', 'q_pl900_134', 'Automated trigger', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_134_1', 'q_pl900_134', 'Instant trigger', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_134_2', 'q_pl900_134', 'Scheduled trigger', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_134_3', 'q_pl900_134', 'Manual trigger', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q135: Add Teams channel in Copilot Studio
+    ('a_pl900_135_0', 'q_pl900_135', 'Create a new copilot specifically for Teams', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_135_1', 'q_pl900_135', 'Add the Microsoft Teams channel in the Publish section of Copilot Studio', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_135_2', 'q_pl900_135', 'Export the copilot and import it into Teams', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_135_3', 'q_pl900_135', 'Configure a DLP policy to allow Teams access', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q136: Security role record-level privileges
+    ('a_pl900_136_0', 'q_pl900_136', 'Field security profiles', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_136_1', 'q_pl900_136', 'Security roles with record-level privileges', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_136_2', 'q_pl900_136', 'Business rules', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_136_3', 'q_pl900_136', 'Managed properties', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q137: Automated cloud flow for Dataverse
+    ('a_pl900_137_0', 'q_pl900_137', 'Scheduled flow', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_137_1', 'q_pl900_137', 'Instant flow', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_137_2', 'q_pl900_137', 'Automated cloud flow', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_137_3', 'q_pl900_137', 'Desktop flow', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q138: External identity providers in Power Pages
+    ('a_pl900_138_0', 'q_pl900_138', 'Azure Active Directory only', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_138_1', 'q_pl900_138', 'External identity providers (OAuth 2.0 / OpenID Connect)', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_138_2', 'q_pl900_138', 'Dataverse security roles', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_138_3', 'q_pl900_138', 'DLP policies', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q139: Dataverse Web API
+    ('a_pl900_139_0', 'q_pl900_139', 'To create canvas apps visually', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_139_1', 'q_pl900_139', 'To provide a RESTful API for accessing and manipulating Dataverse data from external applications', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_139_2', 'q_pl900_139', 'To design Power BI reports', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_139_3', 'q_pl900_139', 'To run Power Automate desktop flows', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q140: Components that use Dataverse (multiple) - Power Apps + Power Pages
+    ('a_pl900_140_0', 'q_pl900_140', 'Power Apps', TRUE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_140_1', 'q_pl900_140', 'Power BI Desktop (standalone)', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_140_2', 'q_pl900_140', 'Power Pages', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_140_3', 'q_pl900_140', 'Azure DevOps', FALSE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_140_4', 'q_pl900_140', 'Microsoft Excel (standalone)', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q141: Default environment
+    ('a_pl900_141_0', 'q_pl900_141', 'Developer', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_141_1', 'q_pl900_141', 'Trial', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_141_2', 'q_pl900_141', 'Default', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_141_3', 'q_pl900_141', 'Sandbox', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q142: Train and publish AI Builder model
+    ('a_pl900_142_0', 'q_pl900_142', 'Deploy the model to Azure Machine Learning', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_142_1', 'q_pl900_142', 'Train and publish the model', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_142_2', 'q_pl900_142', 'Export the model to Power BI', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_142_3', 'q_pl900_142', 'Register the model in Dataverse', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q143: Power Apps maker portal
+    ('a_pl900_143_0', 'q_pl900_143', 'Azure DevOps', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_143_1', 'q_pl900_143', 'Visual Studio Code', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_143_2', 'q_pl900_143', 'The Power Apps maker portal', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_143_3', 'q_pl900_143', 'SQL Server Management Studio', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q144: Retry policy
+    ('a_pl900_144_0', 'q_pl900_144', 'Run after settings', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_144_1', 'q_pl900_144', 'Concurrency control', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_144_2', 'q_pl900_144', 'Retry policy', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_144_3', 'q_pl900_144', 'Timeout settings', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q145: Sandbox for developer testing
+    ('a_pl900_145_0', 'q_pl900_145', 'Default', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_145_1', 'q_pl900_145', 'Trial', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_145_2', 'q_pl900_145', 'Sandbox', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_145_3', 'q_pl900_145', 'Production', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q146: Text() function for currency formatting
+    ('a_pl900_146_0', 'q_pl900_146', 'Value(number, "$#,##0.00")', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_146_1', 'q_pl900_146', 'Text(number, "$#,##0.00")', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_146_2', 'q_pl900_146', 'Format(number, "currency")', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_146_3', 'q_pl900_146', 'PlainText(number, "$#,##0.00")', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q147: Table permissions in Power Pages
+    ('a_pl900_147_0', 'q_pl900_147', 'Dataverse field security profiles', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_147_1', 'q_pl900_147', 'Power Pages table permissions', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_147_2', 'q_pl900_147', 'Power Automate approval flows', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_147_3', 'q_pl900_147', 'DLP policies', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q148: Multi-selection controls - Combo box + List box (multiple)
+    ('a_pl900_148_0', 'q_pl900_148', 'Radio', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_148_1', 'q_pl900_148', 'Combo box', TRUE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_148_2', 'q_pl900_148', 'Toggle', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_148_3', 'q_pl900_148', 'List box', TRUE, 3, 'teacher_john', 'teacher_john'),
+    ('a_pl900_148_4', 'q_pl900_148', 'Rating', FALSE, 4, 'teacher_john', 'teacher_john'),
+    -- Q149: Power Platform admin center for monitoring
+    ('a_pl900_149_0', 'q_pl900_149', 'Power Apps Studio', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_149_1', 'q_pl900_149', 'Power BI Desktop', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_149_2', 'q_pl900_149', 'The Power Platform admin center', TRUE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_149_3', 'q_pl900_149', 'Microsoft Teams admin center', FALSE, 3, 'teacher_john', 'teacher_john'),
+    -- Q150: Create a public view for model-driven app access
+    ('a_pl900_150_0', 'q_pl900_150', 'Create a new Dataverse table', FALSE, 0, 'teacher_john', 'teacher_john'),
+    ('a_pl900_150_1', 'q_pl900_150', 'Create a new canvas app', FALSE, 1, 'teacher_john', 'teacher_john'),
+    ('a_pl900_150_2', 'q_pl900_150', 'Create a new personal view', FALSE, 2, 'teacher_john', 'teacher_john'),
+    ('a_pl900_150_3', 'q_pl900_150', 'Share the app and assign the appropriate security role to the users', TRUE, 3, 'teacher_john', 'teacher_john')
+ON CONFLICT (id) DO NOTHING;
