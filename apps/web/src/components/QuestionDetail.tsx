@@ -24,7 +24,7 @@ interface QuestionDetailProps {
 export default function QuestionDetail({ spaceId, token, onUnauthorized }: QuestionDetailProps) {
   const [questions, setQuestions] = useState<QuestionData[]>([])
   const [index, setIndex] = useState(0)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
   const [revealed, setRevealed] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -39,7 +39,7 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
       const data = await res.json()
       setQuestions(Array.isArray(data) ? data : [])
       setIndex(0)
-      setSelected(null)
+      setSelected(new Set())
       setRevealed(false)
     } catch (_) {}
     finally { setLoading(false) }
@@ -49,7 +49,7 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
 
   const go = (delta: number) => {
     setIndex((i) => i + delta)
-    setSelected(null)
+    setSelected(new Set())
     setRevealed(false)
   }
 
@@ -57,7 +57,23 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
   if (questions.length === 0) return <div className="problem-detail-empty">No questions yet.</div>
 
   const q = questions[index]
-  const correctId = q.answers.find((a) => a.is_correct)?.id
+  const isMulti = q.question_type === 'multiple'
+  const correctIds = new Set(q.answers.filter((a) => a.is_correct).map((a) => a.id))
+  const isCorrect = correctIds.size === selected.size && [...correctIds].every((id) => selected.has(id))
+
+  const toggle = (id: string) => {
+    if (revealed) return
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (isMulti) {
+        next.has(id) ? next.delete(id) : next.add(id)
+      } else {
+        next.clear()
+        next.add(id)
+      }
+      return next
+    })
+  }
 
   return (
     <div className="problem-detail">
@@ -71,6 +87,7 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
 
       <section className="problem-detail-section">
         <span className="question-type-badge">{q.question_type.replace('_', ' ')}</span>
+        {isMulti && <span className="qd-multi-hint">Select all that apply</span>}
         <p className="problem-detail-body" style={{ marginTop: '0.75rem' }}>{q.body}</p>
       </section>
 
@@ -78,25 +95,25 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
         <section className="problem-detail-section">
           <ul className="question-answers-list">
             {q.answers.map((ans) => {
+              const isSelected = selected.has(ans.id)
               let cls = 'question-answer-item'
               if (revealed) {
                 if (ans.is_correct) cls += ' correct'
-                else if (selected === ans.id) cls += ' wrong'
-              } else if (selected === ans.id) {
+                else if (isSelected) cls += ' wrong'
+              } else if (isSelected) {
                 cls += ' selected'
               }
+              const marker = revealed
+                ? (ans.is_correct ? '✓' : isSelected ? '✗' : '○')
+                : (isSelected ? (isMulti ? '☑' : '●') : (isMulti ? '☐' : '○'))
               return (
                 <li
                   key={ans.id}
                   className={cls}
-                  onClick={() => { if (!revealed) setSelected(ans.id) }}
+                  onClick={() => toggle(ans.id)}
                   style={{ cursor: revealed ? 'default' : 'pointer' }}
                 >
-                  <span className="question-answer-marker">
-                    {revealed
-                      ? (ans.is_correct ? '✓' : selected === ans.id ? '✗' : '○')
-                      : (selected === ans.id ? '●' : '○')}
-                  </span>
+                  <span className="question-answer-marker">{marker}</span>
                   <span className="question-answer-text">{ans.text}</span>
                 </li>
               )
@@ -104,10 +121,10 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
           </ul>
           <div className="qd-actions">
             {!revealed ? (
-              <button onClick={() => setRevealed(true)} disabled={!selected}>Check answer</button>
+              <button onClick={() => setRevealed(true)} disabled={selected.size === 0}>Check answer</button>
             ) : (
               <p className="qd-result">
-                {selected === correctId ? '✓ Correct!' : '✗ Incorrect'}
+                {isCorrect ? '✓ Correct!' : '✗ Incorrect'}
               </p>
             )}
           </div>

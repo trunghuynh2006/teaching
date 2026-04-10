@@ -1,0 +1,92 @@
+<form tabindex="-1" class="box is-fullwidth-mobile">
+			<div aria-live="polite" role="status">
+				<label class="is-size-5" for="assessment-progress-description">
+					Question 4 of 50
+				</label>
+				
+				<progress aria-hidden="true" id="assessment-progress-description" class="progress-bar margin-top-xxs" style="width: 100%" value="4" max="50"></progress>
+			</div>
+
+			<div aria-live="polite" class="margin-top-lg margin-bottom-sm">
+				
+	<fieldset class="field" aria-label="question-legend" aria-describedby="accessible-question-SingleSelect-description-855.1.19746">
+		<div id="question-legend" class="margin-bottom-lg content"><p>You have a Microsoft Dataverse environment.</p>
+<p>You create a business process flow for a table. The business process flow has three stages.</p>
+<p>You also create a business rule that must run whenever the value of a status column changes. The business rule must run after each stage of the business process flow is complete.</p>
+<p>You need to ensure the business rule is active and will run as designed.</p>
+<p>What should you do?</p>
+</div>
+
+		<span class="is-visually-hidden" id="accessible-question-SingleSelect-description-855.1.19746">Select only one answer.</span>
+
+		<div class="control">
+			<div class="display-flex flex-direction-column margin-top-xxs">
+				
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="855.1.19746-84011" name="855.1.19746" value="84011" aria-describedby="855.1.19746-84011-result">
+							<span class="radio-label-text"><p>In the business process flow, activate the business rule.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="855.1.19746-84011-result">
+							
+								
+							
+						</div>
+					
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="855.1.19746-84012" name="855.1.19746" value="84012" aria-describedby="855.1.19746-84012-result">
+							<span class="radio-label-text"><p>In the business process flow, add the business rule as a step.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="855.1.19746-84012-result">
+							
+								
+							
+						</div>
+					
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="855.1.19746-84013" name="855.1.19746" value="84013" aria-describedby="855.1.19746-84013-result">
+							<span class="radio-label-text"><p>On the table, activate the business process flow.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="855.1.19746-84013-result">
+							
+								
+							
+						</div>
+					
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="855.1.19746-84014" name="855.1.19746" value="84014" aria-describedby="855.1.19746-84014-result">
+							<span class="radio-label-text"><p>On the table, activate the business rule.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="855.1.19746-84014-result">
+							
+								
+							
+						</div>
+					<!--fast-h2qvji:4-->
+			</div>
+		</div>
+		<section id="rationale" class="has-background-success-light padding-lg padding-top-xxs padding-bottom-xxs margin-top-md" hidden="">
+			<div><p>The correct approach is to activate the business rule on the table, because business rules are always defined and enforced at the table level, not inside a business process flow. Activating the rule on the table ensures it runs automatically when the status column value changes, including after each stage of the BPF is completed. Activating a business rule in the business process flow itself is not possible, and adding it as a step in the flow would not trigger the rule properly. Activating the BPF on the table enables the process flow but does not affect whether the business rule executes.</p>
+<p><a href="https://learn.microsoft.com/en-us/power-apps/maker/model-driven-apps/guide-staff-through-common-tasks-processes" target="_blank">Apply custom business logic with business rules and flows in model-driven apps</a><br>
+<a href="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/data-platform-create-business-rule" target="_blank">Create a business rule for a table</a><br>
+<a href="https://learn.microsoft.com/en-us/dynamics365/customerengagement/on-premises/customize/business-process-flows-overview" target="_blank">Overview of working with business process flows</a></p>
+</div>
+		</section>
+	</fieldset>
+<!--fast-h2qvji:10-->
+			</div>
+			<button id="next-button" class="button button-primary button-filled margin-block-lg" type="submit" data-bi-name="">
+				<span>Next</span>
+				<span class="icon is-small">
+					<span aria-hidden="true" class="docon docon-chevron-right-light"></span>
+				</span>
+			</button>
+			
+					<button type="button" id="checkUserAnswer" class="button link-button margin-sm margin-block-lg">
+						Check Your Answer
+					</button>
+				
+		</form>

@@ -1,0 +1,93 @@
+<form tabindex="-1" class="box is-fullwidth-mobile">
+			<div aria-live="polite" role="status">
+				<label class="is-size-5" for="assessment-progress-description">
+					Question 40 of 50
+				</label>
+				
+				<progress aria-hidden="true" id="assessment-progress-description" class="progress-bar margin-top-xxs" style="width: 100%" value="40" max="50"></progress>
+			</div>
+
+			<div aria-live="polite" class="margin-top-lg margin-bottom-sm">
+				
+	<fieldset class="field" aria-label="question-legend" aria-describedby="accessible-question-SingleSelect-description-856.1.19763">
+		<div id="question-legend" class="margin-bottom-lg content"><p>You have a Microsoft Power Apps canvas app named App1 that records guest check-in details at a hotel. App1 uses a Microsoft Dataverse table.</p>
+<p>You need to design App1 to meet the following requirements:</p>
+<ul>
+<li>Collect the guest’s name, meal choice, and additional preferences.</li>
+<li>Display a message if a guest selects a meal option that is unavailable.</li>
+</ul>
+<p>What should you do?</p>
+</div>
+
+		<span class="is-visually-hidden" id="accessible-question-SingleSelect-description-856.1.19763">Select only one answer.</span>
+
+		<div class="control">
+			<div class="display-flex flex-direction-column margin-top-xxs">
+				
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="856.1.19763-84079" name="856.1.19763" value="84079" aria-describedby="856.1.19763-84079-result">
+							<span class="radio-label-text"><p>Add a form and fields and use the OnSubmit property to show the message.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="856.1.19763-84079-result">
+							
+								
+							
+						</div>
+					
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="856.1.19763-84080" name="856.1.19763" value="84080" aria-describedby="856.1.19763-84080-result">
+							<span class="radio-label-text"><p>Add an Edit form bound to Dataverse and include the required fields. Use a formula on the meal choice control to display the message.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="856.1.19763-84080-result">
+							
+								
+							
+						</div>
+					
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="856.1.19763-84081" name="856.1.19763" value="84081" aria-describedby="856.1.19763-84081-result">
+							<span class="radio-label-text"><p>Add the column that contains each guest’s meal choice, rename it Guest Meal Choice, and mark the Name field as required.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="856.1.19763-84081-result">
+							
+								
+							
+						</div>
+					
+						<label class="radio margin-bottom-xxs padding-xxs quiz-choice ">
+							<input required="" type="radio" class="radio-dot" id="856.1.19763-84082" name="856.1.19763" value="84082" aria-describedby="856.1.19763-84082-result">
+							<span class="radio-label-text"><p>Create a new app that uses the existing Dataverse table.</p>
+</span>
+						</label>
+						<div class="margin-left-md" id="856.1.19763-84082-result">
+							
+								
+							
+						</div>
+					<!--fast-h2qvji:4-->
+			</div>
+		</div>
+		<section id="rationale" class="has-background-success-light padding-lg padding-top-xxs padding-bottom-xxs margin-top-md" hidden="">
+			<div><p>The best solution is to add an Edit form bound to the Dataverse table, include the guest’s name, meal choice, and preferences as required fields, and use a formula on the meal choice control (such as an If statement) to check for unavailable options and display a message. This ensures the validation happens immediately when the user makes a selection, which improves usability. Creating a new app is unnecessary because App1 already exists. Adding or renaming a column and marking the Name field as required does not address the requirement of showing a conditional message. Using the OnSubmit property would only display the message after the user submits the form, not when the meal option is selected, which does not meet the requirement for real-time feedback.</p>
+<p><a href="https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/controls/control-form-detail" target="_blank">Edit form and Display form controls in Power Apps</a><br>
+<a href="https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/data-platform-create-app-scratch" target="_blank">Create a canvas app using Microsoft Dataverse</a></p>
+</div>
+		</section>
+	</fieldset>
+<!--fast-h2qvji:10-->
+			</div>
+			<button id="next-button" class="button button-primary button-filled margin-block-lg" type="submit" data-bi-name="">
+				<span>Next</span>
+				<span class="icon is-small">
+					<span aria-hidden="true" class="docon docon-chevron-right-light"></span>
+				</span>
+			</button>
+			
+					<button type="button" id="checkUserAnswer" class="button link-button margin-sm margin-block-lg">
+						Check Your Answer
+					</button>
+				
+		</form>
