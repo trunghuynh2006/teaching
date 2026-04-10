@@ -442,12 +442,25 @@ button.danger {
 }
 
 .folder-sidebar-panel {
-  width: 200px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   padding: 0.5rem 0.5rem 0.5rem 0;
+  overflow: hidden;
+}
+
+.folder-resize-handle {
+  width: 4px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.folder-resize-handle:hover,
+.folder-resize-handle:active {
+  background: var(--accent, #6c8ebf);
 }
 
 /* Folder icon in list card */

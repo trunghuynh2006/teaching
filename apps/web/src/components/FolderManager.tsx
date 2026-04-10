@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { API_URL } from '../config'
 import { FolderIconDisplay } from '../config/folderIcons'
@@ -12,7 +12,6 @@ import QuestionDetail from './QuestionDetail'
 import AnkiDetail from './AnkiDetail'
 import QuestionModal from './QuestionModal'
 import AnkiModal from './AnkiModal'
-import AnkiGenerateModal from './AnkiGenerateModal'
 import QuestionGenerateModal from './QuestionGenerateModal'
 
 interface FolderItem {
@@ -123,8 +122,27 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
   const [showInlineQuestionModal, setShowInlineQuestionModal] = useState(false)
   const [showInlineAnkiModal, setShowInlineAnkiModal] = useState(false)
-  const [showAnkiGenerateModal, setShowAnkiGenerateModal] = useState(false)
   const [showQuestionGenerateModal, setShowQuestionGenerateModal] = useState(false)
+  const [sidebarWidth, setSidebarWidth] = useState(200)
+  const isResizing = useRef(false)
+  const startResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    isResizing.current = true
+    const startX = e.clientX
+    const startWidth = sidebarWidth
+    const onMove = (ev: MouseEvent) => {
+      if (!isResizing.current) return
+      const next = Math.min(400, Math.max(140, startWidth + ev.clientX - startX))
+      setSidebarWidth(next)
+    }
+    const onUp = () => {
+      isResizing.current = false
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }, [sidebarWidth])
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
   const [editingId, setEditingId] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -414,7 +432,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
   // ── Folder detail view ──────────────────────────────────────
   return (
     <section className="skill-studio folder-view">
-      <nav className="folder-sidebar-panel">
+      <nav className="folder-sidebar-panel" style={{ width: sidebarWidth }}>
         <div className="folder-sidebar-name">{selectedFolder.name}</div>
 
         {/* Knowledge nav item */}
@@ -483,7 +501,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
         )}
       </nav>
 
-      <div className="folder-sidebar-divider" />
+      <div className="folder-resize-handle" onMouseDown={startResize} />
 
       {/* Space items sidebar — only for Problem/Exercise spaces */}
       {selectedSpace && isProblemOrExercise(selectedSpace) && (
@@ -565,7 +583,6 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
             <>
               <div className="folder-content-actions">
                 <button onClick={() => setShowInlineAnkiModal(true)}>+ New Card</button>
-                <button className="secondary" onClick={() => setShowAnkiGenerateModal(true)}>Generate from Knowledge</button>
               </div>
               <AnkiDetail
                 key={`${selectedSpace.id}-${detailRefreshKey}`}
@@ -580,16 +597,6 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
                   onUnauthorized={onUnauthorized}
                   onSaved={() => { setShowInlineAnkiModal(false); setDetailRefreshKey((k) => k + 1) }}
                   onClose={() => setShowInlineAnkiModal(false)}
-                />
-              )}
-              {showAnkiGenerateModal && selectedFolder && (
-                <AnkiGenerateModal
-                  spaceId={selectedSpace.id}
-                  folderId={selectedFolder.id}
-                  token={token}
-                  onUnauthorized={onUnauthorized}
-                  onSaved={() => { setShowAnkiGenerateModal(false); setDetailRefreshKey((k) => k + 1) }}
-                  onClose={() => setShowAnkiGenerateModal(false)}
                 />
               )}
             </>

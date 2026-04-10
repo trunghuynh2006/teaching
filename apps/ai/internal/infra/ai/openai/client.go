@@ -94,36 +94,6 @@ func (c Client) GenerateLesson(ctx context.Context, input domaincontent.Generate
 	return lesson, nil
 }
 
-// GenerateAnkiCards calls the LLM to generate Anki card suggestions from source text.
-func (c Client) GenerateAnkiCards(ctx context.Context, input domaincontent.GenerateAnkiCardsInput) ([]domaincontent.GeneratedAnkiCard, error) {
-	userPrompt, err := c.Prompts.RenderGenerateAnkiCards(prompts.GenerateAnkiCardsData{
-		SourceText: input.SourceText,
-		Language:   input.Language,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	raw, err := c.complete(ctx, userPrompt)
-	if err != nil {
-		return nil, err
-	}
-
-	// The LLM sometimes echoes the full JSON schema alongside the actual data.
-	// "properties" contains schema metadata (objects), not card data — ignore it.
-	var result struct {
-		Cards      []domaincontent.GeneratedAnkiCard `json:"cards"`
-		Properties json.RawMessage                   `json:"properties"`
-	}
-	if err := json.Unmarshal([]byte(raw), &result); err != nil {
-		return nil, fmt.Errorf("parse anki cards response: %w", err)
-	}
-	if len(result.Cards) == 0 {
-		return nil, ErrUnexpectedResponse
-	}
-	return result.Cards, nil
-}
-
 // ExtractConcepts calls the LLM to extract concepts from source text.
 func (c Client) ExtractConcepts(ctx context.Context, input domaincontent.ExtractConceptsInput) ([]domaincontent.ExtractedConcept, error) {
 	userPrompt, err := c.Prompts.RenderExtractConcepts(prompts.ExtractConceptsData{

@@ -2,31 +2,6 @@
 
 package sharedmodels
 
-type AnkiCard struct {
-	BackText string `json:"back_text"`
-	BloomLevel *string `json:"bloom_level,omitempty"`
-	CreatedAt string `json:"created_at"`
-	CreatedBy *string `json:"created_by,omitempty"`
-	CreatedTime *string `json:"created_time,omitempty"`
-	DeckId *string `json:"deck_id,omitempty"`
-	DueAt *string `json:"due_at,omitempty"`
-	EaseFactor *float64 `json:"ease_factor,omitempty"`
-	FrontText string `json:"front_text"`
-	Id string `json:"id"`
-	IntervalDays *int `json:"interval_days,omitempty"`
-	IsSuspended *bool `json:"is_suspended,omitempty"`
-	Lapses *int `json:"lapses,omitempty"`
-	LastReviewedAt *string `json:"last_reviewed_at,omitempty"`
-	Repetitions *int `json:"repetitions,omitempty"`
-	SourceLessonId *string `json:"source_lesson_id,omitempty"`
-	Status *string `json:"status,omitempty"`
-	Tags []string `json:"tags,omitempty"`
-	UpdatedAt string `json:"updated_at"`
-	UpdatedBy *string `json:"updated_by,omitempty"`
-	UpdatedTime *string `json:"updated_time,omitempty"`
-	UserId string `json:"user_id"`
-}
-
 type AnkiDeck struct {
 	CardCount *int `json:"card_count,omitempty"`
 	CardIds []string `json:"card_ids,omitempty"`

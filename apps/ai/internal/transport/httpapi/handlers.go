@@ -120,45 +120,6 @@ func (h *Handler) GenerateLesson(w http.ResponseWriter, r *http.Request, claims 
 	writeJSON(w, http.StatusOK, GenerateLessonResponse{Lesson: lesson})
 }
 
-// GenerateAnkiCardsRequest is the body for POST /content/anki-cards.
-type GenerateAnkiCardsRequest struct {
-	SourceText string `json:"source_text"`
-	Language   string `json:"language"`
-}
-
-// GenerateAnkiCards handles POST /content/anki-cards (teacher/admin only).
-func (h *Handler) GenerateAnkiCards(w http.ResponseWriter, r *http.Request, claims security.Claims) {
-	if !isContentEditor(claims.Role) {
-		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
-		return
-	}
-
-	var payload GenerateAnkiCardsRequest
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
-		return
-	}
-
-	cards, err := h.ContentService.GenerateAnkiCards(r.Context(), appcontent.GenerateAnkiCardsInput{
-		SourceText: payload.SourceText,
-		Language:   payload.Language,
-	})
-	if err != nil {
-		switch {
-		case errors.Is(err, appcontent.ErrInvalidSourceText):
-			writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: err.Error()})
-		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
-			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
-		default:
-			log.Printf("generate anki cards error: %v", err)
-			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
-		}
-		return
-	}
-
-	writeJSON(w, http.StatusOK, map[string]any{"cards": cards})
-}
-
 // ExtractConceptsRequest is the body for POST /content/concepts.
 type ExtractConceptsRequest struct {
 	SourceText string `json:"source_text"`

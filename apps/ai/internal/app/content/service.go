@@ -45,12 +45,6 @@ type GenerateLessonInput struct {
 	Language    string
 }
 
-// GenerateAnkiCardsInput is the application-layer input for generating Anki cards.
-type GenerateAnkiCardsInput struct {
-	SourceText string
-	Language   string
-}
-
 // ExtractConceptsInput is the application-layer input for extracting concepts from source text.
 type ExtractConceptsInput struct {
 	SourceText string
@@ -148,43 +142,6 @@ func (s Service) GenerateLesson(ctx context.Context, input GenerateLessonInput) 
 		}
 	}
 	return lesson, nil
-}
-
-// GenerateAnkiCards generates Anki flashcard suggestions from a given article or lesson text.
-func (s Service) GenerateAnkiCards(ctx context.Context, input GenerateAnkiCardsInput) ([]domaincontent.GeneratedAnkiCard, error) {
-	if strings.TrimSpace(input.SourceText) == "" {
-		return nil, ErrInvalidSourceText
-	}
-	if s.Generator == nil {
-		return nil, ErrGeneratorUnavailable
-	}
-
-	normalized := domaincontent.GenerateAnkiCardsInput{
-		SourceText: strings.TrimSpace(input.SourceText),
-		Language:   fallback(input.Language, "English"),
-	}
-
-	cacheKey := hashKey("generate-anki-cards", normalized)
-	if s.Cache != nil {
-		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
-			var cards []domaincontent.GeneratedAnkiCard
-			if err := json.Unmarshal(raw, &cards); err == nil {
-				return cards, nil
-			}
-		}
-	}
-
-	cards, err := s.Generator.GenerateAnkiCards(ctx, normalized)
-	if err != nil {
-		return nil, err
-	}
-
-	if s.Cache != nil {
-		if raw, err := json.Marshal(cards); err == nil {
-			s.Cache.Set(ctx, cacheKey, raw)
-		}
-	}
-	return cards, nil
 }
 
 // ExtractConcepts extracts concepts from a given source text.

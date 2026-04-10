@@ -164,59 +164,6 @@ SET status = 'draft',
 WHERE id = $1
 RETURNING id, title, description, difficulty, status, tags, created_by, updated_by, created_time, updated_time;
 
--- name: InitAnkiCardsTable :exec
-CREATE TABLE IF NOT EXISTS anki_cards (
-    id VARCHAR(64) PRIMARY KEY,
-    user_id VARCHAR(64) NOT NULL,
-    front_text TEXT NOT NULL,
-    back_text TEXT NOT NULL,
-    bloom_level VARCHAR(20),
-    tags TEXT[] NOT NULL DEFAULT '{}',
-    status VARCHAR(20) NOT NULL DEFAULT 'pending',
-    source_lesson_id VARCHAR(64),
-    deck_id VARCHAR(64),
-    ease_factor NUMERIC(4,2) NOT NULL DEFAULT 2.5,
-    interval_days INT NOT NULL DEFAULT 0,
-    repetitions INT NOT NULL DEFAULT 0,
-    lapses INT NOT NULL DEFAULT 0,
-    is_suspended BOOLEAN NOT NULL DEFAULT FALSE,
-    due_at TIMESTAMPTZ,
-    last_reviewed_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_by VARCHAR(64),
-    updated_by VARCHAR(64)
-);
-
--- name: InitAnkiCardsUserIndex :exec
-CREATE INDEX IF NOT EXISTS idx_anki_cards_user_id ON anki_cards (user_id);
-
--- name: CreateAnkiCard :one
-INSERT INTO anki_cards (id, user_id, front_text, back_text, bloom_level, tags, created_by, updated_by)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
-          ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
-          created_at, updated_at, created_by, updated_by;
-
--- name: ListAnkiCardsDue :many
-SELECT id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
-       ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
-       created_at, updated_at, created_by, updated_by
-FROM anki_cards
-WHERE user_id = $1
-  AND is_suspended = FALSE
-  AND (due_at IS NULL OR due_at <= NOW())
-ORDER BY due_at ASC NULLS FIRST
-LIMIT 50;
-
--- name: GetAnkiCardByID :one
-SELECT id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
-       ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
-       created_at, updated_at, created_by, updated_by
-FROM anki_cards
-WHERE id = $1 AND user_id = $2
-LIMIT 1;
-
 -- name: InitFoldersTable :exec
 CREATE TABLE IF NOT EXISTS folders (
     id VARCHAR(64) PRIMARY KEY,
@@ -284,16 +231,3 @@ JOIN skill_folders sf ON sf.skill_id = s.id
 WHERE sf.folder_id = $1
 ORDER BY sf.added_at ASC;
 
--- name: ReviewAnkiCard :one
-UPDATE anki_cards
-SET ease_factor      = $3,
-    interval_days    = $4,
-    repetitions      = $5,
-    lapses           = $6,
-    due_at           = $7,
-    last_reviewed_at = NOW(),
-    updated_at       = NOW()
-WHERE id = $1 AND user_id = $2
-RETURNING id, user_id, front_text, back_text, bloom_level, tags, status, source_lesson_id, deck_id,
-          ease_factor, interval_days, repetitions, lapses, is_suspended, due_at, last_reviewed_at,
-          created_at, updated_at, created_by, updated_by;

@@ -167,7 +167,6 @@ func main() {
 	mux.HandleFunc("POST /problems/{id}/steps", handler.Auth(handler.CreateProblemStep))
 	mux.HandleFunc("PUT /problem-steps/{id}", handler.Auth(handler.UpdateProblemStep))
 	mux.HandleFunc("DELETE /problem-steps/{id}", handler.Auth(handler.DeleteProblemStep))
-	mux.HandleFunc("POST /spaces/{id}/generate-anki-cards", handler.Auth(handler.GenerateAnkiCardsForSpace))
 	mux.HandleFunc("POST /spaces/{id}/generate-questions", handler.Auth(handler.GenerateQuestionsForSpace))
 	mux.HandleFunc("GET /spaces/{id}/flash-cards", handler.Auth(handler.ListSpaceFlashCards))
 	mux.HandleFunc("GET /spaces/{id}/flash-cards/due", handler.Auth(handler.ListSpaceFlashCardsDue))
