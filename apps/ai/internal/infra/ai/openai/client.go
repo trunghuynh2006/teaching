@@ -263,6 +263,34 @@ func (c Client) GenerateConceptMaterials(ctx context.Context, input domainconten
 	return result, nil
 }
 
+// GenerateFlashCards calls the LLM to generate flashcards from a list of concept names.
+func (c Client) GenerateFlashCards(ctx context.Context, input domaincontent.GenerateFlashCardsInput) ([]domaincontent.GeneratedAnkiCard, error) {
+	userPrompt, err := c.Prompts.RenderGenerateFlashCards(prompts.GenerateFlashCardsData{
+		Concepts: input.Concepts,
+		Domain:   input.Domain,
+		Language: input.Language,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	raw, err := c.complete(ctx, userPrompt)
+	if err != nil {
+		return nil, err
+	}
+
+	var result struct {
+		Flashcards []domaincontent.GeneratedAnkiCard `json:"flashcards"`
+	}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil, fmt.Errorf("parse flash cards response: %w", err)
+	}
+	if len(result.Flashcards) == 0 {
+		return nil, ErrUnexpectedResponse
+	}
+	return result.Flashcards, nil
+}
+
 func (c Client) complete(ctx context.Context, userPrompt string) (string, error) {
 	return c.LLM.Complete(ctx, llm.Request{
 		SystemPrompt: c.Prompts.SystemPrompt(),

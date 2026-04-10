@@ -371,6 +371,51 @@ func (s Service) GenerateConceptMaterials(ctx context.Context, input GenerateCon
 	return result, nil
 }
 
+// GenerateFlashCardsInput is the application-layer input for generating flashcards from concepts.
+type GenerateFlashCardsInput struct {
+	Concepts []string
+	Domain   string
+	Language string
+}
+
+// GenerateFlashCards generates Anki-style flashcards for a list of concept names.
+func (s Service) GenerateFlashCards(ctx context.Context, input GenerateFlashCardsInput) ([]domaincontent.GeneratedAnkiCard, error) {
+	if len(input.Concepts) == 0 {
+		return nil, errors.New("at least one concept is required")
+	}
+	if s.Generator == nil {
+		return nil, ErrGeneratorUnavailable
+	}
+
+	normalized := domaincontent.GenerateFlashCardsInput{
+		Concepts: input.Concepts,
+		Domain:   strings.TrimSpace(input.Domain),
+		Language: fallback(input.Language, "English"),
+	}
+
+	cacheKey := hashKey("generate-flash-cards", normalized)
+	if s.Cache != nil {
+		if raw, ok := s.Cache.Get(ctx, cacheKey); ok {
+			var cards []domaincontent.GeneratedAnkiCard
+			if err := json.Unmarshal(raw, &cards); err == nil {
+				return cards, nil
+			}
+		}
+	}
+
+	cards, err := s.Generator.GenerateFlashCards(ctx, normalized)
+	if err != nil {
+		return nil, err
+	}
+
+	if s.Cache != nil {
+		if raw, err := json.Marshal(cards); err == nil {
+			s.Cache.Set(ctx, cacheKey, raw)
+		}
+	}
+	return cards, nil
+}
+
 func hashKey(prefix string, v any) string {
 	payload, err := json.Marshal(v)
 	if err != nil {

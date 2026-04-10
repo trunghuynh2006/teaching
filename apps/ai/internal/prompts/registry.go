@@ -32,6 +32,7 @@ type Registry struct {
 	discoverParentDomainsTmpl        *template.Template
 	matchParentConceptsTmpl          *template.Template
 	generateConceptMaterialsTmpl     *template.Template
+	generateFlashCardsTmpl           *template.Template
 }
 
 // New loads all prompt files from the embedded filesystem and compiles templates.
@@ -112,6 +113,10 @@ func New() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
+	generateFlashCardsTmpl, err := parse("generate-flash-cards", "files/templates/generate-flash-cards.tmpl")
+	if err != nil {
+		return nil, err
+	}
 
 	return &Registry{
 		systemPrompt:              systemPrompt,
@@ -128,7 +133,24 @@ func New() (*Registry, error) {
 		discoverParentDomainsTmpl:        discoverParentDomainsTmpl,
 		matchParentConceptsTmpl:          matchParentConceptsTmpl,
 		generateConceptMaterialsTmpl:     generateConceptMaterialsTmpl,
+		generateFlashCardsTmpl:           generateFlashCardsTmpl,
 	}, nil
+}
+
+// GenerateFlashCardsData is the input data for the generate-flash-cards template.
+type GenerateFlashCardsData struct {
+	Concepts []string
+	Domain   string
+	Language string
+}
+
+// RenderGenerateFlashCards renders the user prompt for generating flashcards from a concept list.
+func (r *Registry) RenderGenerateFlashCards(data GenerateFlashCardsData) (string, error) {
+	var buf bytes.Buffer
+	if err := r.generateFlashCardsTmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("render generate-flash-cards: %w", err)
+	}
+	return buf.String(), nil
 }
 
 // DiscoverParentDomainsData is the input data for the discover-parent-domains template.

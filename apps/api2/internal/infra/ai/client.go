@@ -323,6 +323,55 @@ func (c *Client) MatchParentConcepts(ctx context.Context, bearerToken string, re
 	return result.Matches, nil
 }
 
+// GenerateFlashCardsRequest is the body for POST /content/flash-cards.
+type GenerateFlashCardsRequest struct {
+	Concepts []string `json:"concepts"`
+	Domain   string   `json:"domain"`
+	Language string   `json:"language"`
+}
+
+// GenerateFlashCards calls POST /content/flash-cards on the ai service.
+func (c *Client) GenerateFlashCards(ctx context.Context, bearerToken string, req GenerateFlashCardsRequest) ([]GeneratedCard, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	httpClient := c.HTTPClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 90 * time.Second}
+	}
+	url := strings.TrimSuffix(c.BaseURL, "/") + "/content/flash-cards"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+bearerToken)
+	resp, err := httpClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("ai service unavailable: %w", err)
+	}
+	defer resp.Body.Close()
+	rawBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		var errBody struct{ Detail string `json:"detail"` }
+		if jsonErr := json.Unmarshal(rawBody, &errBody); jsonErr == nil && errBody.Detail != "" {
+			return nil, fmt.Errorf("ai service error: %s", errBody.Detail)
+		}
+		return nil, fmt.Errorf("ai service returned %d", resp.StatusCode)
+	}
+	var result struct {
+		Flashcards []GeneratedCard `json:"flashcards"`
+	}
+	if err := json.Unmarshal(rawBody, &result); err != nil {
+		return nil, fmt.Errorf("ai service: parse response: %w", err)
+	}
+	return result.Flashcards, nil
+}
+
 // GenerateConceptMaterialsRequest is the body for POST /content/concept-materials.
 type GenerateConceptMaterialsRequest struct {
 	ConceptName    string   `json:"concept_name"`

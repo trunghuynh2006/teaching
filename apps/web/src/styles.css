@@ -831,6 +831,10 @@ button.danger {
   max-height: 85vh;
   display: flex;
   flex-direction: column;
+}
+
+.modal-box-lg {
+  width: 700px;
   overflow: hidden;
 }
 
@@ -877,6 +881,80 @@ button.danger {
   font-size: 0.84rem;
   font-weight: 500;
   color: var(--text);
+}
+
+.modal-input {
+  font-size: 0.88rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #d0dbe3;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(14, 133, 118, 0.1);
+}
+
+/* ── Anki concept picker ────────────────────────── */
+.anki-concept-picker {
+  border: 1px solid #d0dbe3;
+  border-radius: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.anki-concept-group {
+  border-bottom: 1px solid #e8eef2;
+}
+.anki-concept-group:last-child {
+  border-bottom: none;
+}
+
+.anki-concept-topic-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  background: #f4f7f9;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+.anki-concept-topic-label:hover {
+  background: #eaf0f4;
+}
+
+.anki-concept-list {
+  padding: 0.2rem 0;
+}
+
+.anki-concept-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem 0.3rem 1.75rem;
+  font-size: 0.83rem;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+.anki-concept-item:hover {
+  background: #f4f7f9;
+}
+
+.anki-gen-count {
+  font-weight: 400;
+  color: var(--primary);
+  font-size: 0.8rem;
 }
 
 .modal-textarea {
@@ -1267,7 +1345,7 @@ button.danger {
   margin-bottom: 1rem;
 }
 
-.anki-mode-tabs button {
+.anki-mode-tabs button:not(.btn-sm) {
   flex: 1;
   padding: 0.3rem 0.75rem;
   font-size: 0.82rem;
@@ -1280,7 +1358,7 @@ button.danger {
   transition: background 0.15s, color 0.15s;
 }
 
-.anki-mode-tabs button.active {
+.anki-mode-tabs button:not(.btn-sm).active {
   background: #fff;
   color: var(--primary);
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);

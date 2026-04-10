@@ -587,6 +587,7 @@ export default function FolderManager({ token, onUnauthorized }: FolderManagerPr
               <AnkiDetail
                 key={`${selectedSpace.id}-${detailRefreshKey}`}
                 spaceId={selectedSpace.id}
+                folderId={selectedFolder.id}
                 token={token}
                 onUnauthorized={onUnauthorized}
               />

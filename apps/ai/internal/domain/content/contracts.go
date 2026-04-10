@@ -104,6 +104,13 @@ type ConceptParentMatch struct {
 	ParentConcept string `json:"parent_concept"`
 }
 
+// GenerateFlashCardsInput describes a request to generate flashcards from a concept list.
+type GenerateFlashCardsInput struct {
+	Concepts []string
+	Domain   string
+	Language string
+}
+
 // Generator produces AI-generated curriculum content.
 type Generator interface {
 	// ListLessonTitles returns Count candidate lesson titles for the given skill.
@@ -122,6 +129,8 @@ type Generator interface {
 	MatchParentConcepts(ctx context.Context, input MatchParentConceptsInput) ([]ConceptParentMatch, error)
 	// GenerateConceptMaterials returns flashcards and MC questions for a specific concept.
 	GenerateConceptMaterials(ctx context.Context, input ConceptMaterialsInput) (GeneratedConceptMaterials, error)
+	// GenerateFlashCards returns flashcards for a list of concept names.
+	GenerateFlashCards(ctx context.Context, input GenerateFlashCardsInput) ([]GeneratedAnkiCard, error)
 }
 
 // ConceptMaterialsInput describes a request to generate study materials for a concept.

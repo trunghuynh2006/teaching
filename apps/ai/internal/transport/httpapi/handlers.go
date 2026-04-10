@@ -356,6 +356,48 @@ func (h *Handler) GenerateConceptMaterials(w http.ResponseWriter, r *http.Reques
 	writeJSON(w, http.StatusOK, result)
 }
 
+// GenerateFlashCardsRequest is the body for POST /content/flash-cards.
+type GenerateFlashCardsRequest struct {
+	Concepts []string `json:"concepts"`
+	Domain   string   `json:"domain"`
+	Language string   `json:"language"`
+}
+
+// GenerateFlashCards handles POST /content/flash-cards (teacher/admin only).
+func (h *Handler) GenerateFlashCards(w http.ResponseWriter, r *http.Request, claims security.Claims) {
+	if !isContentEditor(claims.Role) {
+		writeJSON(w, http.StatusForbidden, ErrorResponse{Detail: "forbidden"})
+		return
+	}
+
+	var payload GenerateFlashCardsRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "invalid request body"})
+		return
+	}
+	if len(payload.Concepts) == 0 {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "concepts is required"})
+		return
+	}
+
+	cards, err := h.ContentService.GenerateFlashCards(r.Context(), appcontent.GenerateFlashCardsInput{
+		Concepts: payload.Concepts,
+		Domain:   payload.Domain,
+		Language: payload.Language,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, appcontent.ErrGeneratorUnavailable):
+			writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "ai generator unavailable"})
+		default:
+			writeJSON(w, http.StatusBadGateway, ErrorResponse{Detail: err.Error()})
+		}
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"flashcards": cards})
+}
+
 func isContentEditor(role string) bool {
 	return role == "teacher" || role == "admin"
 }

@@ -1,0 +1,31 @@
+Generate Anki-style flashcards for the following list of concepts.
+
+Domain: {{.Domain}}
+Language: {{.Language}}
+Concepts:
+{{- range .Concepts}}
+- {{.}}
+{{- end}}
+
+Rules:
+- Generate 2–3 flashcards per concept covering different angles: definition, example recognition, common mistake avoidance
+- Each card tests exactly one thing — no compound questions
+- front_text is a clear question or cloze prompt; back_text is the concise direct answer
+- Cards must be self-contained (no reference to "the list above" or "as mentioned")
+- Include the concept name in the "tags" array
+
+Respond with a JSON object in exactly this format (no extra keys):
+{
+  "flashcards": [
+    {
+      "front_text": "What is X?",
+      "back_text": "...",
+      "bloom_level": "remember",
+      "tags": ["{{.Domain}}", "X"]
+    }
+  ]
+}
+
+bloom_level must be one of: remember | understand | apply | analyze | evaluate | create
+
+Respond with valid JSON only. No markdown fences. No extra text.
