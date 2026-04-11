@@ -27,6 +27,7 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [revealed, setRevealed] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
 
   const fetchQuestions = useCallback(async () => {
     setLoading(true)
@@ -121,7 +122,23 @@ export default function QuestionDetail({ spaceId, token, onUnauthorized }: Quest
           </ul>
           <div className="qd-actions">
             {!revealed ? (
-              <button onClick={() => setRevealed(true)} disabled={selected.size === 0}>Check answer</button>
+              <button
+                onClick={async () => {
+                  setSubmitting(true)
+                  try {
+                    await fetch(`${API_URL}/questions/${q.id}/attempt`, {
+                      method: 'POST',
+                      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ selected_answer_ids: [...selected] }),
+                    })
+                  } catch (_) {}
+                  finally { setSubmitting(false) }
+                  setRevealed(true)
+                }}
+                disabled={selected.size === 0 || submitting}
+              >
+                {submitting ? 'Checking…' : 'Check answer'}
+              </button>
             ) : (
               <p className="qd-result">
                 {isCorrect ? '✓ Correct!' : '✗ Incorrect'}

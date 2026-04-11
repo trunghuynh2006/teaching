@@ -163,6 +163,15 @@ func (a *app) initDB(ctx context.Context) error {
 	if err := a.queries.InitLearningPathStepsPathIndex(ctx); err != nil {
 		return err
 	}
+	if err := a.queries.InitQuestionAttemptsTable(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitQuestionAttemptsQuestionIndex(ctx); err != nil {
+		return err
+	}
+	if err := a.queries.InitQuestionAttemptsSpaceIndex(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

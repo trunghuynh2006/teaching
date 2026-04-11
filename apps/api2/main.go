@@ -195,6 +195,8 @@ func main() {
 	mux.HandleFunc("POST /learning-paths/{id}/steps", handler.Auth(handler.AddLearningPathStep))
 	mux.HandleFunc("DELETE /learning-paths/{id}/steps/{concept_id}", handler.Auth(handler.RemoveLearningPathStep))
 	mux.HandleFunc("PATCH /learning-paths/{id}/steps/{concept_id}", handler.Auth(handler.ReorderLearningPathStep))
+	mux.HandleFunc("POST /questions/{id}/attempt", handler.Auth(handler.RecordQuestionAttempt))
+	mux.HandleFunc("GET /spaces/{id}/attempts/stats", handler.Auth(handler.ListSpaceAttemptStats))
 
 	wrapped := handler.CORS(mux)
 	addr := fmt.Sprintf(":%s", port)
