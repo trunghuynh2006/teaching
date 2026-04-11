@@ -121,6 +121,43 @@ func (h *Handler) ListSpaceAttemptStats(w http.ResponseWriter, r *http.Request, 
 	writeJSON(w, http.StatusOK, map[string]any{"stats": stats})
 }
 
+// ListMySpaceAttempts handles GET /spaces/{id}/my-attempts.
+// Returns all attempts by the current user in the space, ordered newest first.
+func (h *Handler) ListMySpaceAttempts(w http.ResponseWriter, r *http.Request, currentUser user.User) {
+	spaceID := strings.TrimSpace(r.PathValue("id"))
+	if spaceID == "" {
+		writeJSON(w, http.StatusBadRequest, ErrorResponse{Detail: "Space id is required"})
+		return
+	}
+	attempts, err := h.Queries.ListMySpaceAttempts(r.Context(), spaceID, currentUser.Username)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, ErrorResponse{Detail: "Internal server error"})
+		return
+	}
+	type attemptItem struct {
+		ID                string   `json:"id"`
+		QuestionID        string   `json:"question_id"`
+		SelectedAnswerIDs []string `json:"selected_answer_ids"`
+		IsCorrect         bool     `json:"is_correct"`
+		AnsweredAt        string   `json:"answered_at"`
+	}
+	out := make([]attemptItem, 0, len(attempts))
+	for _, a := range attempts {
+		ts := ""
+		if a.AnsweredAt.Valid {
+			ts = a.AnsweredAt.Time.UTC().Format(time.RFC3339)
+		}
+		out = append(out, attemptItem{
+			ID:                a.ID,
+			QuestionID:        a.QuestionID,
+			SelectedAnswerIDs: a.SelectedAnswerIDs,
+			IsCorrect:         a.IsCorrect,
+			AnsweredAt:        ts,
+		})
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"attempts": out})
+}
+
 func newAttemptID() string {
 	var b [8]byte
 	if _, err := rand.Read(b[:]); err != nil {

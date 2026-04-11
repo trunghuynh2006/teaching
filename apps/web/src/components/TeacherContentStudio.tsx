@@ -8,10 +8,11 @@ import TeacherSkillManager from './TeacherSkillManager'
 
 interface TeacherContentStudioProps {
   token: string
+  role: string
   onUnauthorized: () => void
 }
 
-export default function TeacherContentStudio({ token, onUnauthorized }: TeacherContentStudioProps) {
+export default function TeacherContentStudio({ token, role, onUnauthorized }: TeacherContentStudioProps) {
   return (
     <Routes>
       <Route index element={<Navigate to="skills" replace />} />
@@ -21,7 +22,7 @@ export default function TeacherContentStudio({ token, onUnauthorized }: TeacherC
       <Route path="audio-records" element={<AudioRecordList token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="folders" element={<FolderManager token={token} onUnauthorized={onUnauthorized} />} />
       <Route path="domains" element={<DomainManager token={token} onUnauthorized={onUnauthorized} />} />
-      <Route path="concepts" element={<ConceptManager token={token} onUnauthorized={onUnauthorized} />} />
+      <Route path="concepts" element={<ConceptManager token={token} canEdit={role === 'admin'} onUnauthorized={onUnauthorized} />} />
       <Route path="*" element={<Navigate to="skills" replace />} />
     </Routes>
   )

@@ -78,6 +78,31 @@ func (q *Queries) ListAttemptsBySpace(ctx context.Context, spaceID string) ([]Qu
 	return out, rows.Err()
 }
 
+const listMySpaceAttempts = `
+SELECT id, question_id, space_id, username, selected_answer_ids, is_correct, answered_at
+FROM question_attempts
+WHERE space_id = $1 AND username = $2
+ORDER BY answered_at DESC
+`
+
+func (q *Queries) ListMySpaceAttempts(ctx context.Context, spaceID, username string) ([]QuestionAttempt, error) {
+	rows, err := q.db.Query(ctx, listMySpaceAttempts, spaceID, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []QuestionAttempt
+	for rows.Next() {
+		var a QuestionAttempt
+		if err := rows.Scan(&a.ID, &a.QuestionID, &a.SpaceID, &a.Username,
+			&a.SelectedAnswerIDs, &a.IsCorrect, &a.AnsweredAt); err != nil {
+			return nil, err
+		}
+		out = append(out, a)
+	}
+	return out, rows.Err()
+}
+
 const getSpaceAttemptStats = `
 SELECT question_id,
        COUNT(*)                          AS total_count,

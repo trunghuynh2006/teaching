@@ -9,6 +9,7 @@ import {
   SIDEBAR_BY_SECTION,
   TEACHER_SECTIONS,
 } from './config/menu'
+import LearnerHome from './components/LearnerHome'
 import LoginPage from './pages/LoginPage'
 import { AdminLanding, LearnerLanding, ParentLanding } from './pages/LandingPages'
 
@@ -81,7 +82,7 @@ export default function App() {
     role === 'teacher'
       ? '/teacher/content-studio/skills'
       : role === 'learner'
-      ? '/learner/folders'
+      ? '/learner/home'
       : menuItems[0]?.path ?? '/'
 
   // Redirect unknown paths for non-teacher roles
@@ -134,17 +135,18 @@ export default function App() {
               <Route path="/teacher/gradebook" element={<TeacherGradebook />} />
               <Route
                 path="/teacher/content-studio/*"
-                element={<TeacherContentStudio token={token} onUnauthorized={handleLogout} />}
+                element={<TeacherContentStudio token={token} role={role} onUnauthorized={handleLogout} />}
               />
               <Route path="*" element={<Navigate to="/teacher/content-studio/skills" replace />} />
             </>
           ) : role === 'learner' ? (
             <>
+              <Route path="/learner/home" element={<LearnerHome token={token} userName={user.full_name ?? user.FullName ?? ''} onUnauthorized={handleLogout} />} />
               <Route path="/learner/folders" element={<LearnerLanding activeItem="Folders" token={token} onUnauthorized={handleLogout} />} />
               <Route path="/learner/concepts" element={<LearnerLanding activeItem="Concepts" token={token} onUnauthorized={handleLogout} />} />
               <Route path="/learner/recorder" element={<LearnerLanding activeItem="Voice Recorder" token={token} onUnauthorized={handleLogout} />} />
               <Route path="/learner/audio-records" element={<LearnerLanding activeItem="Audio Records" token={token} onUnauthorized={handleLogout} />} />
-              <Route path="*" element={<Navigate to="/learner/folders" replace />} />
+              <Route path="*" element={<Navigate to="/learner/home" replace />} />
             </>
           ) : (
             <>

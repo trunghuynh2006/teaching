@@ -4,6 +4,7 @@ import { ConceptItem } from './ConceptPanel'
 
 interface ConceptManagerProps {
   token: string
+  canEdit?: boolean
   onUnauthorized: () => void
 }
 
@@ -54,7 +55,7 @@ function formFromConcept(c: ConceptItem): FormState {
   }
 }
 
-export default function ConceptManager({ token, onUnauthorized }: ConceptManagerProps) {
+export default function ConceptManager({ token, canEdit = false, onUnauthorized }: ConceptManagerProps) {
   const [concepts, setConcepts] = useState<ConceptItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -193,7 +194,7 @@ export default function ConceptManager({ token, onUnauthorized }: ConceptManager
       {/* ── Header ── */}
       <div className="concept-manager-header">
         <h2>Concepts</h2>
-        <button className="btn-primary" onClick={openCreate}>+ New Concept</button>
+        {canEdit && <button className="btn-primary" onClick={openCreate}>+ New Concept</button>}
       </div>
 
       {/* ── Filters ── */}
@@ -244,8 +245,8 @@ export default function ConceptManager({ token, onUnauthorized }: ConceptManager
                     {c.scope && c.scope !== 'universal' && (
                       <span className="concept-scope-badge">{c.scope}</span>
                     )}
-                    <button className="btn-sm btn-secondary" onClick={e => { e.stopPropagation(); openEdit(c) }}>Edit</button>
-                    <button className="btn-sm btn-danger"    onClick={e => { e.stopPropagation(); deleteConcept(c) }}>Delete</button>
+                    {canEdit && <button className="btn-sm btn-secondary" onClick={e => { e.stopPropagation(); openEdit(c) }}>Edit</button>}
+                    {canEdit && <button className="btn-sm btn-danger"    onClick={e => { e.stopPropagation(); deleteConcept(c) }}>Delete</button>}
                   </div>
                 </div>
 

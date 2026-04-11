@@ -129,7 +129,10 @@ button.danger {
   flex-direction: column;
   align-items: center;
   gap: 0.4rem;
-  position: relative;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .brand-icon {
@@ -147,6 +150,9 @@ button.danger {
   gap: 0.35rem;
   width: 100%;
   align-items: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
 }
 
 .nav-item {
@@ -177,6 +183,7 @@ button.danger {
 .sidebar-user {
   margin-top: auto;
   margin-bottom: 0.5rem;
+  flex-shrink: 0;
   position: relative;
 }
 
@@ -295,6 +302,148 @@ button.danger {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
   animation: fade-up 380ms ease;
 }
+
+/* ── Learner home ──────────────────────────────────────────── */
+
+.learner-home {
+  max-width: 560px;
+  padding: 2rem 1.5rem;
+}
+
+.learner-home-greeting {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #1a2b3c;
+  margin: 0 0 0.5rem;
+}
+
+.learner-home-summary {
+  font-size: 0.95rem;
+  color: #4a5e6e;
+  margin: 0 0 2rem;
+  line-height: 1.6;
+}
+
+.learner-home-loading {
+  font-size: 0.9rem;
+  color: #7a92a3;
+  margin-top: 1rem;
+}
+
+.learner-home-link {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+.learner-home-section {
+  margin-bottom: 2rem;
+}
+
+.learner-home-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7a92a3;
+  margin: 0 0 0.75rem;
+}
+
+.learner-home-space-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.learner-home-space-item {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #eef2f5;
+}
+
+.learner-home-space-item:last-child { border-bottom: none; }
+
+.learner-home-space-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.learner-home-space-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a2b3c;
+}
+
+.learner-home-space-folder {
+  font-size: 0.78rem;
+  color: #7a92a3;
+}
+
+.learner-home-space-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #4a5e6e;
+}
+
+.learner-home-due {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.learner-home-time {
+  color: #7a92a3;
+  margin-left: auto;
+}
+
+.learner-home-recent-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.learner-home-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #eef2f5;
+  font-size: 0.85rem;
+}
+
+.learner-home-recent-item:last-child { border-bottom: none; }
+
+.learner-home-recent-icon {
+  font-size: 0.8rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.learner-home-recent-icon.correct { color: #16a34a; }
+.learner-home-recent-icon.wrong   { color: #dc2626; }
+
+.learner-home-recent-space {
+  color: #1a2b3c;
+  flex: 1;
+}
+
+.learner-home-recent-time {
+  color: #7a92a3;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+/* ── Legacy landing cards ─────────────────────────────────── */
 
 .cards-grid {
   display: grid;
@@ -1432,6 +1581,42 @@ button.danger {
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
+}
+
+.qd-multi-hint {
+  font-size: 0.78rem;
+  color: #7a92a3;
+}
+
+/* dot progress strip */
+.qd-dot-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.qd-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d1dde6;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.qd-dot:hover { transform: scale(1.3); }
+.qd-dot-active { outline: 2px solid #3b82f6; outline-offset: 1px; }
+.qd-dot-correct { background: #22c55e; }
+.qd-dot-wrong   { background: #ef4444; }
+
+/* attempt history badge */
+.qd-history-badge {
+  font-size: 0.75rem;
+  background: #e8f0fe;
+  color: #2563eb;
+  border-radius: 10px;
+  padding: 1px 8px;
 }
 
 /* ── Question generate modal review list ─────────────────── */

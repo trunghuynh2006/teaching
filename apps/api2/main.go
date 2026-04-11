@@ -196,6 +196,7 @@ func main() {
 	mux.HandleFunc("DELETE /learning-paths/{id}/steps/{concept_id}", handler.Auth(handler.RemoveLearningPathStep))
 	mux.HandleFunc("PATCH /learning-paths/{id}/steps/{concept_id}", handler.Auth(handler.ReorderLearningPathStep))
 	mux.HandleFunc("POST /questions/{id}/attempt", handler.Auth(handler.RecordQuestionAttempt))
+	mux.HandleFunc("GET /spaces/{id}/my-attempts", handler.Auth(handler.ListMySpaceAttempts))
 	mux.HandleFunc("GET /spaces/{id}/attempts/stats", handler.Auth(handler.ListSpaceAttemptStats))
 
 	wrapped := handler.CORS(mux)
