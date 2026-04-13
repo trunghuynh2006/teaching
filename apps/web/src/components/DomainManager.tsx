@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import { API_URL } from '../config'
 
-const API = 'http://localhost:8000'
+const API = API_URL
 
 interface Domain {
   id: string

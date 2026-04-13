@@ -59,7 +59,7 @@ func main() {
 		AuthService:    authService,
 		ProfileService: profile.Service{},
 		Queries:        queries,
-		AllowedOrigin:  "http://localhost:5173",
+		AllowedOrigin:  getenv("ALLOWED_ORIGIN", "http://localhost:5173"),
 		UploadDir:      getenv("UPLOAD_DIR", "./uploads"),
 		OpenAIKey:      getenv("OPENAI_API_KEY", ""),
 		AIClient:       &infra_ai.Client{BaseURL: getenv("AI_SERVICE_URL", "http://localhost:8100")},
